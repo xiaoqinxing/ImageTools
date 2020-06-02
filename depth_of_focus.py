@@ -3,6 +3,7 @@ import numpy as np
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 import sys
 from field_depth_ui import Ui_MainWindow
+import math
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -96,6 +97,14 @@ class LenParameters(object):
         计算总景深，后景深减去前景深
         '''
         return (self.calc_back_field_depth() - self.calc_front_field_depth())
+
+    def calc_fov(self):
+        '''
+        计算对角线视场角
+        '''
+        image_distance = (self.focus_distance*self.focus_length)/(self.focus_distance-self.focus_length)
+        alpha = math.atan((self.cmos_size/2)/image_distance)
+        return (2*alpha*180/math.pi)
 
     def calc_depth_map(self, step=10, unit=1000):
         '''
@@ -192,7 +201,7 @@ class App(object):
             return False
 
     def get_ui_params(self):
-        self.params.focus_length = int(self.ui.focus_length.text())
+        self.params.focus_length = float(self.ui.focus_length.text())
         self.params.confusion_circle_diam = float(
             self.ui.confusion_circle_diam.text())
         self.params.aperture = float(self.ui.aperture.text())
@@ -205,12 +214,12 @@ class App(object):
             self.pri_params = self.params
             self.plot_field_depth()
             self.plot_image_distance()
+            print('视场角：'+str(self.params.calc_fov()))
 
     def coms_size_changed_cb(self):
         self.params.cmos_size = float(self.ui.sensor_size.text())
         value = self.params.calc_confusion_circle_diam()
         self.ui.confusion_circle_diam.setValue(value)
-        print("coms_size_changed_cb value="+str(value))
 
 if __name__ == "__main__":
     app = App()
