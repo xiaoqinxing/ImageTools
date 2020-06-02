@@ -67,12 +67,6 @@ class LenParameters(object):
             self.aperture*self.confusion_circle_diam
         return (a/b)
 
-    def calc_infinity_depth_distance(self):
-        '''
-        计算后景深无穷大时的像距
-        '''
-        return (self.focus_length*self.focus_length/self.aperture/self.confusion_circle_diam+self.focus_length)
-
     def calc_confusion_circle_diam(self):
         '''
         通过CMOS的尺寸计算弥散圈直径，默认是CMOS对角线尺寸除1000
@@ -105,6 +99,18 @@ class LenParameters(object):
         image_distance = (self.focus_distance*self.focus_length)/(self.focus_distance-self.focus_length)
         alpha = math.atan((self.cmos_size/2)/image_distance)
         return (2*alpha*180/math.pi)
+
+    def calc_equivalent_focus_length(self):
+        '''
+        计算等效焦距
+        '''
+        return (43.27/self.cmos_size*self.focus_length)
+
+    def calc_hyperfocal_distance(self):
+        '''
+        计算超焦距，刚好后景深是无穷远时的对焦距离
+        '''
+        return (self.focus_length*self.focus_length/self.aperture/self.confusion_circle_diam+self.focus_length)
 
     def calc_depth_map(self, step=10, unit=1000):
         '''
@@ -150,7 +156,7 @@ class App(object):
         self.pri_params = LenParameters()
         self.ui.pushButton.clicked.connect(self.finished_plot_cb)
         self.ui.sensor_size.editingFinished.connect(self.coms_size_changed_cb)
-
+        self.ui.confusion_circle_diam_slide.sliderMoved.connect(self.confusion_circle_diam_changed_cb)
         print("前景深："+str(self.params.calc_front_field_depth()/1000) + 'm')
         print("后景深："+str(self.params.calc_back_field_depth()/1000) + 'm')
         print("总景深：" + str(self.params.calc_field_depth()/1000)+'m')
@@ -163,9 +169,9 @@ class App(object):
     def plot_field_depth(self):
         (x, y1, y2) = self.params.calc_depth_map()
         field_depth_figure = MplCanvas()
-        field_depth_figure.axes.plot(x, y1)
-        field_depth_figure.axes.plot(x, y2)
-        field_depth_figure.axes.plot(x, x)
+        field_depth_figure.axes.plot(x, y1,color='yellow')
+        field_depth_figure.axes.plot(x, y2,color='red')
+        field_depth_figure.axes.plot(x, x,color='blue')
         field_depth_figure.axes.fill_between(
             x, y1, y2, color='blue', alpha=0.25)
         if(self.field_depth_figure == None):
@@ -207,6 +213,11 @@ class App(object):
         self.params.aperture = float(self.ui.aperture.text())
         self.params.focus_distance = float(self.ui.focus_distance.text())*1000
         self.params.cmos_size = float(self.ui.sensor_size.text())
+    
+    def calc_len_params(self):
+        print('视场角：'+str(self.params.calc_fov())+'度')
+        print('等效焦距：'+str(self.params.calc_equivalent_focus_length())+'mm')
+        print('超焦距：'+str(self.params.calc_hyperfocal_distance()/1000) + 'm')
 
     # CALLBACKS
     def finished_plot_cb(self):
@@ -214,12 +225,16 @@ class App(object):
             self.pri_params = self.params
             self.plot_field_depth()
             self.plot_image_distance()
-            print('视场角：'+str(self.params.calc_fov()))
+            self.calc_len_params()
 
     def coms_size_changed_cb(self):
-        self.params.cmos_size = float(self.ui.sensor_size.text())
-        value = self.params.calc_confusion_circle_diam()
-        self.ui.confusion_circle_diam.setValue(value)
+        self.params.cmos_size = self.ui.sensor_size.value()
+        self.confusion_circle_diam_changed_cb()
+    
+    def confusion_circle_diam_changed_cb(self):
+        value = self.ui.confusion_circle_diam_slide.value()
+        self.params.confusion_circle_diam = self.params.cmos_size/1000*(0.5+value/100)
+        self.ui.confusion_circle_diam.setValue(self.params.confusion_circle_diam)
 
 if __name__ == "__main__":
     app = App()
