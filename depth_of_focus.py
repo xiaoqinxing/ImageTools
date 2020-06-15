@@ -4,8 +4,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 import sys
 from field_depth_ui import Ui_MainWindow
 import math
+from enum import Enum
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg,NavigationToolbar2QT
 from matplotlib.figure import Figure
 
 
@@ -135,10 +136,46 @@ class LenParameters(object):
 
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
+        plt.rcParams['font.family'] = ['SimHei']
+        plt.rcParams['axes.unicode_minus'] = False
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
+        #self.axes.hold(False) #每次绘图时都不保留上一次绘图的结果
         super(MplCanvas, self).__init__(fig)
 
+class MatplotlibWidget(QWidget):
+    def __init__(self, layout):
+        self.plt = MplCanvas()
+        self.layout = layout
+    
+    def draw(self):
+        self.layout.addWidget(self.plt)
+        self.mpl_ntb = NavigationToolbar2QT(self.plt,parent=None)
+        self.layout.addWidget(self.mpl_ntb)
+    
+    def input(self,x,y):
+        self.plt.axes.plot(x, y)
+
+    def input_2line(self,x,y1,y2):
+        self.plt.axes.plot(x, y1,color='yellow')
+        self.plt.axes.plot(x, y2,color='red')
+        self.plt.axes.fill_between(x, y1, y2, color='blue', alpha=0.25)
+    
+    def label(self,string_x,string_y):
+        self.plt.axes.set_xlabel(string_x)
+        self.plt.axes.set_ylabel(string_y)
+
+
+class SettingParamters(object):
+    def __init__(self):
+        # input setting
+        self.input_focus_length = False
+        self.input_apeture = False
+        self.input_distance = False
+        # output setting
+        self.output_field_depth = False
+        self.output_image_distance = False
+        self.output_params = False
 
 class App(object):
     def __init__(self):
@@ -150,6 +187,7 @@ class App(object):
         window.show()
         self.field_depth_figure = None
         self.image_distance_figure = None
+        self.setting = SettingParamters()
         self.params = LenParameters()
         self.get_ui_params()
         self.params.show()
@@ -161,10 +199,20 @@ class App(object):
         print("后景深："+str(self.params.calc_back_field_depth()/1000) + 'm')
         print("总景深：" + str(self.params.calc_field_depth()/1000)+'m')
         self.params.focus_distance_range = [1000, 5000]
-        self.plot_field_depth()
-        self.plot_image_distance()
+        # self.plot_field_depth()
+        # self.plot_image_distance()
+        self.plot()
         self.updatePlot = False
         sys.exit(app.exec_())
+
+    def plot(self):
+        if(self.setting.output_field_depth == True):
+            if(self.setting.input_distance == True):
+                (x, y1, y2) = self.params.calc_depth_map()
+                field_depth_figure = MatplotlibWidget(self.ui.gridLayout)
+                field_depth_figure.input_2line(x,y1,y2)
+                field_depth_figure.label("x","hello")
+                field_depth_figure.draw()
 
     def plot_field_depth(self):
         (x, y1, y2) = self.params.calc_depth_map()
@@ -194,38 +242,34 @@ class App(object):
                 self.image_distance_figure, image_distance_figure)
             self.image_distance_figure = image_distance_figure
 
-    def is_params_changed(self):
-        self.get_ui_params()
-        if(self.params.focus_length != self.pri_params or
-            self.params.confusion_circle_diam != self.pri_params.confusion_circle_diam or
-            self.params.aperture != self.pri_params.aperture or
-            self.params.focus_distance != self.pri_params.focus_distance or
-            self.params.cmos_size != self.pri_params.cmos_size
-           ):
-            return True
-        else:
-            return False
+    def calc_len_params(self):
+        print('视场角：'+str(self.params.calc_fov())+'度')
+        print('等效焦距：'+str(self.params.calc_equivalent_focus_length())+'mm')
+        print('超焦距：'+str(self.params.calc_hyperfocal_distance()/1000) + 'm')
 
+    # get params
     def get_ui_params(self):
+        # basic setting
         self.params.focus_length = float(self.ui.focus_length.text())
         self.params.confusion_circle_diam = float(
             self.ui.confusion_circle_diam.text())
         self.params.aperture = float(self.ui.aperture.text())
         self.params.focus_distance = float(self.ui.focus_distance.text())*1000
         self.params.cmos_size = float(self.ui.sensor_size.text())
-    
-    def calc_len_params(self):
-        print('视场角：'+str(self.params.calc_fov())+'度')
-        print('等效焦距：'+str(self.params.calc_equivalent_focus_length())+'mm')
-        print('超焦距：'+str(self.params.calc_hyperfocal_distance()/1000) + 'm')
+        # input setting
+        self.setting.input_focus_length = self.ui.input_focus_length.isChecked()
+        self.setting.input_apeture = self.ui.input_apeture.isChecked()
+        self.setting.input_distance = self.ui.input_distance.isChecked()
+        # output setting
+        self.setting.output_field_depth = self.ui.output_field_depth.isChecked()
+        self.setting.output_image_distance = self.ui.output_image_distance.isChecked()
+        self.setting.output_params = self.ui.output_params.isChecked()
 
     # CALLBACKS
     def finished_plot_cb(self):
-        if(self.is_params_changed() == True):
-            self.pri_params = self.params
-            self.plot_field_depth()
-            self.plot_image_distance()
-            self.calc_len_params()
+        self.get_ui_params()
+        self.plot()
+        self.calc_len_params()
 
     def coms_size_changed_cb(self):
         self.params.cmos_size = self.ui.sensor_size.value()
