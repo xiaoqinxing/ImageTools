@@ -6,7 +6,7 @@ from field_depth_ui import Ui_MainWindow
 import math
 from enum import Enum
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg,NavigationToolbar2QT
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 
 
@@ -25,6 +25,8 @@ class LenParameters(object):
         self.focus_distance = 0
         self.effective_focus_length = 0
         self.focus_distance_range = [0, 0]
+        self.aperture_range = [0, 0]
+        self.focus_range = [0, 0]
         self.confusion_circle_diam = 0
         self.cmos_size = 0
 
@@ -97,7 +99,8 @@ class LenParameters(object):
         '''
         计算对角线视场角
         '''
-        image_distance = (self.focus_distance*self.focus_length)/(self.focus_distance-self.focus_length)
+        image_distance = (self.focus_distance*self.focus_length) / \
+            (self.focus_distance-self.focus_length)
         alpha = math.atan((self.cmos_size/2)/image_distance)
         return (2*alpha*180/math.pi)
 
@@ -113,15 +116,55 @@ class LenParameters(object):
         '''
         return (self.focus_length*self.focus_length/self.aperture/self.confusion_circle_diam+self.focus_length)
 
-    def calc_depth_map(self, step=10, unit=1000):
+    def calc_depth_map_from_distance(self, step_num=1000, unit=1000):
         '''
         计算不同物距范围内的景深
         '''
         y1 = list()
         y2 = list()
-        x = range(self.focus_distance_range[0],
-                  self.focus_distance_range[1], step*10)
+        x = np.linspace(self.focus_distance_range[0],
+                        self.focus_distance_range[1], step_num)
         for self.focus_distance in x:
+            y1.append(self.calc_front_field_depth())
+            value = self.calc_back_field_depth()
+            # 防止后景深计算为负数
+            if(value <= 0):
+                value = float('inf')
+            y2.append(value)
+        y1 = np.array(y1)/unit
+        y2 = np.array(y2)/unit
+        x = np.array(x)/unit
+        return (x, y1, y2)
+
+    def calc_depth_map_from_focus(self, step_num=1000, unit=1000):
+        '''
+        计算不同焦距范围内的景深
+        '''
+        y1 = list()
+        y2 = list()
+        x = np.linspace(self.focus_range[0],
+                        self.focus_range[1], step_num)
+        for self.focus_length in x:
+            y1.append(self.calc_front_field_depth())
+            value = self.calc_back_field_depth()
+            # 防止后景深计算为负数
+            if(value <= 0):
+                value = float('inf')
+            y2.append(value)
+        y1 = np.array(y1)/unit
+        y2 = np.array(y2)/unit
+        x = np.array(x)/unit
+        return (x, y1, y2)
+
+    def calc_depth_map_from_apeture(self, step_num=1000, unit=1000):
+        '''
+        计算不同光圈范围内的景深
+        '''
+        y1 = list()
+        y2 = list()
+        x = np.linspace(self.aperture_range[0],
+                        self.aperture_range[1], step_num)
+        for self.aperture in x:
             y1.append(self.calc_front_field_depth())
             value = self.calc_back_field_depth()
             # 防止后景深计算为负数
@@ -140,30 +183,41 @@ class MplCanvas(FigureCanvasQTAgg):
         plt.rcParams['axes.unicode_minus'] = False
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
-        #self.axes.hold(False) #每次绘图时都不保留上一次绘图的结果
+        # self.axes.hold(False) #每次绘图时都不保留上一次绘图的结果
         super(MplCanvas, self).__init__(fig)
+
 
 class MatplotlibWidget(QWidget):
     def __init__(self, layout):
         self.plt = MplCanvas()
         self.layout = layout
-    
-    def draw(self):
+        self.mpl_ntb = NavigationToolbar2QT(self.plt, parent=None)
+
+    def draw(self, navigationBar=True):
         self.layout.addWidget(self.plt)
-        self.mpl_ntb = NavigationToolbar2QT(self.plt,parent=None)
-        self.layout.addWidget(self.mpl_ntb)
-    
-    def input(self,x,y):
+        if navigationBar == True:
+            self.layout.addWidget(self.mpl_ntb)
+
+    def clean(self, navigationBar=True):
+        self.layout.removeWidget(self.plt)
+        if navigationBar == True:
+            self.layout.removeWidget(self.mpl_ntb)
+        self.plt = MplCanvas()
+        self.mpl_ntb = NavigationToolbar2QT(self.plt, parent=None)
+
+    def input(self, x, y):
         self.plt.axes.plot(x, y)
 
-    def input_2line(self,x,y1,y2):
-        self.plt.axes.plot(x, y1,color='yellow')
-        self.plt.axes.plot(x, y2,color='red')
+    def input_2line(self, x, y1, y2):
+        self.plt.axes.plot(x, y1, color='green')
+        self.plt.axes.plot(x, y2, color='red')
         self.plt.axes.fill_between(x, y1, y2, color='blue', alpha=0.25)
-    
-    def label(self,string_x,string_y):
+
+    def label(self, string_x, string_y, enable_grid=True):
         self.plt.axes.set_xlabel(string_x)
         self.plt.axes.set_ylabel(string_y)
+        if enable_grid == True:
+            self.plt.axes.grid(True)
 
 
 class SettingParamters(object):
@@ -194,32 +248,53 @@ class App(object):
         self.pri_params = LenParameters()
         self.ui.pushButton.clicked.connect(self.finished_plot_cb)
         self.ui.sensor_size.editingFinished.connect(self.coms_size_changed_cb)
-        self.ui.confusion_circle_diam_slide.sliderMoved.connect(self.confusion_circle_diam_changed_cb)
+        self.ui.confusion_circle_diam_slide.sliderMoved.connect(
+            self.confusion_circle_diam_changed_cb)
         print("前景深："+str(self.params.calc_front_field_depth()/1000) + 'm')
         print("后景深："+str(self.params.calc_back_field_depth()/1000) + 'm')
         print("总景深：" + str(self.params.calc_field_depth()/1000)+'m')
-        self.params.focus_distance_range = [1000, 5000]
-        # self.plot_field_depth()
-        # self.plot_image_distance()
-        self.plot()
-        self.updatePlot = False
+        self.ui.apeture_min_range.setValue(self.params.aperture/2)
+        self.ui.apeture_max_range.setValue(self.params.aperture*2)
+        self.ui.distance_min_range.setValue(self.params.focus_distance/2000)
+        self.ui.distance_max_range.setValue(self.params.focus_distance/500)
+        self.ui.focus_min_range.setValue(self.params.focus_length/2)
+        self.ui.focus_max_range.setValue(self.params.focus_length*2)
+        self.get_ui_params()
+        self.plot_fig = None
+        self.plot_figure()
         sys.exit(app.exec_())
 
-    def plot(self):
+    def clean_figures(self):
+        if self.plot_fig == None:
+            self.plot_fig = MatplotlibWidget(self.ui.gridLayout)
+        else:
+            self.plot_fig.clean()
+
+    def plot_figure(self):
+        self.clean_figures()
         if(self.setting.output_field_depth == True):
             if(self.setting.input_distance == True):
-                (x, y1, y2) = self.params.calc_depth_map()
-                field_depth_figure = MatplotlibWidget(self.ui.gridLayout)
-                field_depth_figure.input_2line(x,y1,y2)
-                field_depth_figure.label("x","hello")
-                field_depth_figure.draw()
+                (x, y1, y2) = self.params.calc_depth_map_from_distance()
+                self.plot_fig.input_2line(x, y1, y2)
+                self.plot_fig.label("对焦距离", "景深范围")
+                self.plot_fig.draw()
+            if(self.setting.input_focus_length == True):
+                (x, y1, y2) = self.params.calc_depth_map_from_focus()
+                self.plot_fig.input_2line(x, y1, y2)
+                self.plot_fig.label("焦距", "景深范围")
+                self.plot_fig.draw()
+            if(self.setting.input_apeture == True):
+                (x, y1, y2) = self.params.calc_depth_map_from_apeture()
+                self.plot_fig.input_2line(x, y1, y2)
+                self.plot_fig.label("光圈值", "景深范围")
+                self.plot_fig.draw()
 
     def plot_field_depth(self):
         (x, y1, y2) = self.params.calc_depth_map()
         field_depth_figure = MplCanvas()
-        field_depth_figure.axes.plot(x, y1,color='yellow')
-        field_depth_figure.axes.plot(x, y2,color='red')
-        field_depth_figure.axes.plot(x, x,color='blue')
+        field_depth_figure.axes.plot(x, y1, color='green')
+        field_depth_figure.axes.plot(x, y2, color='red')
+        field_depth_figure.axes.plot(x, x, color='blue')
         field_depth_figure.axes.fill_between(
             x, y1, y2, color='blue', alpha=0.25)
         if(self.field_depth_figure == None):
@@ -264,21 +339,33 @@ class App(object):
         self.setting.output_field_depth = self.ui.output_field_depth.isChecked()
         self.setting.output_image_distance = self.ui.output_image_distance.isChecked()
         self.setting.output_params = self.ui.output_params.isChecked()
+        # advanced setting
+        self.params.aperture_range[0] = float(self.ui.apeture_min_range.text())
+        self.params.aperture_range[1] = float(self.ui.apeture_max_range.text())
+        self.params.focus_distance_range[0] = float(
+            self.ui.distance_min_range.text())*1000
+        self.params.focus_distance_range[1] = float(
+            self.ui.distance_max_range.text())*1000
+        self.params.focus_range[0] = float(self.ui.focus_min_range.text())
+        self.params.focus_range[1] = float(self.ui.focus_max_range.text())
 
     # CALLBACKS
     def finished_plot_cb(self):
         self.get_ui_params()
-        self.plot()
+        self.plot_figure()
         self.calc_len_params()
 
     def coms_size_changed_cb(self):
         self.params.cmos_size = self.ui.sensor_size.value()
         self.confusion_circle_diam_changed_cb()
-    
+
     def confusion_circle_diam_changed_cb(self):
         value = self.ui.confusion_circle_diam_slide.value()
-        self.params.confusion_circle_diam = self.params.cmos_size/1000*(0.5+value/100)
-        self.ui.confusion_circle_diam.setValue(self.params.confusion_circle_diam)
+        self.params.confusion_circle_diam = self.params.cmos_size / \
+            1000*(0.5+value/100)
+        self.ui.confusion_circle_diam.setValue(
+            self.params.confusion_circle_diam)
+
 
 if __name__ == "__main__":
     app = App()
