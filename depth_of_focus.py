@@ -9,6 +9,23 @@ from enum import Enum
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 
+cmos_size_dist = {"1/6": 3.0,
+                  "1/4": 4.0,
+                  "1/3.6": 5.0,
+                  "1/3.2": 5.678,
+                  "1/3": 6.0,
+                  "1/2.8": 6.46,
+                  "1/2.7": 6.592,
+                  "1/2.5": 7.182,
+                  "1/2": 8.000,
+                  "1/1.8": 8.933,
+                  "1/1.7": 9.500,
+                  "1/1.6": 10.07,
+                  "2/3":11.00,
+                  "1":16.0,
+                  "4/3":22.5,
+                  "1.8": 25.878,
+                  "35mm film": 43.267}
 
 class LenParameters(object):
     def __init__(self):
@@ -231,6 +248,7 @@ class SettingParamters(object):
         self.output_image_distance = False
         self.output_params = False
 
+
 class App(object):
     def __init__(self):
         app = QApplication(sys.argv)
@@ -250,9 +268,7 @@ class App(object):
         self.ui.sensor_size.editingFinished.connect(self.coms_size_changed_cb)
         self.ui.confusion_circle_diam_slide.sliderMoved.connect(
             self.confusion_circle_diam_changed_cb)
-        print("前景深："+str(self.params.calc_front_field_depth()/1000) + 'm')
-        print("后景深："+str(self.params.calc_back_field_depth()/1000) + 'm')
-        print("总景深：" + str(self.params.calc_field_depth()/1000)+'m')
+        self.ui.sensor_size_list.currentTextChanged.connect(self.coms_size_list_changed_cb)
         self.ui.apeture_min_range.setValue(self.params.aperture/2)
         self.ui.apeture_max_range.setValue(self.params.aperture*2)
         self.ui.distance_min_range.setValue(self.params.focus_distance/2000)
@@ -311,6 +327,9 @@ class App(object):
         print('视场角：'+str(self.params.calc_fov())+'度')
         print('等效焦距：'+str(self.params.calc_equivalent_focus_length())+'mm')
         print('超焦距：'+str(self.params.calc_hyperfocal_distance()/1000) + 'm')
+        print("前景深："+str(self.params.calc_front_field_depth()/1000) + 'm')
+        print("后景深："+str(self.params.calc_back_field_depth()/1000) + 'm')
+        print("总景深：" + str(self.params.calc_field_depth()/1000)+'m')
 
     # get params
     def get_ui_params(self):
@@ -344,6 +363,11 @@ class App(object):
         self.get_ui_params()
         self.plot_figure()
         self.calc_len_params()
+
+    def coms_size_list_changed_cb(self):
+        self.params.cmos_size = cmos_size_dist[self.ui.sensor_size_list.currentText()]
+        self.ui.sensor_size.setValue(self.params.cmos_size)
+        self.confusion_circle_diam_changed_cb()
 
     def coms_size_changed_cb(self):
         self.params.cmos_size = self.ui.sensor_size.value()
