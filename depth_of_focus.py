@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget,QHeaderView
 import sys
 from field_depth_ui import Ui_MainWindow
 from LenParameters import LenParameters,SettingParamters,cmos_size_dist
-from MatplotlibWidget import MatplotlibWidget
+from MatplotlibWidget import MatplotlibWidget,ParamsTable
 
 
 class App(object):
@@ -29,6 +29,7 @@ class App(object):
         self.init_params_range()
         self.plot_fig = MatplotlibWidget(self.ui.gridLayout)
         self.plot_figure()
+        self.tableWidget = ParamsTable(self.ui.gridLayout)
         sys.exit(app.exec_())
 
     def init_params_range(self):
@@ -61,6 +62,16 @@ class App(object):
                 self.plot_fig.label("光圈值(F)", "景深范围(m)")
             self.plot_fig.input_2line(x, y1, y2)
             self.plot_fig.draw()
+    
+    def plot_params(self):
+        self.tableWidget.clean()
+        self.tableWidget.append("视场角",str(self.params.calc_fov()),'度')
+        self.tableWidget.append("等效焦距",str(self.params.calc_equivalent_focus_length()),'mm')
+        self.tableWidget.append("超焦距距离",str(self.params.calc_hyperfocal_distance()/1000),'m')
+        self.tableWidget.append("前景深",str(self.params.calc_front_field_depth()/1000),'m')
+        self.tableWidget.append("后景深",str(self.params.calc_back_field_depth()/1000),'m')
+        self.tableWidget.append("总景深",str(self.params.calc_field_depth()/1000),'m')
+        self.tableWidget.show()
 
     def calc_len_params(self):
         print('视场角：'+str(self.params.calc_fov())+'度')
@@ -100,7 +111,12 @@ class App(object):
     # CALLBACKS
     def finished_plot_cb(self):
         self.get_ui_params()
-        self.plot_figure()
+        if self.setting.output_field_depth == True:
+            self.tableWidget.clean()
+            self.plot_figure()
+        elif self.setting.output_params == True:
+            self.plot_fig.clean()
+            self.plot_params()
         self.calc_len_params()
 
     def coms_size_list_changed_cb(self):

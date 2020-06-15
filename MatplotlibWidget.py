@@ -1,7 +1,7 @@
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget,QTableWidget,QTableWidgetItem
 
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -44,3 +44,30 @@ class MatplotlibWidget(QWidget):
         self.plt.axes.set_ylabel(string_y)
         if enable_grid == True:
             self.plt.axes.grid(True)
+
+class ParamsTable(QWidget):
+    def __init__(self,layout):
+        # 6行3列
+        self.tableWidget = QTableWidget(6,3)
+        self.tableWidget.setHorizontalHeaderLabels(["参数","值","单位"])
+        #self.tableWidget.horizontalHeader().setSectionResizeMde(QHeaderView.Stretch)
+        self.line = 0
+        self.layout = layout
+    
+    def append(self,name,value,uint):
+        newItem = QTableWidgetItem(name)
+        self.tableWidget.setItem(self.line,0,newItem)
+        newItem = QTableWidgetItem(value)
+        self.tableWidget.setItem(self.line,1,newItem)
+        newItem = QTableWidgetItem(uint)
+        self.tableWidget.setItem(self.line,2,newItem)
+        self.line += 1
+
+    def show(self):
+        self.layout.addWidget(self.tableWidget)
+    
+    def clean(self):
+        self.layout.removeWidget(self.tableWidget)
+        self.tableWidget = QTableWidget(6,3)
+        self.tableWidget.setHorizontalHeaderLabels(["参数","值","单位"])
+        self.line = 0

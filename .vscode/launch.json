@@ -8,7 +8,7 @@
             "name": "Python: 当前文件",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "${workspaceFolder}/depth_of_focus.py",
             "console": "integratedTerminal"
         }
     ]
