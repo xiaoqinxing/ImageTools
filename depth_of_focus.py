@@ -153,7 +153,7 @@ class LenParameters(object):
             y2.append(value)
         y1 = np.array(y1)/unit
         y2 = np.array(y2)/unit
-        x = np.array(x)/unit
+        x = np.array(x)
         return (x, y1, y2)
 
     def calc_depth_map_from_apeture(self, step_num=1000, unit=1000):
@@ -173,7 +173,7 @@ class LenParameters(object):
             y2.append(value)
         y1 = np.array(y1)/unit
         y2 = np.array(y2)/unit
-        x = np.array(x)/unit
+        x = np.array(x)
         return (x, y1, y2)
 
 
@@ -260,34 +260,24 @@ class App(object):
         self.ui.focus_min_range.setValue(self.params.focus_length/2)
         self.ui.focus_max_range.setValue(self.params.focus_length*2)
         self.get_ui_params()
-        self.plot_fig = None
+        self.plot_fig = MatplotlibWidget(self.ui.gridLayout)
         self.plot_figure()
         sys.exit(app.exec_())
 
-    def clean_figures(self):
-        if self.plot_fig == None:
-            self.plot_fig = MatplotlibWidget(self.ui.gridLayout)
-        else:
-            self.plot_fig.clean()
-
     def plot_figure(self):
-        self.clean_figures()
+        self.plot_fig.clean()
         if(self.setting.output_field_depth == True):
             if(self.setting.input_distance == True):
                 (x, y1, y2) = self.params.calc_depth_map_from_distance()
-                self.plot_fig.input_2line(x, y1, y2)
-                self.plot_fig.label("对焦距离", "景深范围")
-                self.plot_fig.draw()
-            if(self.setting.input_focus_length == True):
+                self.plot_fig.label("对焦距离(m)", "景深范围(m)")
+            elif(self.setting.input_focus_length == True):
                 (x, y1, y2) = self.params.calc_depth_map_from_focus()
-                self.plot_fig.input_2line(x, y1, y2)
-                self.plot_fig.label("焦距", "景深范围")
-                self.plot_fig.draw()
-            if(self.setting.input_apeture == True):
+                self.plot_fig.label("焦距(mm)", "景深范围(m)")
+            elif(self.setting.input_apeture == True):
                 (x, y1, y2) = self.params.calc_depth_map_from_apeture()
-                self.plot_fig.input_2line(x, y1, y2)
-                self.plot_fig.label("光圈值", "景深范围")
-                self.plot_fig.draw()
+                self.plot_fig.label("光圈值(F)", "景深范围(m)")
+            self.plot_fig.input_2line(x, y1, y2)
+            self.plot_fig.draw()
 
     def plot_field_depth(self):
         (x, y1, y2) = self.params.calc_depth_map()
