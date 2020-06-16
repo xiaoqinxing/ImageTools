@@ -1,7 +1,7 @@
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import QWidget,QTableWidget,QTableWidgetItem
+from PyQt5.QtWidgets import QWidget,QTableWidget,QTableWidgetItem,QHeaderView
 
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -50,7 +50,7 @@ class ParamsTable(QWidget):
         # 6行3列
         self.tableWidget = QTableWidget(6,3)
         self.tableWidget.setHorizontalHeaderLabels(["参数","值","单位"])
-        #self.tableWidget.horizontalHeader().setSectionResizeMde(QHeaderView.Stretch)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.line = 0
         self.layout = layout
     
@@ -70,4 +70,5 @@ class ParamsTable(QWidget):
         self.layout.removeWidget(self.tableWidget)
         self.tableWidget = QTableWidget(6,3)
         self.tableWidget.setHorizontalHeaderLabels(["参数","值","单位"])
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.line = 0
