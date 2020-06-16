@@ -58,7 +58,11 @@ class LenParameters(object):
         b = self.focus_length*self.focus_length - \
             (self.focus_distance - self.focus_length) * \
             self.aperture*self.confusion_circle_diam
-        return (a/b)
+        ret = a/b
+        # 防止后景深计算为负数
+        if(ret <= 0):
+            ret = float('inf')
+        return ret
 
     def calc_confusion_circle_diam(self):
         '''
@@ -116,11 +120,7 @@ class LenParameters(object):
                         self.focus_distance_range[1], step_num)
         for self.focus_distance in x:
             y1.append(self.calc_front_field_depth())
-            value = self.calc_back_field_depth()
-            # 防止后景深计算为负数
-            if(value <= 0):
-                value = float('inf')
-            y2.append(value)
+            y2.append(self.calc_back_field_depth())
         y1 = np.array(y1)/unit
         y2 = np.array(y2)/unit
         x = np.array(x)/unit
@@ -136,11 +136,7 @@ class LenParameters(object):
                         self.focus_range[1], step_num)
         for self.focus_length in x:
             y1.append(self.calc_front_field_depth())
-            value = self.calc_back_field_depth()
-            # 防止后景深计算为负数
-            if(value <= 0):
-                value = float('inf')
-            y2.append(value)
+            y2.append(self.calc_back_field_depth())
         y1 = np.array(y1)/unit
         y2 = np.array(y2)/unit
         x = np.array(x)
