@@ -25,7 +25,7 @@
     </property>
     <layout class="QGridLayout" name="gridLayout"/>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>620</x>
@@ -233,7 +233,7 @@
              <item row="3" column="1">
               <widget class="QComboBox" name="sensor_size_list">
                <property name="currentText">
-                <string>35mm film</string>
+                <string>1/6</string>
                </property>
                <item>
                 <property name="text">
@@ -549,13 +549,39 @@
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>选项</string>
+    </property>
+    <addaction name="tunning_tool"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="optical_calc">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>镜头计算器</string>
+   </property>
+  </action>
+  <action name="tunning_tool">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>在线调试工具</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
