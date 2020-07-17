@@ -1,19 +1,41 @@
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget,QHeaderView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QHeaderView, QMessageBox
 import sys
 from field_depth_ui import Ui_MainWindow
-from LenParameters import LenParameters,SettingParamters,cmos_size_dist
-from MatplotlibWidget import MatplotlibWidget,ParamsTable
+from LenParameters import LenParameters, SettingParamters, cmos_size_dist
+from MatplotlibWidget import MatplotlibWidget, ParamsTable
+from tunning_ui import Ui_Form
+
+
+class MainWindow(QMainWindow):
+    """对QMainWindow类重写，实现一些功能"""
+
+    def closeEvent(self, event):
+        """
+        重写closeEvent方法，实现dialog窗体关闭时执行一些代码
+        :param event: close()触发的事件
+        :return: None
+        """
+        print("test")
+        reply = QMessageBox.question(self,
+                                     '本程序',
+                                     "是否要退出程序？",
+                                     QMessageBox.Yes | QMessageBox.No,
+                                     QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
 
 class App(object):
     def __init__(self):
         app = QApplication(sys.argv)
         app.setStyle('Fusion')
-        window = QMainWindow()
+        self.window = MainWindow()
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(window)
-        window.show()
+        self.ui.setupUi(self.window)
+        self.window.show()
         self.field_depth_figure = None
         self.image_distance_figure = None
         self.setting = SettingParamters()
@@ -25,12 +47,24 @@ class App(object):
         self.ui.sensor_size.editingFinished.connect(self.coms_size_changed_cb)
         self.ui.confusion_circle_diam_slide.sliderMoved.connect(
             self.confusion_circle_diam_changed_cb)
-        self.ui.sensor_size_list.currentTextChanged.connect(self.coms_size_list_changed_cb)
+        self.ui.sensor_size_list.currentTextChanged.connect(
+            self.coms_size_list_changed_cb)
+        self.ui.tunning_tool.triggered.connect(self.show_tunning_tool)
         self.init_params_range()
         self.plot_fig = MatplotlibWidget(self.ui.gridLayout)
         self.plot_figure()
         self.tableWidget = ParamsTable(self.ui.gridLayout)
         sys.exit(app.exec_())
+
+    def show_tunning_tool(self):
+        self.window2 = MainWindow()
+        self.ui2 = Ui_Form()
+        self.ui2.setupUi(self.window2)
+        self.window2.show()
+        print("show_tunning_tool")
+
+    def closeEvent(self, event):
+        print("test")
 
     def init_params_range(self):
         self.ui.apeture_min_range.setValue(self.params.aperture/2)
@@ -42,7 +76,7 @@ class App(object):
         self.params.aperture_range[0] = float(self.ui.apeture_min_range.text())
         self.params.aperture_range[1] = float(self.ui.apeture_max_range.text())
         self.params.focus_distance_range[0] = float(
-        self.ui.distance_min_range.text())*1000
+            self.ui.distance_min_range.text())*1000
         self.params.focus_distance_range[1] = float(
             self.ui.distance_max_range.text())*1000
         self.params.focus_range[0] = float(self.ui.focus_min_range.text())
@@ -62,15 +96,20 @@ class App(object):
                 self.plot_fig.label("光圈值(F)", "景深范围(m)")
             self.plot_fig.input_2line(x, y1, y2)
             self.plot_fig.draw()
-    
+
     def plot_params(self):
         self.tableWidget.clean()
-        self.tableWidget.append("视场角",str(self.params.calc_fov()),'度')
-        self.tableWidget.append("等效焦距",str(self.params.calc_equivalent_focus_length()),'mm')
-        self.tableWidget.append("超焦距距离",str(self.params.calc_hyperfocal_distance()/1000),'m')
-        self.tableWidget.append("前景深",str(self.params.calc_front_field_depth()/1000),'m')
-        self.tableWidget.append("后景深",str(self.params.calc_back_field_depth()/1000),'m')
-        self.tableWidget.append("总景深",str(self.params.calc_field_depth()/1000),'m')
+        self.tableWidget.append("视场角", str(self.params.calc_fov()), '度')
+        self.tableWidget.append("等效焦距", str(
+            self.params.calc_equivalent_focus_length()), 'mm')
+        self.tableWidget.append("超焦距距离", str(
+            self.params.calc_hyperfocal_distance()/1000), 'm')
+        self.tableWidget.append("前景深", str(
+            self.params.calc_front_field_depth()/1000), 'm')
+        self.tableWidget.append("后景深", str(
+            self.params.calc_back_field_depth()/1000), 'm')
+        self.tableWidget.append("总景深", str(
+            self.params.calc_field_depth()/1000), 'm')
         self.tableWidget.show()
 
     def calc_len_params(self):
@@ -120,7 +159,8 @@ class App(object):
         self.calc_len_params()
 
     def coms_size_list_changed_cb(self):
-        self.params.cmos_size = cmos_size_dist[self.ui.sensor_size_list.currentText()]
+        self.params.cmos_size = cmos_size_dist[self.ui.sensor_size_list.currentText(
+        )]
         self.ui.sensor_size.setValue(self.params.cmos_size)
         self.confusion_circle_diam_changed_cb()
 
