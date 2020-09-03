@@ -32,9 +32,6 @@ class FieldDepthWindow(object):
         self.plot_figure()
         self.tableWidget = ParamsTable(self.ui.plotview)
 
-    def get_window(self):
-        return self.window
-
     def closeEvent(self, event):
         print("test")
 
