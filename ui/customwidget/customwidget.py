@@ -1,4 +1,10 @@
-from PySide2.QtWidgets import QMessageBox,QMainWindow
+from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from PySide2.QtWidgets import QMessageBox, QMainWindow
+
+
 class MainWindow(QMainWindow):
     """对QMainWindow类重写，实现一些功能"""
 
@@ -18,10 +24,7 @@ class MainWindow(QMainWindow):
         else:
             event.ignore()
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
-from PySide2.QtWidgets import QWidget,QTableWidget,QTableWidgetItem,QHeaderView
+
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         plt.rcParams['font.family'] = ['SimHei']
@@ -64,30 +67,31 @@ class MatplotlibWidget(QWidget):
         if enable_grid == True:
             self.plt.axes.grid(True)
 
+
 class ParamsTable(QWidget):
-    def __init__(self,layout):
+    def __init__(self, layout):
         # 6行3列
-        self.tableWidget = QTableWidget(6,3)
-        self.tableWidget.setHorizontalHeaderLabels(["参数","值","单位"])
+        self.tableWidget = QTableWidget(6, 3)
+        self.tableWidget.setHorizontalHeaderLabels(["参数", "值", "单位"])
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.line = 0
         self.layout = layout
-    
-    def append(self,name,value,uint):
+
+    def append(self, name, value, uint):
         newItem = QTableWidgetItem(name)
-        self.tableWidget.setItem(self.line,0,newItem)
+        self.tableWidget.setItem(self.line, 0, newItem)
         newItem = QTableWidgetItem(value)
-        self.tableWidget.setItem(self.line,1,newItem)
+        self.tableWidget.setItem(self.line, 1, newItem)
         newItem = QTableWidgetItem(uint)
-        self.tableWidget.setItem(self.line,2,newItem)
+        self.tableWidget.setItem(self.line, 2, newItem)
         self.line += 1
 
     def show(self):
         self.layout.addWidget(self.tableWidget)
-    
+
     def clean(self):
         self.layout.removeWidget(self.tableWidget)
-        self.tableWidget = QTableWidget(6,3)
-        self.tableWidget.setHorizontalHeaderLabels(["参数","值","单位"])
+        self.tableWidget = QTableWidget(6, 3)
+        self.tableWidget.setHorizontalHeaderLabels(["参数", "值", "单位"])
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.line = 0

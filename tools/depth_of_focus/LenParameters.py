@@ -1,5 +1,7 @@
 import numpy as np
 import math
+
+
 class LenParameters(object):
     def __init__(self):
         '''
@@ -162,6 +164,7 @@ class LenParameters(object):
         x = np.array(x)
         return (x, y1, y2)
 
+
 class SettingParamters(object):
     def __init__(self):
         # input setting
@@ -173,20 +176,23 @@ class SettingParamters(object):
         self.output_image_distance = False
         self.output_params = False
 
-cmos_size_dist = {"1/6": 3.0,
-                  "1/4": 4.0,
-                  "1/3.6": 5.0,
-                  "1/3.2": 5.678,
-                  "1/3": 6.0,
-                  "1/2.8": 6.46,
-                  "1/2.7": 6.592,
-                  "1/2.5": 7.182,
-                  "1/2": 8.000,
-                  "1/1.8": 8.933,
-                  "1/1.7": 9.500,
-                  "1/1.6": 10.07,
-                  "2/3":11.00,
-                  "1":16.0,
-                  "4/3":22.5,
-                  "1.8": 25.878,
-                  "35mm film": 43.267}
+
+cmos_size_dist = {
+    "1/6": 3.0,
+    "1/4": 4.0,
+    "1/3.6": 5.0,
+    "1/3.2": 5.678,
+    "1/3": 6.0,
+    "1/2.8": 6.46,
+    "1/2.7": 6.592,
+    "1/2.5": 7.182,
+    "1/2": 8.000,
+    "1/1.8": 8.933,
+    "1/1.7": 9.500,
+    "1/1.6": 10.07,
+    "2/3": 11.00,
+    "1": 16.0,
+    "4/3": 22.5,
+    "1.8": 25.878,
+    "35mm film": 43.267
+}
