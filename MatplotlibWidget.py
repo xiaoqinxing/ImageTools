@@ -1,7 +1,7 @@
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import QWidget,QTableWidget,QTableWidgetItem,QHeaderView
+from PySide2.QtWidgets import QWidget,QTableWidget,QTableWidgetItem,QHeaderView
 
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100):

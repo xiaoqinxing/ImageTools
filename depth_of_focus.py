@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QHeaderView, QMessageBox
+from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QHeaderView, QMessageBox
 import sys
 from field_depth_ui import Ui_MainWindow
 from LenParameters import LenParameters, SettingParamters, cmos_size_dist
