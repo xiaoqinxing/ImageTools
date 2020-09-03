@@ -12,12 +12,12 @@ class ImageTools(object):
         self.ui.setupUi(self.window)
         self.window.show()
         self.ui.field_depth_tool.triggered.connect(self.add_field_depth_tool_window)
-        self.field_depth_window = None
+        self.sub_window = None
 
     def add_field_depth_tool_window(self):
-        self.field_depth_window = FieldDepthWindow()
-        self.ui.mdiArea.addSubWindow(self.field_depth_window.get_window())
-        self.field_depth_window.show()
+        self.sub_window = FieldDepthWindow()
+        self.ui.mdiArea.addSubWindow(self.sub_window.get_window())
+        self.sub_window.show()
 
 if __name__ == "__main__":
     apps = QApplication([])
