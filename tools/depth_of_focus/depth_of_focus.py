@@ -1,40 +1,18 @@
 import matplotlib.pyplot as plt
-from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QHeaderView, QMessageBox
-import sys
-from field_depth_ui import Ui_MainWindow
-from LenParameters import LenParameters, SettingParamters, cmos_size_dist
-from MatplotlibWidget import MatplotlibWidget, ParamsTable
-from tunning_ui import Ui_Form
+from PySide2.QtWidgets import QMainWindow
+from ui.windows.field_depth_window import Ui_FieldDepthWindow
+from tools.depth_of_focus.LenParameters import LenParameters, SettingParamters, cmos_size_dist
+from ui.customwidget.customwidget import MatplotlibWidget, ParamsTable
+from ui.customwidget.customwidget import MainWindow
 
 
-class MainWindow(QMainWindow):
-    """对QMainWindow类重写，实现一些功能"""
-
-    def closeEvent(self, event):
-        """
-        重写closeEvent方法，实现dialog窗体关闭时执行一些代码
-        :param event: close()触发的事件
-        :return: None
-        """
-        print("test")
-        reply = QMessageBox.question(self,
-                                     '本程序',
-                                     "是否要退出程序？",
-                                     QMessageBox.Yes | QMessageBox.No,
-                                     QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
-
-
-class App(object):
+class FieldDepthWindow(object):
     def __init__(self):
-        app = QApplication(sys.argv)
-        app.setStyle('Fusion')
-        self.window = MainWindow()
-        self.ui = Ui_MainWindow()
+        self.window = QMainWindow()
+        self.ui = Ui_FieldDepthWindow()
         self.ui.setupUi(self.window)
+
+    def show(self):
         self.window.show()
         self.field_depth_figure = None
         self.image_distance_figure = None
@@ -49,19 +27,13 @@ class App(object):
             self.confusion_circle_diam_changed_cb)
         self.ui.sensor_size_list.currentTextChanged.connect(
             self.coms_size_list_changed_cb)
-        self.ui.tunning_tool.triggered.connect(self.show_tunning_tool)
         self.init_params_range()
-        self.plot_fig = MatplotlibWidget(self.ui.gridLayout)
+        self.plot_fig = MatplotlibWidget(self.ui.plotview)
         self.plot_figure()
-        self.tableWidget = ParamsTable(self.ui.gridLayout)
-        sys.exit(app.exec_())
+        self.tableWidget = ParamsTable(self.ui.plotview)
 
-    def show_tunning_tool(self):
-        self.window2 = MainWindow()
-        self.ui2 = Ui_Form()
-        self.ui2.setupUi(self.window2)
-        self.window2.show()
-        print("show_tunning_tool")
+    def get_window(self):
+        return self.window
 
     def closeEvent(self, event):
         print("test")
@@ -174,7 +146,3 @@ class App(object):
             1000*(0.5+value/100)
         self.ui.confusion_circle_diam.setValue(
             self.params.confusion_circle_diam)
-
-
-if __name__ == "__main__":
-    app = App()

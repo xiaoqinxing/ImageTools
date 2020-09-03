@@ -1,8 +1,27 @@
+from PySide2.QtWidgets import QMessageBox,QMainWindow
+class MainWindow(QMainWindow):
+    """对QMainWindow类重写，实现一些功能"""
+
+    def closeEvent(self, event):
+        """
+        重写closeEvent方法，实现dialog窗体关闭时执行一些代码
+        :param event: close()触发的事件
+        :return: None
+        """
+        reply = QMessageBox.question(self,
+                                     'ImageTools',
+                                     "是否要退出程序？",
+                                     QMessageBox.Yes | QMessageBox.No,
+                                     QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from PySide2.QtWidgets import QWidget,QTableWidget,QTableWidgetItem,QHeaderView
-
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         plt.rcParams['font.family'] = ['SimHei']
