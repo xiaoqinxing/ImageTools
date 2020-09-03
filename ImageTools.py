@@ -13,6 +13,7 @@ class ImageTools(object):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.window.show()
+        self.ui.mdiArea.setStyleSheet("QTabBar::tab { height: 30px;}")
         self.ui.field_depth_tool.triggered.connect(
             self.add_field_depth_tool_window)
         self.ui.shake_tool.triggered.connect(self.add_shake_tool_window)

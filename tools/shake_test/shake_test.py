@@ -34,13 +34,13 @@ class ShakeTestTool(object):
         success, frame = self.vidcap.read()
         if success:
             new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            # corners = cv2.goodFeaturesToTrack(new_gray, 100, 0.3, 30)
-            # if corners is not None and len(corners) > 0:
-            #     for x, y in np.float32(corners).reshape(-1, 2):
-            #         keypoints.append((x, y))
-            # if keypoints is not None and len(keypoints) > 0:
-            #     for x, y in keypoints:
-            #         cv2.circle(frame, (int(x + 200), y), 3, (255, 255, 0))
+            corners = cv2.goodFeaturesToTrack(new_gray, 100, 0.01, 30)
+            if corners is not None and len(corners) > 0:
+                for x, y in np.float32(corners).reshape(-1, 2):
+                    keypoints.append((x, y))
+            if keypoints is not None and len(keypoints) > 0:
+                for x, y in keypoints:
+                    cv2.circle(new_gray, (int(x + 200), y), 3, (255, 255, 0))
 
             # display
             image = QImage(
