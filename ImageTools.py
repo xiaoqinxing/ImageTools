@@ -4,6 +4,7 @@ import sys
 from ui.customwidget.customwidget import MainWindow
 from tools.depth_of_focus.depth_of_focus import FieldDepthWindow
 from tools.shake_test.shake_test import ShakeTestTool
+from tools.imageeditor.imageeditor import ImageEditor
 
 
 class ImageTools(object):
@@ -17,6 +18,7 @@ class ImageTools(object):
         self.ui.field_depth_tool.triggered.connect(
             self.add_field_depth_tool_window)
         self.ui.shake_tool.triggered.connect(self.add_shake_tool_window)
+        self.ui.open_image.triggered.connect(self.add_image_editor_window)
         self.sub_window = None
 
     def add_field_depth_tool_window(self):
@@ -26,6 +28,11 @@ class ImageTools(object):
 
     def add_shake_tool_window(self):
         self.sub_window = ShakeTestTool()
+        self.ui.mdiArea.addSubWindow(self.sub_window.window)
+        self.sub_window.show()
+    
+    def add_image_editor_window(self):
+        self.sub_window = ImageEditor()
         self.ui.mdiArea.addSubWindow(self.sub_window.window)
         self.sub_window.show()
 

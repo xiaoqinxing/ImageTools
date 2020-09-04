@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/tool_icon">
+        <file>resource/save_icon.png</file>
+        <file>resource/compare.png</file>
+        <file>resource/start.png</file>
+        <file>resource/pause.png</file>
+        <file>resource/stop.png</file>
+    </qresource>
+</RCC>

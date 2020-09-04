@@ -1,8 +1,9 @@
-from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView
+from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView,QGraphicsView
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from PySide2.QtWidgets import QMessageBox, QMainWindow
+from PySide2.QtCore import Signal,QPoint
 
 
 class MainWindow(QMainWindow):
@@ -95,3 +96,14 @@ class ParamsTable(QWidget):
         self.tableWidget.setHorizontalHeaderLabels(["参数", "值", "单位"])
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.line = 0
+
+
+class ImageView(QGraphicsView):
+    sigMouseMovePoint=Signal(QPoint)
+    def __init__(self, scene, parent):
+        super().__init__(scene, parent)
+
+    def mouseMoveEvent(self, event):
+        pt = event.pos()
+        self.sigMouseMovePoint.emit(pt)
+        return super().mouseMoveEvent(event)
