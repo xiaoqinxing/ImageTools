@@ -17,12 +17,13 @@ class ShakeTestTool(object):
         self.video_timer = QTimer()
 
         # 构建角点检测所需参数
-        self.feature_params = dict(maxCorners=100,
-                                   qualityLevel=0.3,
-                                   minDistance=7)
+        self.feature_params = dict(maxCorners=30,
+                                   qualityLevel=0.4,
+                                   minDistance=50)
 
         # lucas kanade参数
-        self.lk_params = dict(winSize=(15, 15),
+        # 如果发现跟踪跟丢的问题，可能是光流法搜索的区域不够大
+        self.lk_params = dict(winSize=(20, 20),
                               maxLevel=2)
 
     def show(self):
@@ -38,47 +39,48 @@ class ShakeTestTool(object):
         success, frame = self.vidcap.read()
         if success:
             self.old_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # 返回所有检测特征点，需要输入图片，角点的最大数量，品质因子，minDistance=7如果这个角点里有比这个强的就不要这个弱的
             self.p0 = cv2.goodFeaturesToTrack(
                 self.old_gray, mask=None, **self.feature_params)
+            # 创建一个mask, 用于进行横线的绘制
             self.mask = np.zeros_like(self.old_gray)
-        self.video_timer.start(100)
-        self.video_timer.timeout.connect(self.open_frame)
+            # 随机颜色条
+            # self.color = np.random.randint(0, 255, (50, 3))
+            self.video_timer.start(100)
+            self.video_timer.timeout.connect(self.open_frame)
 
     def open_frame(self):
-        keypoints = list()
         success, frame = self.vidcap.read()
         if success:
             new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            # 随机颜色条
-            color = np.random.randint(0, 255, (100, 3))
-
+            
+            # 进行光流检测需要输入前一帧和当前图像及前一帧检测到的角点
             pl, st, err = cv2.calcOpticalFlowPyrLK(
                 self.old_gray, new_gray, self.p0, None, **self.lk_params)
+            # 在原角点的基础上寻找亚像素角点，其中，criteria是设置寻找亚像素角点的参数，
+			# 采用的停止准则是最大循环次数30和最大误差容限0.001
+            pl = cv2.cornerSubPix(new_gray, pl, (5, 5), (-1, -1),
+								criteria = (cv2.TERM_CRITERIA_MAX_ITER | cv2.TERM_CRITERIA_EPS, 30, 0.001))
 
+            # 读取运动了的角点st == 1表示检测到的运动物体，即v和u表示为0
             good_new = pl[st == 1]
             good_old = self.p0[st == 1]
 
-            # # 第九步：绘制轨迹
+            # 绘制轨迹
             for i, (new, old) in enumerate(zip(good_new, good_old)):
                 a, b = new.ravel()
                 c, d = old.ravel()
                 self.mask = cv2.line(
-                    self.mask, (a, b), (c, d), color[i].tolist(), 2)
-                frame = cv2.circle(new_gray, (a, b), 5, color[i].tolist(), -1)
+                    self.mask, (a, b), (c, d), 255, 2)
+                frame = cv2.circle(new_gray, (a, b), 5, 255, -1)
 
-            # 第十步：将两个图片进行结合，并进行图片展示
+            # 将两个图片进行结合，并进行图片展示
             img = cv2.add(frame, self.mask)
+
             # 更新前一帧图片和角点的位置
             self.old_gray = new_gray.copy()
 
             self.p0 = good_new.reshape(-1, 1, 2)
-            # corners = cv2.goodFeaturesToTrack(new_gray, 100, 0.2, 100)
-            # if corners is not None and len(corners) > 0:
-            #     for x, y in np.float32(corners).reshape(-1, 2):
-            #         keypoints.append((x, y))
-            # if keypoints is not None and len(keypoints) > 0:
-            #     for x, y in keypoints:
-            #         cv2.circle(new_gray, (int(x + 200), y), 3, (255, 255, 0))
 
             # display
             image = QImage(

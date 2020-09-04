@@ -3,3 +3,4 @@ dist/
 *.spec
 __pycache__/
 *.pyc
+settings.json

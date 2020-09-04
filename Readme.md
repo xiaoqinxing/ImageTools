@@ -11,3 +11,6 @@
 1. 安装python for QT插件
 2. 在设置里面填写designer.exe的路径和pyuic的路径，然后右键ui文件，就可以对文件进行修改或者编译啦。
 3. 如果想要在当前目录下生成，修改pyuic的配置为：`pyside2-uic -o ${fileDirname}/${fileBasenameNoExtension}.py`
+
+## 打包方法
+pyinstaller -Fw ./ImageTools.py
