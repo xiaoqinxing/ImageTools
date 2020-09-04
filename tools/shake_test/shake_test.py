@@ -5,6 +5,16 @@ from PySide2.QtCore import QTimer
 from ui.windows.shake_test_window import Ui_ShakeTestWindow
 import numpy as np
 
+class Direction():
+    """
+    角点运动的方向
+    source是方向不动
+    """
+    left = 0
+    right = 1
+    up = 2
+    down = 4
+    source = 8
 
 class ShakeTestTool(object):
     def __init__(self):
@@ -15,6 +25,7 @@ class ShakeTestTool(object):
         self.ui.isok.clicked.connect(self.process_video)
         self.ui.cancel_button.clicked.connect(self.cancel_process_video)
         self.video_timer = QTimer()
+        self.direction = Direction.source
 
         # 构建角点检测所需参数
         self.feature_params = dict(maxCorners=30,
@@ -70,6 +81,7 @@ class ShakeTestTool(object):
             for i, (new, old) in enumerate(zip(good_new, good_old)):
                 a, b = new.ravel()
                 c, d = old.ravel()
+                
                 self.mask = cv2.line(
                     self.mask, (a, b), (c, d), 255, 2)
                 frame = cv2.circle(new_gray, (a, b), 5, 255, -1)
