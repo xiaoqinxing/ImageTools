@@ -93,10 +93,10 @@ class ShakeTestTool(object):
             self.mask = np.zeros_like(self.old_gray)
 
             # 寻找到中心最近的特征点
-            center_x = frame.shape[1]
-            center_y = frame.shape[0]
+            center_x = frame.shape[1]/2
+            center_y = frame.shape[0]/2
             self.center_index = self.find_center_point_index(
-                center_x, center_y)
+                center_x, center_y,(frame.shape[1]/5)*(frame.shape[1]/5))
 
             # 如果在距离中心直径300px的范围内没有找到，那么退出
             if(self.center_index == -1):
