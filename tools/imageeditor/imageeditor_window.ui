@@ -33,7 +33,7 @@
        <bool>true</bool>
       </property>
       <property name="acceptDrops">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="toolTipDuration">
        <number>-1</number>
@@ -122,6 +122,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="openimage"/>
    <addaction name="saveimage"/>
    <addaction name="actioncompare"/>
   </widget>
@@ -183,6 +184,18 @@
    </property>
    <property name="toolTip">
     <string>compare</string>
+   </property>
+  </action>
+  <action name="openimage">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/open.png</normaloff>:/tool_icon/resource/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>open</string>
+   </property>
+   <property name="toolTip">
+    <string>open</string>
    </property>
   </action>
  </widget>

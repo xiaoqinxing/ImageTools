@@ -1,4 +1,5 @@
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget, QMdiArea, QTabWidget
+from PySide2.QtCore import Qt
 from ui.mainwindow import Ui_MainWindow
 import sys
 from ui.customwidget import MainWindow
@@ -13,31 +14,29 @@ class ImageTools(object):
         self.window = MainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
-        self.window.show()
-        self.ui.mdiArea.setStyleSheet("QTabBar::tab { height: 30px;}")
+        self.subwindows_ui = self.ui.mdiArea
+        self.subwindows_ui.setStyleSheet("QTabBar::tab { height: 30px;}")
         self.ui.field_depth_tool.triggered.connect(
             self.add_field_depth_tool_window)
         self.ui.shake_tool.triggered.connect(self.add_shake_tool_window)
-        self.ui.open_image.triggered.connect(self.add_image_editor_window)
+        self.ui.imageeditor.triggered.connect(self.add_image_editor_window)
+        self.window.show()
         self.sub_window = None
 
     def add_field_depth_tool_window(self):
         self.sub_window = FieldDepthWindow()
-        self.ui.mdiArea.addSubWindow(self.sub_window.window)
+        self.subwindows_ui.addSubWindow(self.sub_window.window)
         self.sub_window.show()
 
     def add_shake_tool_window(self):
         self.sub_window = ShakeTestTool()
-        self.ui.mdiArea.addSubWindow(self.sub_window.window)
+        self.subwindows_ui.addSubWindow(self.sub_window.window)
         self.sub_window.show()
 
     def add_image_editor_window(self):
-        imagepath = QFileDialog.getOpenFileName(
-            None, '打开图片', './', "Images (*.jpg *.png *.bmp)")
-        if (imagepath[0] != ''):
-            self.sub_window = ImageEditor(imagepath[0])
-            self.ui.mdiArea.addSubWindow(self.sub_window.window)
-            self.sub_window.show()
+        self.sub_window = ImageEditor()
+        self.subwindows_ui.addSubWindow(self.sub_window.window)
+        self.sub_window.show()
 
 
 if __name__ == "__main__":

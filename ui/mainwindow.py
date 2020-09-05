@@ -20,22 +20,25 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
+        MainWindow.setWindowModality(Qt.NonModal)
         MainWindow.resize(1140, 857)
-        self.open_image = QAction(MainWindow)
-        self.open_image.setObjectName(u"open_image")
-        self.open_device = QAction(MainWindow)
-        self.open_device.setObjectName(u"open_device")
+        icon = QIcon()
+        icon.addFile(u":/tool_icon/resource/main.png", QSize(), QIcon.Normal, QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         self.field_depth_tool = QAction(MainWindow)
         self.field_depth_tool.setObjectName(u"field_depth_tool")
         self.field_depth_tool.setCheckable(False)
         self.shake_tool = QAction(MainWindow)
         self.shake_tool.setObjectName(u"shake_tool")
+        self.imageeditor = QAction(MainWindow)
+        self.imageeditor.setObjectName(u"imageeditor")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.mdiArea = QMdiArea(self.centralwidget)
         self.mdiArea.setObjectName(u"mdiArea")
+        self.mdiArea.setAcceptDrops(True)
         self.mdiArea.setLineWidth(0)
         self.mdiArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.mdiArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -50,18 +53,14 @@ class Ui_MainWindow(object):
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 1140, 21))
-        self.menu = QMenu(self.menubar)
-        self.menu.setObjectName(u"menu")
         self.menu_2 = QMenu(self.menubar)
         self.menu_2.setObjectName(u"menu_2")
         MainWindow.setMenuBar(self.menubar)
 
-        self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.menu_2.menuAction())
-        self.menu.addAction(self.open_image)
-        self.menu.addAction(self.open_device)
         self.menu_2.addAction(self.field_depth_tool)
         self.menu_2.addAction(self.shake_tool)
+        self.menu_2.addAction(self.imageeditor)
 
         self.retranslateUi(MainWindow)
 
@@ -70,11 +69,9 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"ImageTools", None))
-        self.open_image.setText(QCoreApplication.translate("MainWindow", u"\u6253\u5f00\u56fe\u7247", None))
-        self.open_device.setText(QCoreApplication.translate("MainWindow", u"\u6253\u5f00\u8bbe\u5907(RTSP)", None))
         self.field_depth_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u8ba1\u7b97\u5668", None))
         self.shake_tool.setText(QCoreApplication.translate("MainWindow", u"\u6296\u52a8\u6d4b\u8bd5\u5de5\u5177", None))
-        self.menu.setTitle(QCoreApplication.translate("MainWindow", u"\u6587\u4ef6", None))
+        self.imageeditor.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u7247\u67e5\u770b\u5de5\u5177", None))
         self.menu_2.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
     # retranslateUi
 

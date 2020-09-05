@@ -37,6 +37,10 @@ class MplCanvas(FigureCanvasQTAgg):
 
 
 class MatplotlibWidget(QWidget):
+    """
+    自定义的matplot窗口
+    """
+
     def __init__(self, layout):
         self.plt = MplCanvas()
         self.layout = layout
@@ -70,6 +74,10 @@ class MatplotlibWidget(QWidget):
 
 
 class ParamsTable(QWidget):
+    """
+    自定义的镜头参数表
+    """
+
     def __init__(self, layout):
         # 6行3列
         self.tableWidget = QTableWidget(6, 3)
@@ -99,18 +107,22 @@ class ParamsTable(QWidget):
 
 
 class ImageView(QGraphicsView):
+    """
+    自定义的图片显示（可以获取到鼠标位置和放大比例）
+    """
     sigMouseMovePoint = Signal(QPoint)
     sigWheelEvent = Signal(float)
+    sigDragEvent = Signal(str)
 
     def __init__(self, scene, parent):
         super().__init__(scene, parent)
         self.setMouseTracking(True)
         self.scale_ratio = 1.0
+        self.setAcceptDrops(True)
 
     def mouseMoveEvent(self, event):
         self.sceneMousePos = self.mapToScene(event.pos())
         self.sigMouseMovePoint.emit(self.sceneMousePos)
-        print(self.sceneMousePos)
         return super().mouseMoveEvent(event)
 
     def wheelEvent(self, event):
@@ -125,4 +137,25 @@ class ImageView(QGraphicsView):
             self.scale_ratio /= 1.2
         self.viewport().update()
         self.sigWheelEvent.emit(self.scale_ratio)
-        return super().wheelEvent(event)
+        # return super().wheelEvent(event)
+
+    # def dragEnterEvent(self, event):
+    #     print(event)
+    #     if event.mimeData().hasUrls():
+    #         event.acceptProposedAction()
+    #     else:
+    #         event.ignore()
+
+    # def dropEvent(self, event):
+    #     print(event)
+    #     if event.mimeData().hasUrls():
+    #         try:
+    #             for url in event.mimeData().urls():
+    #                 print(url)
+    #             print(event.mimeData().urls()[0].path())
+    #             self.sigMouseMovePoint.emit(event.mimeData().urls()[0].path())
+    #         except Exception as e:
+    #             print(e)
+    #         event.accept()
+    #     else:
+    #         event.ignore()

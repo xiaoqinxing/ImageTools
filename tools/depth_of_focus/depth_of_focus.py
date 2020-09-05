@@ -31,9 +31,6 @@ class FieldDepthWindow(object):
         self.plot_figure()
         self.tableWidget = ParamsTable(self.ui.plotview)
 
-    def closeEvent(self, event):
-        print("test")
-
     def init_params_range(self):
         self.ui.apeture_min_range.setValue(self.params.aperture/2)
         self.ui.apeture_max_range.setValue(self.params.aperture*2)
@@ -81,12 +78,13 @@ class FieldDepthWindow(object):
         self.tableWidget.show()
 
     def calc_len_params(self):
-        print('视场角：'+str(self.params.calc_fov())+'度')
-        print('等效焦距：'+str(self.params.calc_equivalent_focus_length())+'mm')
-        print('超焦距距离：'+str(self.params.calc_hyperfocal_distance()/1000) + 'm')
-        print("前景深："+str(self.params.calc_front_field_depth()/1000) + 'm')
-        print("后景深："+str(self.params.calc_back_field_depth()/1000) + 'm')
-        print("总景深：" + str(self.params.calc_field_depth()/1000)+'m')
+        # print('视场角：'+str(self.params.calc_fov())+'度')
+        # print('等效焦距：'+str(self.params.calc_equivalent_focus_length())+'mm')
+        # print('超焦距距离：'+str(self.params.calc_hyperfocal_distance()/1000) + 'm')
+        # print("前景深："+str(self.params.calc_front_field_depth()/1000) + 'm')
+        # print("后景深："+str(self.params.calc_back_field_depth()/1000) + 'm')
+        # print("总景深：" + str(self.params.calc_field_depth()/1000)+'m')
+        return
 
     # get params
     def get_ui_params(self):

@@ -26,13 +26,14 @@ class LenParameters(object):
         '''
         调试打印
         '''
-        print('=========================================')
-        print('实际焦距: ' + str(self.focus_length) + ' mm')
-        print('光圈: F/' + str(self.aperture))
-        print('对焦距离: ' + str(self.focus_distance) + ' mm')
-        print('有效焦距: ' + str(self.effective_focus_length) + ' mm')
-        print('弥散圈直径: ' + str(self.confusion_circle_diam) + ' mm')
-        print('=========================================')
+        # print('=========================================')
+        # print('实际焦距: ' + str(self.focus_length) + ' mm')
+        # print('光圈: F/' + str(self.aperture))
+        # print('对焦距离: ' + str(self.focus_distance) + ' mm')
+        # print('有效焦距: ' + str(self.effective_focus_length) + ' mm')
+        # print('弥散圈直径: ' + str(self.confusion_circle_diam) + ' mm')
+        # print('=========================================')
+        return
 
     def calc_front_field_depth(self):
         """
