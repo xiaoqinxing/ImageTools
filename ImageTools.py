@@ -1,5 +1,4 @@
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget, QMdiArea, QTabWidget
-from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget
 from ui.mainwindow import Ui_MainWindow
 import sys
 from ui.customwidget import MainWindow

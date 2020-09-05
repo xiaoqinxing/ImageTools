@@ -123,7 +123,7 @@ class ImageView(QGraphicsView):
     def mouseMoveEvent(self, event):
         self.sceneMousePos = self.mapToScene(event.pos())
         self.sigMouseMovePoint.emit(self.sceneMousePos)
-        return super().mouseMoveEvent(event)
+        # return super().mouseMoveEvent(event)
 
     def wheelEvent(self, event):
         # return super().wheelEvent(event)

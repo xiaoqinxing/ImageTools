@@ -1,6 +1,6 @@
 import cv2
 from PySide2.QtWidgets import QMainWindow, QGraphicsScene, QMessageBox, QFileDialog
-from PySide2.QtGui import QImage, QPixmap
+from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Slot
 from tools.imageeditor.imageeditor_window import Ui_ImageEditor
 from ui.customwidget import ImageView
