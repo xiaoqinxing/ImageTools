@@ -2,7 +2,7 @@ import cv2
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide2.QtGui import QImage, QPixmap
 from PySide2.QtCore import QTimer
-from ui.windows.shake_test_window import Ui_ShakeTestWindow
+from tools.shake_test.shake_test_window import Ui_ShakeTestWindow
 import numpy as np
 import math
 
@@ -60,8 +60,8 @@ class ShakeTestTool(object):
                 center_index = i
                 winSize = now_distance
         return center_index
-    
-    def calc_distance_anypoint(self,input_array):
+
+    def calc_distance_anypoint(self, input_array):
         """
         计算每个特征点到中心的距离
         """
@@ -71,7 +71,7 @@ class ShakeTestTool(object):
                 now_point = point.ravel()
                 center_point = input_array[self.center_index].ravel()
                 distance_anypoint.append(math.sqrt((now_point[0]-center_point[0])*(now_point[0]-center_point[0])
-                                                            + (now_point[1]-center_point[1])*(now_point[1]-center_point[1])))
+                                                   + (now_point[1]-center_point[1])*(now_point[1]-center_point[1])))
         return distance_anypoint
 
     def process_video(self):
@@ -96,7 +96,7 @@ class ShakeTestTool(object):
             center_x = frame.shape[1]/2
             center_y = frame.shape[0]/2
             self.center_index = self.find_center_point_index(
-                center_x, center_y,(frame.shape[1]/5)*(frame.shape[1]/5))
+                center_x, center_y, (frame.shape[1]/5)*(frame.shape[1]/5))
 
             # 如果在距离中心直径300px的范围内没有找到，那么退出
             if(self.center_index == -1):
@@ -106,8 +106,10 @@ class ShakeTestTool(object):
                 return
 
             # 初始化横纵方向上的坐标
-            self.min_y_coord = self.max_y_coord = self.p0[self.center_index].ravel()[1]
-            self.min_x_coord = self.max_x_coord = self.p0[self.center_index].ravel()[0]
+            self.min_y_coord = self.max_y_coord = self.p0[self.center_index].ravel()[
+                1]
+            self.min_x_coord = self.max_x_coord = self.p0[self.center_index].ravel()[
+                0]
 
             # 计算每个特征点到中心的距离
             self.old_distance_anypoint = self.calc_distance_anypoint(self.p0)
@@ -117,8 +119,8 @@ class ShakeTestTool(object):
             self.video_timer.timeout.connect(self.open_frame)
         else:
             reply = QMessageBox.critical(
-                    self.window, '警告', '视频打不开',
-                    QMessageBox.Yes, QMessageBox.Yes)
+                self.window, '警告', '视频打不开',
+                QMessageBox.Yes, QMessageBox.Yes)
             return
 
     def display(self, img):
@@ -128,7 +130,7 @@ class ShakeTestTool(object):
         self.ui.videoview.setPixmap(temp_pixmap)
         self.ui.videoview.setScaledContents(True)
 
-    def draw_track(self,good_new,new_gray):
+    def draw_track(self, good_new, new_gray):
         for i, (new, old) in enumerate(zip(good_new, self.p0)):
             a, b = new.ravel()
             c, d = old.ravel()
@@ -164,7 +166,7 @@ class ShakeTestTool(object):
             now_distance_anypoint = self.calc_distance_anypoint(pl)
 
             # 绘制轨迹
-            self.draw_track(pl,new_gray)
+            self.draw_track(pl, new_gray)
 
             # 计算每个点与中心点的距离，将之与第一帧对比，得出变形程度
             distance_diff_sum = 0
@@ -174,23 +176,25 @@ class ShakeTestTool(object):
             print(distance_diff_sum/len(self.old_distance_anypoint))
 
             if(self.dewarp_sum < distance_diff_sum/len(self.old_distance_anypoint)):
-                self.dewarp_sum = distance_diff_sum/len(self.old_distance_anypoint)
+                self.dewarp_sum = distance_diff_sum / \
+                    len(self.old_distance_anypoint)
                 self.ui.warp_ratio.setValue(self.dewarp_sum)
-            
+
             self.calc_center_distance(pl)
-            self.ui.center_max_y_distance.setValue(self.max_y_coord-self.min_y_coord)
-            self.ui.center_max_x_distance.setValue(self.max_x_coord-self.min_x_coord)
+            self.ui.center_max_y_distance.setValue(
+                self.max_y_coord-self.min_y_coord)
+            self.ui.center_max_x_distance.setValue(
+                self.max_x_coord-self.min_x_coord)
             # self.dewarp_sum += distance_diff_sum / \
             #     len(self.old_distance_anypoint)
             # dewarp_ratio = self.dewarp_sum/self.dewarp_count
             # print(dewarp_ratio)
             # self.ui.warp_ratio.setValue(dewarp_ratio)
-          
 
     def cancel_process_video(self):
         self.video_timer.stop()
-    
-    def calc_center_distance(self,input_array):
+
+    def calc_center_distance(self, input_array):
         center_point = input_array[self.center_index].ravel()
         if(self.min_y_coord > center_point[1]):
             self.min_y_coord = center_point[1]

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from PySide2.QtWidgets import QMainWindow
-from ui.windows.field_depth_window import Ui_FieldDepthWindow
+from tools.depth_of_focus.field_depth_window import Ui_FieldDepthWindow
 from tools.depth_of_focus.LenParameters import LenParameters, SettingParamters, cmos_size_dist
-from ui.customwidget.customwidget import MatplotlibWidget, ParamsTable
+from ui.customwidget import MatplotlibWidget, ParamsTable
 
 
 class FieldDepthWindow(object):

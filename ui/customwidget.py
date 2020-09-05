@@ -1,9 +1,9 @@
-from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView,QGraphicsView
+from PySide2.QtCore import Signal, QPoint
+from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from PySide2.QtWidgets import QMessageBox, QMainWindow
-from PySide2.QtCore import Signal,QPoint
 
 
 class MainWindow(QMainWindow):
@@ -99,11 +99,30 @@ class ParamsTable(QWidget):
 
 
 class ImageView(QGraphicsView):
-    sigMouseMovePoint=Signal(QPoint)
+    sigMouseMovePoint = Signal(QPoint)
+    sigWheelEvent = Signal(float)
+
     def __init__(self, scene, parent):
         super().__init__(scene, parent)
+        self.setMouseTracking(True)
+        self.scale_ratio = 1.0
 
     def mouseMoveEvent(self, event):
-        pt = event.pos()
-        self.sigMouseMovePoint.emit(pt)
+        self.sceneMousePos = self.mapToScene(event.pos())
+        self.sigMouseMovePoint.emit(self.sceneMousePos)
+        print(self.sceneMousePos)
         return super().mouseMoveEvent(event)
+
+    def wheelEvent(self, event):
+        # return super().wheelEvent(event)
+        angle = event.angleD.y()
+        # self.centerOn(self.sceneMousePos)
+        if (angle > 0):
+            self.scale(1.2, 1.2)
+            self.scale_ratio *= 1.2
+        else:
+            self.scale(1 / 1.2, 1 / 1.2)
+            self.scale_ratio /= 1.2
+        self.viewport().update()
+        self.sigWheelEvent.emit(self.scale_ratio)
+        return super().wheelEvent(event)

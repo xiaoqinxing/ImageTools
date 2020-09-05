@@ -5,5 +5,6 @@
         <file>resource/start.png</file>
         <file>resource/pause.png</file>
         <file>resource/stop.png</file>
+        <file>resource/main.png</file>
     </qresource>
 </RCC>

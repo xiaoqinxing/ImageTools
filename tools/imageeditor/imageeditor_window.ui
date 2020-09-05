@@ -11,13 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string/>
+   <string>图片处理工具</string>
   </property>
   <property name="toolTip">
    <string/>
   </property>
   <property name="toolTipDuration">
    <number>-1</number>
+  </property>
+  <property name="animated">
+   <bool>true</bool>
   </property>
   <property name="dockOptions">
    <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging|QMainWindow::VerticalTabs</set>
@@ -63,7 +66,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -147,7 +150,7 @@
   </action>
   <action name="saveimage">
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset resource="../../ui/resource.qrc">
      <normaloff>:/tool_icon/resource/save_icon.png</normaloff>:/tool_icon/resource/save_icon.png</iconset>
    </property>
    <property name="text">
@@ -172,7 +175,7 @@
   </action>
   <action name="actioncompare">
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset resource="../../ui/resource.qrc">
      <normaloff>:/tool_icon/resource/compare.png</normaloff>:/tool_icon/resource/compare.png</iconset>
    </property>
    <property name="text">
@@ -184,7 +187,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../resource.qrc"/>
+  <include location="../../ui/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

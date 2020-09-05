@@ -1,7 +1,7 @@
-from PySide2.QtWidgets import QApplication, QMainWindow
-from ui.windows.mainwindow import Ui_MainWindow
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog
+from ui.mainwindow import Ui_MainWindow
 import sys
-from ui.customwidget.customwidget import MainWindow
+from ui.customwidget import MainWindow
 from tools.depth_of_focus.depth_of_focus import FieldDepthWindow
 from tools.shake_test.shake_test import ShakeTestTool
 from tools.imageeditor.imageeditor import ImageEditor
@@ -30,11 +30,14 @@ class ImageTools(object):
         self.sub_window = ShakeTestTool()
         self.ui.mdiArea.addSubWindow(self.sub_window.window)
         self.sub_window.show()
-    
+
     def add_image_editor_window(self):
-        self.sub_window = ImageEditor()
-        self.ui.mdiArea.addSubWindow(self.sub_window.window)
-        self.sub_window.show()
+        imagepath = QFileDialog.getOpenFileName(
+            None, '打开图片', './', "Images (*.jpg *.png *.bmp)")
+        if (imagepath[0] != ''):
+            self.sub_window = ImageEditor(imagepath[0])
+            self.ui.mdiArea.addSubWindow(self.sub_window.window)
+            self.sub_window.show()
 
 
 if __name__ == "__main__":
