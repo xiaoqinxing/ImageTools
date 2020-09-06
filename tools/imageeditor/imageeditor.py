@@ -14,7 +14,8 @@ class ImageEditor(object):
         self.ui.setupUi(self.window)
         self.scene = QGraphicsScene()
         self.imageview = ImageView(self.scene, self.ui.graphicsView)
-        # self.ui.graphicsView.setScene(self.scene)
+        # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
+        self.ui.gridLayout.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
         self.ui.openimage.triggered.connect(self.on_open_img)
 

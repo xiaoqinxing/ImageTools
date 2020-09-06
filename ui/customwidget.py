@@ -1,5 +1,5 @@
-from PySide2.QtCore import Signal, QPoint
-from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView
+from PySide2.QtCore import Signal, QPoint, Qt
+from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -116,9 +116,21 @@ class ImageView(QGraphicsView):
 
     def __init__(self, scene, parent):
         super().__init__(scene, parent)
+        self.setUi()
+
+    def setUi(self):
         self.setMouseTracking(True)
         self.scale_ratio = 1.0
         self.setAcceptDrops(True)
+        self.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.setToolTipDuration(-1)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setSizeAdjustPolicy(
+            QAbstractScrollArea.AdjustToContents)
+        self.setTransformationAnchor(
+            QGraphicsView.AnchorViewCenter)
+        self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
 
     def mouseMoveEvent(self, event):
         self.sceneMousePos = self.mapToScene(event.pos())
@@ -135,9 +147,8 @@ class ImageView(QGraphicsView):
         else:
             self.scale(0.8, 0.8)
             self.scale_ratio *= 0.8
-        # self.viewport().update()
         self.sigWheelEvent.emit(self.scale_ratio)
-        # return super().wheelEvent(event)
+        return super().wheelEvent(event)
 
     def dragEnterEvent(self, event):
         print(event)
@@ -151,17 +162,3 @@ class ImageView(QGraphicsView):
             event.acceptProposedAction()
         else:
             event.ignore()
-
-    # def dropEvent(self, event):
-    #     print(event)
-    #     if event.mimeData().hasUrls():
-    #         try:
-    #             for url in event.mimeData().urls():
-    #                 print(url)
-    #             print(event.mimeData().urls()[0].path())
-    #             self.sigMouseMovePoint.emit(event.mimeData().urls()[0].path())
-    #         except Exception as e:
-    #             print(e)
-        #     event.accept()
-        # else:
-        #     event.ignore()
