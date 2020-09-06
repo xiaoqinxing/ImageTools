@@ -8,10 +8,13 @@ class ImageEffect(object):
         # 防止有中文
         # self.srcImage = cv2.imread(filename)
         self.srcImage = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), -1)
+        self.height = self.srcImage.shape[0]
+        self.width = self.srcImage.shape[1]
+        self.depth = self.srcImage.shape[2]
         # 根据不同的颜色通道，进行不同的颜色转换
-        if(self.srcImage.shape[2] == 3):
+        if(self.depth == 3):
             self.srcImage = cv2.cvtColor(self.srcImage, cv2.COLOR_BGR2RGB)
-        elif(self.srcImage.shape[2] == 4):
+        elif(self.depth == 4):
             self.srcImage = cv2.cvtColor(self.srcImage, cv2.COLOR_BGR2BGRA)
         else:
             self.srcImage == None
@@ -33,8 +36,11 @@ class ImageEffect(object):
         elif (img == self.dstImage):
             self.nowImage = self.srcImage
 
-    def get_img_point(self, img, x, y):
-        return img.at(x, y)
+    def get_img_point(self, x, y):
+        if(x > 0 and x < self.width and y > 0 and y < self.height):
+            return self.nowImage[y, x]
+        else:
+            return None
 
     def get_src_image(self):
         return self.srcqImage
@@ -43,10 +49,10 @@ class ImageEffect(object):
         return self.dstqImage
 
     def convert_qImage(self, img):
-        if img.shape[2] == 3:
+        if self.depth == 3:
             return QImage(img, img.shape[1],
                           img.shape[0], QImage.Format_RGB888)
-        elif img.shape[2] == 4:
+        elif self.depth == 4:
             return QImage(img, img.shape[1],
                           img.shape[0], QImage.Format_RGB32)
         else:

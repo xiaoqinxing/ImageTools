@@ -17,7 +17,9 @@ class ImageEditor(object):
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.gridLayout.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
+        self.imageview.sigMouseMovePoint.connect(self.show_point_rgb)
         self.ui.openimage.triggered.connect(self.on_open_img)
+        self.img = None
 
     def show(self):
         self.window.show()
@@ -41,3 +43,13 @@ class ImageEditor(object):
                 rely = QMessageBox.critical(
                     self.window, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
                 return
+
+    def show_point_rgb(self, point):
+        x = int(point.x())
+        y = int(point.y())
+        print(str(x) + ' ' + str(y))
+        if (self.img is not None):
+            rgb = self.img.get_img_point(x, y)
+            if(rgb is not None):
+                self.ui.statusBar.showMessage(
+                    "x:{},y:{} : R:{} G:{} B:{}".format(x, y, rgb[0], rgb[1], rgb[2]))

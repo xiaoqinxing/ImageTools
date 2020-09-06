@@ -1,4 +1,4 @@
-from PySide2.QtCore import Signal, QPoint, Qt
+from PySide2.QtCore import Signal, QPointF, Qt
 from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 import matplotlib.pyplot as plt
@@ -110,7 +110,7 @@ class ImageView(QGraphicsView):
     """
     自定义的图片显示（可以获取到鼠标位置和放大比例）
     """
-    sigMouseMovePoint = Signal(QPoint)
+    sigMouseMovePoint = Signal(QPointF)
     sigWheelEvent = Signal(float)
     sigDragEvent = Signal(str)
 
@@ -151,11 +151,9 @@ class ImageView(QGraphicsView):
         return super().wheelEvent(event)
 
     def dragEnterEvent(self, event):
-        print(event)
         if event.mimeData().hasUrls():
             try:
                 for url in event.mimeData().urls():
-                    print(url.path())
                     self.sigDragEvent.emit(url.path()[1:])
             except Exception as e:
                 print(e)
