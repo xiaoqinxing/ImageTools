@@ -26,7 +26,7 @@ class ImageEffect(object):
 
     def save_image(self, img, filename):
         self.imageconvert(img)
-        #cv2.imwrite(filename, self.nowImage)
+        # cv2.imwrite(filename, self.nowImage)
         # 解决中文路径的问题
         cv2.imencode('.jpg', img)[1].tofile(filename)
 
@@ -75,23 +75,29 @@ class ImageEffect(object):
 
     def calcHist(self, img, x1, y1, x2, y2):
         self.imageconvert(img)
-        height, width, depth = img.shape
+        # height, width, depth = img.shape
         i1 = max(x1, 0)
-        i2 = min(x2, x1)
+        i2 = min(x2, self.width)
         j1 = max(y1, 0)
-        j2 = min(y1, y2)
-        if (i2 > i2 and j2 > j1):
-            image = img[j1:j2, i1:i2]
+        j2 = min(self.height, y2)
+        if (i2 > i1 and j2 > j1):
+            image = self.nowImage[j1:j2, i1:i2]
             chans = cv2.split(image)
-            colors = (0, 1, 2)
-            data = np.array([])
-            for (chan, color) in zip(chans, colors):
-                data[color] = cv2.calcHist([image], [0], None, [
-                    256], [0, 256])
+            r_hist = (cv2.calcHist([chans[0]], [0], None, [
+                256], [0, 256]))
+            g_hist = (cv2.calcHist([chans[1]], [0], None, [
+                256], [0, 256]))
+            b_hist = (cv2.calcHist([chans[2]], [0], None, [
+                256], [0, 256]))
             # 转为灰度图，然后算亮度直方图
             image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-            data[3] = cv2.calcHist([image], [0], None, [
-                256], [0, 256])
+            y_hist = (cv2.calcHist([image], [0], None, [
+                256], [0, 256]))
+            r_hist.reshape(1, 256)
+            g_hist.reshape(1, 256)
+            b_hist.reshape(1, 256)
+            y_hist.reshape(1, 256)
+            return (r_hist, g_hist, b_hist, y_hist)
 
 
 class BlurType():

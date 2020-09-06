@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from PySide2.QtWidgets import QMainWindow
 from tools.depth_of_focus.field_depth_window import Ui_FieldDepthWindow
 from tools.depth_of_focus.LenParameters import LenParameters, SettingParamters, cmos_size_dist
-from ui.customwidget import MatplotlibWidget, ParamsTable
+from ui.customwidget import MatplotlibLayout, ParamsTable
 
 
 class FieldDepthWindow(object):
@@ -27,7 +27,7 @@ class FieldDepthWindow(object):
         self.ui.sensor_size_list.currentTextChanged.connect(
             self.coms_size_list_changed_cb)
         self.init_params_range()
-        self.plot_fig = MatplotlibWidget(self.ui.plotview)
+        self.plot_fig = MatplotlibLayout(self.ui.plotview)
         self.plot_figure()
         self.tableWidget = ParamsTable(self.ui.plotview)
 
