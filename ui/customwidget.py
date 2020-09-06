@@ -123,28 +123,34 @@ class ImageView(QGraphicsView):
     def mouseMoveEvent(self, event):
         self.sceneMousePos = self.mapToScene(event.pos())
         self.sigMouseMovePoint.emit(self.sceneMousePos)
-        # return super().mouseMoveEvent(event)
+        return super().mouseMoveEvent(event)
 
     def wheelEvent(self, event):
         # return super().wheelEvent(event)
         angle = event.angleD.y()
-        # self.centerOn(self.sceneMousePos)
+        self.centerOn(self.sceneMousePos)
         if (angle > 0):
             self.scale(1.2, 1.2)
             self.scale_ratio *= 1.2
         else:
-            self.scale(1 / 1.2, 1 / 1.2)
-            self.scale_ratio /= 1.2
-        self.viewport().update()
+            self.scale(0.8, 0.8)
+            self.scale_ratio *= 0.8
+        # self.viewport().update()
         self.sigWheelEvent.emit(self.scale_ratio)
         # return super().wheelEvent(event)
 
-    # def dragEnterEvent(self, event):
-    #     print(event)
-    #     if event.mimeData().hasUrls():
-    #         event.acceptProposedAction()
-    #     else:
-    #         event.ignore()
+    def dragEnterEvent(self, event):
+        print(event)
+        if event.mimeData().hasUrls():
+            try:
+                for url in event.mimeData().urls():
+                    print(url.path())
+                    self.sigDragEvent.emit(url.path()[1:])
+            except Exception as e:
+                print(e)
+            event.acceptProposedAction()
+        else:
+            event.ignore()
 
     # def dropEvent(self, event):
     #     print(event)
@@ -156,6 +162,6 @@ class ImageView(QGraphicsView):
     #             self.sigMouseMovePoint.emit(event.mimeData().urls()[0].path())
     #         except Exception as e:
     #             print(e)
-    #         event.accept()
-    #     else:
-    #         event.ignore()
+        #     event.accept()
+        # else:
+        #     event.ignore()

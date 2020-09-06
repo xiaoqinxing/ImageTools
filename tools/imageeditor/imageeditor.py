@@ -14,7 +14,8 @@ class ImageEditor(object):
         self.ui.setupUi(self.window)
         self.scene = QGraphicsScene()
         self.imageview = ImageView(self.scene, self.ui.graphicsView)
-        # self.imageview.sigDragEvent.connect(self.open_img)
+        # self.ui.graphicsView.setScene(self.scene)
+        self.imageview.sigDragEvent.connect(self.__init_img)
         self.ui.openimage.triggered.connect(self.on_open_img)
 
     def show(self):
