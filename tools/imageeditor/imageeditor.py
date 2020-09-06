@@ -18,8 +18,10 @@ class ImageEditor(object):
         self.ui.gridLayout.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
         self.imageview.sigMouseMovePoint.connect(self.show_point_rgb)
+        self.imageview.sigWheelEvent.connect(self.update_wheel_ratio)
         self.ui.openimage.triggered.connect(self.on_open_img)
         self.img = None
+        self.scale_ratio = 100
 
     def show(self):
         self.window.show()
@@ -45,11 +47,17 @@ class ImageEditor(object):
                 return
 
     def show_point_rgb(self, point):
-        x = int(point.x())
-        y = int(point.y())
-        print(str(x) + ' ' + str(y))
+        self.x = int(point.x())
+        self.y = int(point.y())
+        # print(str(x) + ' ' + str(y))
         if (self.img is not None):
-            rgb = self.img.get_img_point(x, y)
-            if(rgb is not None):
+            rgb = self.img.get_img_point(self.x, self.y)
+            if (rgb is not None):
+                self.rgb = rgb
                 self.ui.statusBar.showMessage(
-                    "x:{},y:{} : R:{} G:{} B:{}".format(x, y, rgb[0], rgb[1], rgb[2]))
+                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+
+    def update_wheel_ratio(self, ratio):
+        self.scale_ratio = int(ratio * 100)
+        self.ui.statusBar.showMessage(
+            "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))

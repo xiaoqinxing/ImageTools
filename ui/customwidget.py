@@ -138,7 +138,6 @@ class ImageView(QGraphicsView):
         return super().mouseMoveEvent(event)
 
     def wheelEvent(self, event):
-        # return super().wheelEvent(event)
         angle = event.angleD.y()
         self.centerOn(self.sceneMousePos)
         if (angle > 0):
