@@ -1,5 +1,5 @@
 from PySide2.QtCore import Signal, QPointF, Qt
-from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea
+from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea, QLabel
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -196,6 +196,25 @@ class ImageView(QGraphicsView):
             self.scale_ratio *= 0.8
         self.sigWheelEvent.emit(self.scale_ratio)
         return super().wheelEvent(event)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            try:
+                for url in event.mimeData().urls():
+                    self.sigDragEvent.emit(url.path()[1:])
+            except Exception as e:
+                print(e)
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+
+class VideoView(QLabel):
+    sigDragEvent = Signal(str)
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setAcceptDrops(True)
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():

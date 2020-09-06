@@ -3,6 +3,7 @@ from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide2.QtGui import QImage, QPixmap
 from PySide2.QtCore import QTimer
 from tools.shake_test.shake_test_window import Ui_ShakeTestWindow
+from ui.customwidget import VideoView
 import numpy as np
 import math
 
@@ -24,6 +25,9 @@ class ShakeTestTool(object):
         self.window = QMainWindow()
         self.ui = Ui_ShakeTestWindow()
         self.ui.setupUi(self.window)
+        self.videoview = VideoView(self.ui.videoview)
+        self.ui.gridLayout_2.addWidget(self.videoview, 0, 0, 1, 1)
+        self.videoview.sigDragEvent.connect(self.open_video_path)
         self.ui.openvideo.clicked.connect(self.open_video)
         self.ui.isok.clicked.connect(self.process_video)
         self.ui.cancel_button.clicked.connect(self.cancel_process_video)
@@ -46,7 +50,11 @@ class ShakeTestTool(object):
     def open_video(self):
         videopath = QFileDialog.getOpenFileName(
             None, '打开文件', './', 'video files(*.mp4)')
-        self.ui.videopath.setText(videopath[0])
+        if(videopath[0] != ''):
+            self.ui.videopath.setText(videopath[0])
+
+    def open_video_path(self, str):
+        self.ui.videopath.setText(str)
 
     def find_center_point_index(self, x, y, winSize=90000):
         """
@@ -171,7 +179,7 @@ class ShakeTestTool(object):
             # 计算每个点与中心点的距离，将之与第一帧对比，得出变形程度
             distance_diff_sum = 0
             for (old, new) in zip(self.old_distance_anypoint, now_distance_anypoint):
-                distance_diff = (old-new)/old
+                distance_diff = abs((old-new)/old)
                 distance_diff_sum += distance_diff
             print(distance_diff_sum/len(self.old_distance_anypoint))
 
