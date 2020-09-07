@@ -21,6 +21,7 @@ class Direction():
 
 
 class ShakeTestTool(object):
+    video_valid = False
     def __init__(self):
         self.window = QMainWindow()
         self.ui = Ui_ShakeTestWindow()
@@ -52,9 +53,11 @@ class ShakeTestTool(object):
             None, '打开文件', './', 'video files(*.mp4)')
         if(videopath[0] != ''):
             self.ui.videopath.setText(videopath[0])
+            self.vertify_video()
 
     def open_video_path(self, str):
         self.ui.videopath.setText(str)
+        self.vertify_video()
 
     def find_center_point_index(self, x, y, winSize=90000):
         """
@@ -81,8 +84,8 @@ class ShakeTestTool(object):
                 distance_anypoint.append(math.sqrt((now_point[0]-center_point[0])*(now_point[0]-center_point[0])
                                                    + (now_point[1]-center_point[1])*(now_point[1]-center_point[1])))
         return distance_anypoint
-
-    def process_video(self):
+    
+    def vertify_video(self):
         # 输出参数初始化
         self.dewarp_sum = 0
         self.dewarp_count = 0
@@ -104,13 +107,14 @@ class ShakeTestTool(object):
             center_x = frame.shape[1]/2
             center_y = frame.shape[0]/2
             self.center_index = self.find_center_point_index(
-                center_x, center_y, (frame.shape[1]/5)*(frame.shape[1]/5))
+                center_x, center_y, (frame.shape[1]/10)*(frame.shape[1]/10))
 
             # 如果在距离中心直径300px的范围内没有找到，那么退出
             if(self.center_index == -1):
                 reply = QMessageBox.critical(
                     self.window, '警告', '图像中心没有找到特征点，请重新拍摄视频',
                     QMessageBox.Yes, QMessageBox.Yes)
+                self.video_valid = False
                 return
 
             # 初始化横纵方向上的坐标
@@ -121,15 +125,20 @@ class ShakeTestTool(object):
 
             # 计算每个特征点到中心的距离
             self.old_distance_anypoint = self.calc_distance_anypoint(self.p0)
-
-            # 增加定时器，每100ms进行一帧的处理
-            self.video_timer.start(100)
-            self.video_timer.timeout.connect(self.open_frame)
+            self.display(self.old_gray)
+            self.video_valid = True
         else:
             reply = QMessageBox.critical(
                 self.window, '警告', '视频打不开',
                 QMessageBox.Yes, QMessageBox.Yes)
+            self.video_valid = False
             return
+
+    def process_video(self):
+        if(self.video_valid == True):
+            # 增加定时器，每100ms进行一帧的处理
+            self.video_timer.start(100)
+            self.video_timer.timeout.connect(self.open_frame)
 
     def display(self, img):
         image = QImage(
