@@ -32,7 +32,9 @@ class ShakeTestTool(object):
         self.ui.openvideo.clicked.connect(self.open_video)
         self.ui.isok.clicked.connect(self.process_video)
         self.ui.cancel_button.clicked.connect(self.cancel_process_video)
+        self.ui.skipframes.valueChanged.connect(self.set_skip_frames)
         self.video_timer = QTimer()
+        self.skip_frames = 0
         self.direction = Direction.source
 
         # 构建角点检测所需参数
@@ -42,7 +44,7 @@ class ShakeTestTool(object):
 
         # lucas kanade参数
         # 如果发现跟踪跟丢的问题，可能是光流法搜索的区域不够大
-        self.lk_params = dict(winSize=(25, 25),
+        self.lk_params = dict(winSize=(50, 50),
                               maxLevel=2)
 
     def show(self):
@@ -84,12 +86,18 @@ class ShakeTestTool(object):
                 distance_anypoint.append(math.sqrt((now_point[0]-center_point[0])*(now_point[0]-center_point[0])
                                                    + (now_point[1]-center_point[1])*(now_point[1]-center_point[1])))
         return distance_anypoint
+
+    def set_skip_frames(self, skip_num):
+        self.skip_frames = skip_num
+        self.vertify_video()
     
     def vertify_video(self):
         # 输出参数初始化
         self.dewarp_sum = 0
         self.dewarp_count = 0
         self.vidcap = cv2.VideoCapture(self.ui.videopath.text())
+        # 片头调过多少帧
+        self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.skip_frames)
         success, frame = self.vidcap.read()
         if success:
             self.old_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -102,6 +110,12 @@ class ShakeTestTool(object):
                                        criteria=(cv2.TERM_CRITERIA_MAX_ITER | cv2.TERM_CRITERIA_EPS, 30, 0.001))
             # 创建一个mask, 用于进行横线的绘制
             self.mask = np.zeros_like(self.old_gray)
+
+            # 显示特征点的位置
+            for point in self.p0:
+                a, b = point.ravel()
+                frame = cv2.circle(self.old_gray, (a, b), 10, 255, -1)
+                self.display(frame)
 
             # 寻找到中心最近的特征点
             center_x = frame.shape[1]/2
@@ -125,7 +139,6 @@ class ShakeTestTool(object):
 
             # 计算每个特征点到中心的距离
             self.old_distance_anypoint = self.calc_distance_anypoint(self.p0)
-            self.display(self.old_gray)
             self.video_valid = True
         else:
             reply = QMessageBox.critical(

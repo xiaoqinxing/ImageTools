@@ -36,6 +36,47 @@ class Ui_ShakeTestWindow(object):
         self.groupBox_2.setMaximumSize(QSize(270, 16777215))
         self.gridLayout_3 = QGridLayout(self.groupBox_2)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayout_6 = QGridLayout()
+        self.gridLayout_6.setObjectName(u"gridLayout_6")
+        self.corner_num = QSlider(self.groupBox_2)
+        self.corner_num.setObjectName(u"corner_num")
+        self.corner_num.setSliderPosition(50)
+        self.corner_num.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_6.addWidget(self.corner_num, 1, 1, 1, 1)
+
+        self.label_6 = QLabel(self.groupBox_2)
+        self.label_6.setObjectName(u"label_6")
+
+        self.gridLayout_6.addWidget(self.label_6, 1, 0, 1, 1)
+
+        self.corner_size = QSlider(self.groupBox_2)
+        self.corner_size.setObjectName(u"corner_size")
+        self.corner_size.setSliderPosition(50)
+        self.corner_size.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_6.addWidget(self.corner_size, 2, 1, 1, 1)
+
+        self.label_7 = QLabel(self.groupBox_2)
+        self.label_7.setObjectName(u"label_7")
+
+        self.gridLayout_6.addWidget(self.label_7, 2, 0, 1, 1)
+
+        self.label_5 = QLabel(self.groupBox_2)
+        self.label_5.setObjectName(u"label_5")
+
+        self.gridLayout_6.addWidget(self.label_5, 0, 0, 1, 1)
+
+        self.skipframes = QSpinBox(self.groupBox_2)
+        self.skipframes.setObjectName(u"skipframes")
+        self.skipframes.setMaximum(1000)
+        self.skipframes.setSingleStep(10)
+
+        self.gridLayout_6.addWidget(self.skipframes, 0, 1, 1, 1)
+
+
+        self.gridLayout_3.addLayout(self.gridLayout_6, 1, 0, 1, 1)
+
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.label = QLabel(self.groupBox_2)
@@ -169,7 +210,7 @@ class Ui_ShakeTestWindow(object):
         self.videoview.setObjectName(u"videoview")
         self.videoview.setMinimumSize(QSize(441, 0))
 
-        self.gridLayout_2.addWidget(self.videoview, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.videoview, 0, 3, 1, 1)
 
 
         self.gridLayout.addWidget(self.groupBox, 0, 0, 1, 1)
@@ -191,6 +232,9 @@ class Ui_ShakeTestWindow(object):
     def retranslateUi(self, ShakeTestWindow):
         ShakeTestWindow.setWindowTitle(QCoreApplication.translate("ShakeTestWindow", u"\u9632\u6296\u6d4b\u8bd5\u5de5\u5177", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u8bbe\u7f6e", None))
+        self.label_6.setText(QCoreApplication.translate("ShakeTestWindow", u"\u7279\u5f81\u70b9\u9009\u53d6", None))
+        self.label_7.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8fd0\u52a8\u5e45\u5ea6", None))
+        self.label_5.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8df3\u8fc7\u5e27\u6570", None))
         self.label.setText(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891\u6587\u4ef6", None))
         self.openvideo.setText(QCoreApplication.translate("ShakeTestWindow", u"\u6253\u5f00\u6587\u4ef6", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u7ed3\u679c", None))
