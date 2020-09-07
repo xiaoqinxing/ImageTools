@@ -1,4 +1,4 @@
-from PySide2.QtCore import Signal, QPointF, Qt
+from PySide2.QtCore import Signal, QPointF, Qt, QSize
 from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea, QLabel
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 import matplotlib.pyplot as plt
@@ -212,7 +212,7 @@ class ImageView(QGraphicsView):
 class VideoView(QLabel):
     sigDragEvent = Signal(str)
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.setAcceptDrops(True)
 

@@ -26,13 +26,15 @@ class ShakeTestTool(object):
         self.window = QMainWindow()
         self.ui = Ui_ShakeTestWindow()
         self.ui.setupUi(self.window)
-        self.videoview = VideoView(self.ui.videoview)
+        self.videoview = VideoView()
         self.ui.gridLayout_2.addWidget(self.videoview, 0, 0, 1, 1)
         self.videoview.sigDragEvent.connect(self.open_video_path)
         self.ui.openvideo.clicked.connect(self.open_video)
         self.ui.isok.clicked.connect(self.process_video)
         self.ui.cancel_button.clicked.connect(self.cancel_process_video)
         self.ui.skipframes.valueChanged.connect(self.set_skip_frames)
+        self.ui.corner_num.valueChanged.connect(self.set_corner_num)
+        self.ui.corner_size.valueChanged.connect(self.set_corner_size)
         self.video_timer = QTimer()
         self.skip_frames = 0
         self.direction = Direction.source
@@ -86,6 +88,17 @@ class ShakeTestTool(object):
                 distance_anypoint.append(math.sqrt((now_point[0]-center_point[0])*(now_point[0]-center_point[0])
                                                    + (now_point[1]-center_point[1])*(now_point[1]-center_point[1])))
         return distance_anypoint
+    
+    def set_corner_num(self, num):
+        self.feature_params = dict(maxCorners=30,
+                                   qualityLevel=(num/100),
+                                   minDistance=50)
+        self.vertify_video()
+    
+    def set_corner_size(self, size):
+        self.lk_params = dict(winSize=(size, size),
+                              maxLevel=2)
+        self.vertify_video()
 
     def set_skip_frames(self, skip_num):
         self.skip_frames = skip_num
@@ -157,8 +170,8 @@ class ShakeTestTool(object):
         image = QImage(
             img.data, img.shape[1], img.shape[0], QImage.Format_Indexed8)
         temp_pixmap = QPixmap.fromImage(image)
-        self.ui.videoview.setPixmap(temp_pixmap)
-        self.ui.videoview.setScaledContents(True)
+        self.videoview.setPixmap(temp_pixmap)
+        self.videoview.setScaledContents(True)
 
     def draw_track(self, good_new, new_gray):
         for i, (new, old) in enumerate(zip(good_new, self.p0)):

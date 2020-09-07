@@ -20,7 +20,7 @@ class Ui_ShakeTestWindow(object):
     def setupUi(self, ShakeTestWindow):
         if not ShakeTestWindow.objectName():
             ShakeTestWindow.setObjectName(u"ShakeTestWindow")
-        ShakeTestWindow.resize(758, 858)
+        ShakeTestWindow.resize(724, 722)
         self.centralwidget = QWidget(ShakeTestWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -52,7 +52,7 @@ class Ui_ShakeTestWindow(object):
 
         self.corner_size = QSlider(self.groupBox_2)
         self.corner_size.setObjectName(u"corner_size")
-        self.corner_size.setSliderPosition(50)
+        self.corner_size.setSliderPosition(40)
         self.corner_size.setOrientation(Qt.Horizontal)
 
         self.gridLayout_6.addWidget(self.corner_size, 2, 1, 1, 1)
@@ -204,21 +204,16 @@ class Ui_ShakeTestWindow(object):
 
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
+        self.groupBox.setMinimumSize(QSize(500, 0))
         self.gridLayout_2 = QGridLayout(self.groupBox)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.videoview = QLabel(self.groupBox)
-        self.videoview.setObjectName(u"videoview")
-        self.videoview.setMinimumSize(QSize(441, 0))
-
-        self.gridLayout_2.addWidget(self.videoview, 0, 3, 1, 1)
-
 
         self.gridLayout.addWidget(self.groupBox, 0, 0, 1, 1)
 
         ShakeTestWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ShakeTestWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 758, 23))
+        self.menubar.setGeometry(QRect(0, 0, 724, 23))
         ShakeTestWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(ShakeTestWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -245,6 +240,5 @@ class Ui_ShakeTestWindow(object):
         self.isok.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5f00\u59cb", None))
         self.cancel_button.setText(QCoreApplication.translate("ShakeTestWindow", u"\u505c\u6b62", None))
         self.groupBox.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891\u9884\u89c8", None))
-        self.videoview.setText("")
     # retranslateUi
 
