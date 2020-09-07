@@ -41,7 +41,7 @@ class ShakeTestTool(object):
 
         # lucas kanade参数
         # 如果发现跟踪跟丢的问题，可能是光流法搜索的区域不够大
-        self.lk_params = dict(winSize=(20, 20),
+        self.lk_params = dict(winSize=(25, 25),
                               maxLevel=2)
 
     def show(self):

@@ -20,22 +20,25 @@ class ImageTools(object):
         self.ui.shake_tool.triggered.connect(self.add_shake_tool_window)
         self.ui.imageeditor.triggered.connect(self.add_image_editor_window)
         self.window.show()
-        self.sub_window = None
+        self.sub_windows = list()
 
     def add_field_depth_tool_window(self):
-        self.sub_window = FieldDepthWindow()
-        self.subwindows_ui.addSubWindow(self.sub_window.window)
-        self.sub_window.show()
+        sub_window = FieldDepthWindow()
+        self.subwindows_ui.addSubWindow(sub_window.window)
+        sub_window.show()
+        self.sub_windows.append(sub_window)
 
     def add_shake_tool_window(self):
-        self.sub_window = ShakeTestTool()
-        self.subwindows_ui.addSubWindow(self.sub_window.window)
-        self.sub_window.show()
+        sub_window = ShakeTestTool()
+        self.subwindows_ui.addSubWindow(sub_window.window)
+        sub_window.show()
+        self.sub_windows.append(sub_window)
 
     def add_image_editor_window(self):
-        self.sub_window = ImageEditor()
-        self.subwindows_ui.addSubWindow(self.sub_window.window)
-        self.sub_window.show()
+        sub_window = ImageEditor()
+        self.subwindows_ui.addSubWindow(sub_window.window)
+        sub_window.show()
+        self.sub_windows.append(sub_window)
 
 
 if __name__ == "__main__":

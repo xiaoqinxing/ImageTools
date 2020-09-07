@@ -83,11 +83,11 @@ class ImageEffect(object):
         if (i2 > i1 and j2 > j1):
             image = self.nowImage[j1:j2, i1:i2]
             chans = cv2.split(image)
-            r_hist = (cv2.calcHist([chans[0]], [0], None, [
+            b_hist = (cv2.calcHist([chans[0]], [0], None, [
                 256], [0, 256]))
             g_hist = (cv2.calcHist([chans[1]], [0], None, [
                 256], [0, 256]))
-            b_hist = (cv2.calcHist([chans[2]], [0], None, [
+            r_hist = (cv2.calcHist([chans[2]], [0], None, [
                 256], [0, 256]))
             # 转为灰度图，然后算亮度直方图
             image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
