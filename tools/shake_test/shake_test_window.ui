@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>758</width>
+    <height>858</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -127,7 +127,7 @@
            <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>图片变形程度</string>
+              <string>图片最大变形程度</string>
              </property>
             </widget>
            </item>
@@ -138,6 +138,9 @@
              </property>
              <property name="decimals">
               <number>4</number>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -160,6 +163,9 @@
              <property name="decimals">
               <number>4</number>
              </property>
+             <property name="maximum">
+              <double>1000.000000000000000</double>
+             </property>
             </widget>
            </item>
           </layout>
@@ -181,6 +187,9 @@
              <property name="decimals">
               <number>4</number>
              </property>
+             <property name="maximum">
+              <double>1000.000000000000000</double>
+             </property>
             </widget>
            </item>
           </layout>
@@ -190,6 +199,12 @@
       </item>
       <item>
        <spacer name="verticalSpacer_3">
+        <property name="maximumSize">
+         <size>
+          <width>268</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -202,41 +217,59 @@
        </spacer>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QPushButton" name="isok">
-          <property name="maximumSize">
-           <size>
-            <width>121</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>开始</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="cancel_button">
-          <property name="maximumSize">
-           <size>
-            <width>121</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>停止</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="maximumSize">
+         <size>
+          <width>271</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QPushButton" name="isok">
+             <property name="maximumSize">
+              <size>
+               <width>121</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>开始</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cancel_button">
+             <property name="maximumSize">
+              <size>
+               <width>121</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>停止</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </item>
     <item row="0" column="0">
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>视频</string>
+       <string>视频预览</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
@@ -262,7 +295,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>758</width>
      <height>23</height>
     </rect>
    </property>
@@ -271,7 +304,4 @@
  </widget>
  <resources/>
  <connections/>
- <buttongroups>
-  <buttongroup name="direction"/>
- </buttongroups>
 </ui>

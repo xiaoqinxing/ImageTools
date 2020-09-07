@@ -108,6 +108,7 @@ class ImageEditor(object):
 
     def hist_show(self):
         self.histview.clean()
+        self.histview.label("亮度", "数量")
         if (self.r_hist_visible == 2):
             self.histview.input_r_hist(self.x_axis, self.r_hist)
         if (self.g_hist_visible == 2):

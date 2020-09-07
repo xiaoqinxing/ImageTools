@@ -20,7 +20,7 @@ class Ui_ShakeTestWindow(object):
     def setupUi(self, ShakeTestWindow):
         if not ShakeTestWindow.objectName():
             ShakeTestWindow.setObjectName(u"ShakeTestWindow")
-        ShakeTestWindow.resize(800, 600)
+        ShakeTestWindow.resize(758, 858)
         self.centralwidget = QWidget(ShakeTestWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -82,6 +82,7 @@ class Ui_ShakeTestWindow(object):
         self.warp_ratio.setObjectName(u"warp_ratio")
         self.warp_ratio.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.warp_ratio.setDecimals(4)
+        self.warp_ratio.setMaximum(10.000000000000000)
 
         self.horizontalLayout_5.addWidget(self.warp_ratio)
 
@@ -99,6 +100,7 @@ class Ui_ShakeTestWindow(object):
         self.center_max_x_distance.setObjectName(u"center_max_x_distance")
         self.center_max_x_distance.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.center_max_x_distance.setDecimals(4)
+        self.center_max_x_distance.setMaximum(1000.000000000000000)
 
         self.horizontalLayout_4.addWidget(self.center_max_x_distance)
 
@@ -116,6 +118,7 @@ class Ui_ShakeTestWindow(object):
         self.center_max_y_distance.setObjectName(u"center_max_y_distance")
         self.center_max_y_distance.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.center_max_y_distance.setDecimals(4)
+        self.center_max_y_distance.setMaximum(1000.000000000000000)
 
         self.horizontalLayout_6.addWidget(self.center_max_y_distance)
 
@@ -129,22 +132,31 @@ class Ui_ShakeTestWindow(object):
 
         self.verticalLayout.addItem(self.verticalSpacer_3)
 
+        self.groupBox_4 = QGroupBox(self.centralwidget)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        self.groupBox_4.setMaximumSize(QSize(271, 16777215))
+        self.groupBox_4.setFlat(True)
+        self.gridLayout_5 = QGridLayout(self.groupBox_4)
+        self.gridLayout_5.setObjectName(u"gridLayout_5")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.isok = QPushButton(self.centralwidget)
+        self.isok = QPushButton(self.groupBox_4)
         self.isok.setObjectName(u"isok")
         self.isok.setMaximumSize(QSize(121, 16777215))
 
         self.horizontalLayout_2.addWidget(self.isok)
 
-        self.cancel_button = QPushButton(self.centralwidget)
+        self.cancel_button = QPushButton(self.groupBox_4)
         self.cancel_button.setObjectName(u"cancel_button")
         self.cancel_button.setMaximumSize(QSize(121, 16777215))
 
         self.horizontalLayout_2.addWidget(self.cancel_button)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.gridLayout_5.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
+
+
+        self.verticalLayout.addWidget(self.groupBox_4)
 
 
         self.gridLayout.addLayout(self.verticalLayout, 0, 1, 1, 1)
@@ -165,7 +177,7 @@ class Ui_ShakeTestWindow(object):
         ShakeTestWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ShakeTestWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 23))
+        self.menubar.setGeometry(QRect(0, 0, 758, 23))
         ShakeTestWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(ShakeTestWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -182,12 +194,13 @@ class Ui_ShakeTestWindow(object):
         self.label.setText(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891\u6587\u4ef6", None))
         self.openvideo.setText(QCoreApplication.translate("ShakeTestWindow", u"\u6253\u5f00\u6587\u4ef6", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u7ed3\u679c", None))
-        self.label_3.setText(QCoreApplication.translate("ShakeTestWindow", u"\u56fe\u7247\u53d8\u5f62\u7a0b\u5ea6", None))
+        self.label_3.setText(QCoreApplication.translate("ShakeTestWindow", u"\u56fe\u7247\u6700\u5927\u53d8\u5f62\u7a0b\u5ea6", None))
         self.label_2.setText(QCoreApplication.translate("ShakeTestWindow", u"\u4e2d\u5fc3\u70b9\u6700\u5927\u6a2a\u5411\u4f4d\u79fb", None))
         self.label_4.setText(QCoreApplication.translate("ShakeTestWindow", u"\u4e2d\u5fc3\u70b9\u6700\u5927\u7eb5\u5411\u4f4d\u79fb", None))
+        self.groupBox_4.setTitle("")
         self.isok.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5f00\u59cb", None))
         self.cancel_button.setText(QCoreApplication.translate("ShakeTestWindow", u"\u505c\u6b62", None))
-        self.groupBox.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891", None))
+        self.groupBox.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891\u9884\u89c8", None))
         self.videoview.setText("")
     # retranslateUi
 
