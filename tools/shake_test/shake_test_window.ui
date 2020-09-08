@@ -63,7 +63,7 @@
            <item row="1" column="0">
             <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>特征点选取</string>
+              <string>特征点数量</string>
              </property>
             </widget>
            </item>
@@ -142,6 +142,13 @@
             </widget>
            </item>
           </layout>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="remove_move_point_enable">
+           <property name="text">
+            <string>去除静止的特征点</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -343,7 +350,7 @@
      <x>0</x>
      <y>0</y>
      <width>724</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

@@ -100,6 +100,11 @@ class Ui_ShakeTestWindow(object):
 
         self.gridLayout_3.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
+        self.remove_move_point_enable = QCheckBox(self.groupBox_2)
+        self.remove_move_point_enable.setObjectName(u"remove_move_point_enable")
+
+        self.gridLayout_3.addWidget(self.remove_move_point_enable, 2, 0, 1, 1)
+
 
         self.verticalLayout.addWidget(self.groupBox_2)
 
@@ -213,7 +218,7 @@ class Ui_ShakeTestWindow(object):
         ShakeTestWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ShakeTestWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 724, 23))
+        self.menubar.setGeometry(QRect(0, 0, 724, 22))
         ShakeTestWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(ShakeTestWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -227,11 +232,12 @@ class Ui_ShakeTestWindow(object):
     def retranslateUi(self, ShakeTestWindow):
         ShakeTestWindow.setWindowTitle(QCoreApplication.translate("ShakeTestWindow", u"\u9632\u6296\u6d4b\u8bd5\u5de5\u5177", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u8bbe\u7f6e", None))
-        self.label_6.setText(QCoreApplication.translate("ShakeTestWindow", u"\u7279\u5f81\u70b9\u9009\u53d6", None))
+        self.label_6.setText(QCoreApplication.translate("ShakeTestWindow", u"\u7279\u5f81\u70b9\u6570\u91cf", None))
         self.label_7.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8fd0\u52a8\u5e45\u5ea6", None))
         self.label_5.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8df3\u8fc7\u5e27\u6570", None))
         self.label.setText(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891\u6587\u4ef6", None))
         self.openvideo.setText(QCoreApplication.translate("ShakeTestWindow", u"\u6253\u5f00\u6587\u4ef6", None))
+        self.remove_move_point_enable.setText(QCoreApplication.translate("ShakeTestWindow", u"\u53bb\u9664\u9759\u6b62\u7684\u7279\u5f81\u70b9", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u7ed3\u679c", None))
         self.label_3.setText(QCoreApplication.translate("ShakeTestWindow", u"\u56fe\u7247\u6700\u5927\u53d8\u5f62\u7a0b\u5ea6", None))
         self.label_2.setText(QCoreApplication.translate("ShakeTestWindow", u"\u4e2d\u5fc3\u70b9\u6700\u5927\u6a2a\u5411\u4f4d\u79fb", None))

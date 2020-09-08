@@ -22,6 +22,8 @@ class Direction():
 
 class ShakeTestTool(object):
     video_valid = False
+    only_select_move_point = False
+
     def __init__(self):
         self.window = QMainWindow()
         self.ui = Ui_ShakeTestWindow()
@@ -35,6 +37,8 @@ class ShakeTestTool(object):
         self.ui.skipframes.valueChanged.connect(self.set_skip_frames)
         self.ui.corner_num.valueChanged.connect(self.set_corner_num)
         self.ui.corner_size.valueChanged.connect(self.set_corner_size)
+        self.ui.remove_move_point_enable.stateChanged.connect(
+            self.set_find_move_point)
         self.video_timer = QTimer()
         self.skip_frames = 0
         self.direction = Direction.source
@@ -69,8 +73,8 @@ class ShakeTestTool(object):
         """
         center_index = -1
         for i, point in enumerate(self.p0):
-            now_distance = (point[0][0]-x)*(point[0][0]-x) + \
-                (point[0][1]-y)*(point[0][1]-y)
+            a, b = point.ravel()
+            now_distance = (a-x)*(a-x) + (b-y)*(b-y)
             if(now_distance < winSize):
                 center_index = i
                 winSize = now_distance
@@ -88,13 +92,13 @@ class ShakeTestTool(object):
                 distance_anypoint.append(math.sqrt((now_point[0]-center_point[0])*(now_point[0]-center_point[0])
                                                    + (now_point[1]-center_point[1])*(now_point[1]-center_point[1])))
         return distance_anypoint
-    
+
     def set_corner_num(self, num):
         self.feature_params = dict(maxCorners=30,
                                    qualityLevel=(num/100),
                                    minDistance=50)
         self.vertify_video()
-    
+
     def set_corner_size(self, size):
         self.lk_params = dict(winSize=(size, size),
                               maxLevel=2)
@@ -103,7 +107,11 @@ class ShakeTestTool(object):
     def set_skip_frames(self, skip_num):
         self.skip_frames = skip_num
         self.vertify_video()
-    
+
+    def set_find_move_point(self, type):
+        self.only_select_move_point = type
+        self.vertify_video()
+
     def vertify_video(self):
         # 输出参数初始化
         self.dewarp_sum = 0
@@ -121,14 +129,13 @@ class ShakeTestTool(object):
             # 获取角点的精确坐标
             self.p0 = cv2.cornerSubPix(self.old_gray, self.p0, (5, 5), (-1, -1),
                                        criteria=(cv2.TERM_CRITERIA_MAX_ITER | cv2.TERM_CRITERIA_EPS, 30, 0.001))
+
+            # 与下一帧进行对比，找到运动的点，排除掉静止的点
+            if(self.only_select_move_point == 2):
+                self.p0 = self.find_move_points(self.p0)
+
             # 创建一个mask, 用于进行横线的绘制
             self.mask = np.zeros_like(self.old_gray)
-
-            # 显示特征点的位置
-            for point in self.p0:
-                a, b = point.ravel()
-                frame = cv2.circle(self.old_gray, (a, b), 10, 255, -1)
-                self.display(frame)
 
             # 寻找到中心最近的特征点
             center_x = frame.shape[1]/2
@@ -150,6 +157,15 @@ class ShakeTestTool(object):
             self.min_x_coord = self.max_x_coord = self.p0[self.center_index].ravel()[
                 0]
 
+            # 显示特征点的位置
+            for i, point in enumerate(self.p0):
+                a, b = point.ravel()
+                if(i != self.center_index):
+                    frame = cv2.circle(self.old_gray, (a, b), 4, 255, -1)
+                else:
+                    frame = cv2.circle(self.old_gray, (a, b), 8, 255, -1)
+            self.display(frame)
+
             # 计算每个特征点到中心的距离
             self.old_distance_anypoint = self.calc_distance_anypoint(self.p0)
             self.video_valid = True
@@ -159,6 +175,16 @@ class ShakeTestTool(object):
                 QMessageBox.Yes, QMessageBox.Yes)
             self.video_valid = False
             return
+
+    def find_move_points(self, p0):
+        success, frame = self.vidcap.read()
+        if success:
+            new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            # 进行光流检测需要输入前一帧和当前图像及前一帧检测到的角点
+            pl, st, err = cv2.calcOpticalFlowPyrLK(
+                self.old_gray, new_gray, p0, None, **self.lk_params)
+            return p0[st == 1]
 
     def process_video(self):
         if(self.video_valid == True):
@@ -180,7 +206,10 @@ class ShakeTestTool(object):
 
             self.mask = cv2.line(
                 self.mask, (a, b), (c, d), 255, 2)
-            frame = cv2.circle(new_gray, (a, b), 5, 255, -1)
+            if(i != self.center_index):
+                frame = cv2.circle(new_gray, (a, b), 4, 255, -1)
+            else:
+                frame = cv2.circle(new_gray, (a, b), 8, 255, -1)
 
         # 将两个图片进行结合，并进行图片展示
         img = cv2.add(frame, self.mask)
@@ -233,6 +262,8 @@ class ShakeTestTool(object):
             # dewarp_ratio = self.dewarp_sum/self.dewarp_count
             # print(dewarp_ratio)
             # self.ui.warp_ratio.setValue(dewarp_ratio)
+        else:
+            self.video_timer.stop()
 
     def cancel_process_video(self):
         self.video_timer.stop()
