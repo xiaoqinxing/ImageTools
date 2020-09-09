@@ -38,41 +38,65 @@ class Ui_ShakeTestWindow(object):
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout_6 = QGridLayout()
         self.gridLayout_6.setObjectName(u"gridLayout_6")
+        self.label_5 = QLabel(self.groupBox_2)
+        self.label_5.setObjectName(u"label_5")
+
+        self.gridLayout_6.addWidget(self.label_5, 2, 0, 1, 1)
+
+        self.label_8 = QLabel(self.groupBox_2)
+        self.label_8.setObjectName(u"label_8")
+
+        self.gridLayout_6.addWidget(self.label_8, 0, 0, 1, 1)
+
         self.corner_num = QSlider(self.groupBox_2)
         self.corner_num.setObjectName(u"corner_num")
         self.corner_num.setSliderPosition(50)
         self.corner_num.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_6.addWidget(self.corner_num, 1, 1, 1, 1)
-
-        self.label_6 = QLabel(self.groupBox_2)
-        self.label_6.setObjectName(u"label_6")
-
-        self.gridLayout_6.addWidget(self.label_6, 1, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.corner_num, 3, 1, 1, 1)
 
         self.corner_size = QSlider(self.groupBox_2)
         self.corner_size.setObjectName(u"corner_size")
         self.corner_size.setSliderPosition(40)
         self.corner_size.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_6.addWidget(self.corner_size, 2, 1, 1, 1)
+        self.gridLayout_6.addWidget(self.corner_size, 4, 1, 1, 1)
 
         self.label_7 = QLabel(self.groupBox_2)
         self.label_7.setObjectName(u"label_7")
 
-        self.gridLayout_6.addWidget(self.label_7, 2, 0, 1, 1)
-
-        self.label_5 = QLabel(self.groupBox_2)
-        self.label_5.setObjectName(u"label_5")
-
-        self.gridLayout_6.addWidget(self.label_5, 0, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.label_7, 4, 0, 1, 1)
 
         self.skipframes = QSpinBox(self.groupBox_2)
         self.skipframes.setObjectName(u"skipframes")
         self.skipframes.setMaximum(1000)
         self.skipframes.setSingleStep(10)
 
-        self.gridLayout_6.addWidget(self.skipframes, 0, 1, 1, 1)
+        self.gridLayout_6.addWidget(self.skipframes, 2, 1, 1, 1)
+
+        self.set_roi_up = QSpinBox(self.groupBox_2)
+        self.set_roi_up.setObjectName(u"set_roi_up")
+        self.set_roi_up.setMaximum(1000)
+        self.set_roi_up.setSingleStep(50)
+
+        self.gridLayout_6.addWidget(self.set_roi_up, 0, 1, 1, 1)
+
+        self.label_6 = QLabel(self.groupBox_2)
+        self.label_6.setObjectName(u"label_6")
+
+        self.gridLayout_6.addWidget(self.label_6, 3, 0, 1, 1)
+
+        self.label_9 = QLabel(self.groupBox_2)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout_6.addWidget(self.label_9, 1, 0, 1, 1)
+
+        self.set_roi_down = QSpinBox(self.groupBox_2)
+        self.set_roi_down.setObjectName(u"set_roi_down")
+        self.set_roi_down.setMaximum(1000)
+        self.set_roi_down.setSingleStep(50)
+
+        self.gridLayout_6.addWidget(self.set_roi_down, 1, 1, 1, 1)
 
 
         self.gridLayout_3.addLayout(self.gridLayout_6, 1, 0, 1, 1)
@@ -102,6 +126,7 @@ class Ui_ShakeTestWindow(object):
 
         self.remove_move_point_enable = QCheckBox(self.groupBox_2)
         self.remove_move_point_enable.setObjectName(u"remove_move_point_enable")
+        self.remove_move_point_enable.setChecked(True)
 
         self.gridLayout_3.addWidget(self.remove_move_point_enable, 2, 0, 1, 1)
 
@@ -218,7 +243,7 @@ class Ui_ShakeTestWindow(object):
         ShakeTestWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ShakeTestWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 724, 22))
+        self.menubar.setGeometry(QRect(0, 0, 724, 23))
         ShakeTestWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(ShakeTestWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -232,9 +257,11 @@ class Ui_ShakeTestWindow(object):
     def retranslateUi(self, ShakeTestWindow):
         ShakeTestWindow.setWindowTitle(QCoreApplication.translate("ShakeTestWindow", u"\u9632\u6296\u6d4b\u8bd5\u5de5\u5177", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u8bbe\u7f6e", None))
-        self.label_6.setText(QCoreApplication.translate("ShakeTestWindow", u"\u7279\u5f81\u70b9\u6570\u91cf", None))
-        self.label_7.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8fd0\u52a8\u5e45\u5ea6", None))
         self.label_5.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8df3\u8fc7\u5e27\u6570", None))
+        self.label_8.setText(QCoreApplication.translate("ShakeTestWindow", u"ROI\u4e0a\u8fb9\u754c", None))
+        self.label_7.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8fd0\u52a8\u5e45\u5ea6", None))
+        self.label_6.setText(QCoreApplication.translate("ShakeTestWindow", u"\u7279\u5f81\u70b9\u6570\u91cf", None))
+        self.label_9.setText(QCoreApplication.translate("ShakeTestWindow", u"ROI\u4e0b\u8fb9\u754c", None))
         self.label.setText(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891\u6587\u4ef6", None))
         self.openvideo.setText(QCoreApplication.translate("ShakeTestWindow", u"\u6253\u5f00\u6587\u4ef6", None))
         self.remove_move_point_enable.setText(QCoreApplication.translate("ShakeTestWindow", u"\u53bb\u9664\u9759\u6b62\u7684\u7279\u5f81\u70b9", None))

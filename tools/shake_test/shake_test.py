@@ -23,6 +23,8 @@ class Direction():
 class ShakeTestTool(object):
     video_valid = False
     only_select_move_point = False
+    roi_up_crop = 0
+    roi_down_crop = 0
 
     def __init__(self):
         self.window = QMainWindow()
@@ -39,6 +41,8 @@ class ShakeTestTool(object):
         self.ui.corner_size.valueChanged.connect(self.set_corner_size)
         self.ui.remove_move_point_enable.stateChanged.connect(
             self.set_find_move_point)
+        self.ui.set_roi_up.valueChanged.connect(self.set_roi_up)
+        self.ui.set_roi_down.valueChanged.connect(self.set_roi_down)
         self.video_timer = QTimer()
         self.skip_frames = 0
         self.direction = Direction.source
@@ -55,6 +59,14 @@ class ShakeTestTool(object):
 
     def show(self):
         self.window.show()
+    
+    def set_roi_up(self, pixels):
+        self.roi_up_crop = pixels
+        self.vertify_video()
+    
+    def set_roi_down(self, pixels):
+        self.roi_down_crop = pixels
+        self.vertify_video()
 
     def open_video(self):
         videopath = QFileDialog.getOpenFileName(
@@ -121,10 +133,23 @@ class ShakeTestTool(object):
         self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.skip_frames)
         success, frame = self.vidcap.read()
         if success:
+            height = frame.shape[0]
+            width = frame.shape[1]
             self.old_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # 进行ROI的选取
+            mask = np.zeros_like(self.old_gray)
+            if(self.roi_up_crop + self.roi_down_crop < height):
+                mask[self.roi_up_crop:(height-self.roi_down_crop),:] = 1
+            else:
+                reply = QMessageBox.critical(
+                    self.window, '警告', '裁剪区域过大，请重新选取ROI区域',
+                    QMessageBox.Yes, QMessageBox.Yes)
+                self.video_valid = False
+                return
+
             # 返回所有检测特征点，需要输入图片，角点的最大数量，品质因子，minDistance=7如果这个角点里有比这个强的就不要这个弱的
             self.p0 = cv2.goodFeaturesToTrack(
-                self.old_gray, mask=None, **self.feature_params)
+                self.old_gray, mask=mask, **self.feature_params)
 
             # 获取角点的精确坐标
             self.p0 = cv2.cornerSubPix(self.old_gray, self.p0, (5, 5), (-1, -1),
@@ -137,11 +162,14 @@ class ShakeTestTool(object):
             # 创建一个mask, 用于进行横线的绘制
             self.mask = np.zeros_like(self.old_gray)
 
+            # 画出ROI区域
+            cv2.line(self.mask,(0, self.roi_up_crop),(width, self.roi_up_crop),255,thickness=2)
+            cv2.line(self.mask,(0, height-self.roi_down_crop),(width, height-self.roi_down_crop),255,thickness=2)
+
             # 寻找到中心最近的特征点
-            center_x = frame.shape[1]/2
-            center_y = frame.shape[0]/2
-            self.center_index = self.find_center_point_index(
-                center_x, center_y, (frame.shape[1]/8)*(frame.shape[1]/8))
+            center_x = width/2
+            center_y = height/2
+            self.center_index = self.find_center_point_index(center_x, center_y, (width/8)*(width/8))
 
             # 显示特征点的位置
             for i, point in enumerate(self.p0):
@@ -150,7 +178,8 @@ class ShakeTestTool(object):
                     frame = cv2.circle(self.old_gray, (a, b), 4, 255, -1)
                 else:
                     frame = cv2.circle(self.old_gray, (a, b), 8, 255, -1)
-            self.display(frame)
+            img = cv2.add(frame, self.mask)
+            self.display(img)
 
             # 如果在距离中心直径300px的范围内没有找到，那么退出
             if(self.center_index == -1):
