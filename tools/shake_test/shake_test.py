@@ -36,13 +36,13 @@ class ShakeTestTool(object):
         self.ui.openvideo.clicked.connect(self.open_video)
         self.ui.isok.clicked.connect(self.process_video)
         self.ui.cancel_button.clicked.connect(self.cancel_process_video)
-        self.ui.skipframes.valueChanged.connect(self.set_skip_frames)
+        self.ui.skipframes.editingFinished.connect(self.set_skip_frames)
         self.ui.corner_num.valueChanged.connect(self.set_corner_num)
         self.ui.corner_size.valueChanged.connect(self.set_corner_size)
         self.ui.remove_move_point_enable.stateChanged.connect(
             self.set_find_move_point)
-        self.ui.set_roi_up.valueChanged.connect(self.set_roi_up)
-        self.ui.set_roi_down.valueChanged.connect(self.set_roi_down)
+        self.ui.set_roi_up.editingFinished.connect(self.set_roi_up)
+        self.ui.set_roi_down.editingFinished.connect(self.set_roi_down)
         self.video_timer = QTimer()
         self.skip_frames = 0
         self.direction = Direction.source
@@ -60,12 +60,12 @@ class ShakeTestTool(object):
     def show(self):
         self.window.show()
     
-    def set_roi_up(self, pixels):
-        self.roi_up_crop = pixels
+    def set_roi_up(self):
+        self.roi_up_crop = self.ui.set_roi_up.value()
         self.vertify_video()
     
-    def set_roi_down(self, pixels):
-        self.roi_down_crop = pixels
+    def set_roi_down(self):
+        self.roi_down_crop = self.ui.set_roi_down.value()
         self.vertify_video()
 
     def open_video(self):
@@ -116,8 +116,8 @@ class ShakeTestTool(object):
                               maxLevel=2)
         self.vertify_video()
 
-    def set_skip_frames(self, skip_num):
-        self.skip_frames = skip_num
+    def set_skip_frames(self):
+        self.skip_frames = self.ui.skipframes.value()
         self.vertify_video()
 
     def set_find_move_point(self, type):
@@ -216,6 +216,7 @@ class ShakeTestTool(object):
 
     def process_video(self):
         if(self.video_valid == True):
+            self.vertify_video()
             # 增加定时器，每100ms进行一帧的处理
             self.video_timer.start(100)
             self.video_timer.timeout.connect(self.open_frame)

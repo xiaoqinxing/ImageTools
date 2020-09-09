@@ -69,7 +69,7 @@ class Ui_ShakeTestWindow(object):
 
         self.skipframes = QSpinBox(self.groupBox_2)
         self.skipframes.setObjectName(u"skipframes")
-        self.skipframes.setMaximum(1000)
+        self.skipframes.setMaximum(10000)
         self.skipframes.setSingleStep(10)
 
         self.gridLayout_6.addWidget(self.skipframes, 2, 1, 1, 1)

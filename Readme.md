@@ -14,3 +14,4 @@
 
 ## 打包方法
 pyinstaller -Fw ./ImageTools.py
+注意matplotlib版本最好是3.2
