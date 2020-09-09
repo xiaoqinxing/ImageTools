@@ -96,7 +96,7 @@ class ShakeTestTool(object):
     def set_corner_num(self, num):
         self.feature_params = dict(maxCorners=30,
                                    qualityLevel=(num/100),
-                                   minDistance=50)
+                                   minDistance=40)
         self.vertify_video()
 
     def set_corner_size(self, size):
@@ -141,21 +141,7 @@ class ShakeTestTool(object):
             center_x = frame.shape[1]/2
             center_y = frame.shape[0]/2
             self.center_index = self.find_center_point_index(
-                center_x, center_y, (frame.shape[1]/10)*(frame.shape[1]/10))
-
-            # 如果在距离中心直径300px的范围内没有找到，那么退出
-            if(self.center_index == -1):
-                reply = QMessageBox.critical(
-                    self.window, '警告', '图像中心没有找到特征点，请重新拍摄视频',
-                    QMessageBox.Yes, QMessageBox.Yes)
-                self.video_valid = False
-                return
-
-            # 初始化横纵方向上的坐标
-            self.min_y_coord = self.max_y_coord = self.p0[self.center_index].ravel()[
-                1]
-            self.min_x_coord = self.max_x_coord = self.p0[self.center_index].ravel()[
-                0]
+                center_x, center_y, (frame.shape[1]/8)*(frame.shape[1]/8))
 
             # 显示特征点的位置
             for i, point in enumerate(self.p0):
@@ -166,9 +152,22 @@ class ShakeTestTool(object):
                     frame = cv2.circle(self.old_gray, (a, b), 8, 255, -1)
             self.display(frame)
 
-            # 计算每个特征点到中心的距离
-            self.old_distance_anypoint = self.calc_distance_anypoint(self.p0)
-            self.video_valid = True
+            # 如果在距离中心直径300px的范围内没有找到，那么退出
+            if(self.center_index == -1):
+                reply = QMessageBox.critical(
+                    self.window, '警告', '图像中心没有找到特征点，请重新拍摄视频',
+                    QMessageBox.Yes, QMessageBox.Yes)
+                self.video_valid = False
+            else:
+                # 初始化横纵方向上的坐标
+                self.min_y_coord = self.max_y_coord = self.p0[self.center_index].ravel()[
+                    1]
+                self.min_x_coord = self.max_x_coord = self.p0[self.center_index].ravel()[
+                    0]
+                self.video_valid = True
+                # 计算每个特征点到中心的距离
+                self.old_distance_anypoint = self.calc_distance_anypoint(self.p0)
+ 
         else:
             reply = QMessageBox.critical(
                 self.window, '警告', '视频打不开',
