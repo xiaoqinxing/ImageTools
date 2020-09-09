@@ -22,7 +22,8 @@ class ImageEditor(object):
         self.imageview.sigMouseMovePoint.connect(self.show_point_rgb)
         self.imageview.sigWheelEvent.connect(self.update_wheel_ratio)
         self.ui.openimage.triggered.connect(self.on_open_img)
-        self.ui.historgram.triggered.connect(self.on_calc_hist)
+        # self.ui.historgram.triggered.connect(self.on_calc_hist)
+        self.ui.actionstats.triggered.connect(self.on_calc_stats)
         self.img = None
         self.scale_ratio = 100
 
@@ -65,22 +66,18 @@ class ImageEditor(object):
         self.ui.statusBar.showMessage(
             "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
 
-    def on_calc_hist(self, type):
-        # if(type == True):
-        #     self.imageview.setDragMode(QGraphicsView.rubberBandSelectionMode)
-        # else:
-        #     self.imageview.setDragMode(QGraphicsView.ScrollHandDrag)
+    def on_calc_stats(self):
         if (self.img is not None):
             (self.r_hist, self.g_hist, self.b_hist, self.y_hist) = self.img.calcHist(self.now_image, 0, 0,
                                                                                      self.img.width, self.img.height)
-            self.hist_window = QDialog()
+            self.hist_window = HistViewDrag(self.imageview)
             hist_view_ui = Ui_HistgramView()
             hist_view_ui.setupUi(self.hist_window)
             hist_view_ui.r_enable.stateChanged.connect(self.on_r_hist_enable)
             hist_view_ui.g_enable.stateChanged.connect(self.on_g_hist_enable)
             hist_view_ui.b_enable.stateChanged.connect(self.on_b_hist_enable)
             hist_view_ui.y_enable.stateChanged.connect(self.on_y_hist_enable)
-            self.histview = MatplotlibWidget(hist_view_ui.gridLayout)
+            self.histview = MatplotlibWidget(hist_view_ui.gridLayout_10)
             self.histview.label("亮度", "数量")
             self.hist_window.show()
             self.x_axis = np.linspace(0, 255, num=256)
@@ -118,3 +115,14 @@ class ImageEditor(object):
         if (self.y_hist_visible == 2):
             self.histview.input_y_hist(self.x_axis, self.y_hist)
         self.histview.draw()
+
+
+class HistViewDrag(QDialog):
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.parent.setDragMode(QGraphicsView.RubberBandDrag)
+
+    def closeEvent(self, event):
+        self.parent.setDragMode(QGraphicsView.ScrollHandDrag)
+        return super().closeEvent(event)

@@ -83,10 +83,11 @@ class MatplotlibWidget(QWidget):
         self.layout = layout
         self.plt = MplCanvas()
         self.first_draw = 0
+        self.setMinimumSize(QSize(352, 0))
         # self.mpl_ntb = NavigationToolbar2QT(self.plt, parent=None)
 
     def draw(self, navigationBar=True):
-        self.layout.addWidget(self.plt, 0, 0, 1, 1)
+        self.layout.addWidget(self.plt, 1, 1, 1, 1)
         self.first_draw = 1
 
     def clean(self, navigationBar=True):

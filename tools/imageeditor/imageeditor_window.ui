@@ -66,17 +66,9 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>工具</string>
-    </property>
-    <addaction name="separator"/>
-    <addaction name="historgram"/>
-    <addaction name="statics"/>
-   </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>图像处理</string>
@@ -92,7 +84,6 @@
     </widget>
     <addaction name="blur"/>
    </widget>
-   <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
@@ -125,6 +116,7 @@
    <addaction name="openimage"/>
    <addaction name="saveimage"/>
    <addaction name="actioncompare"/>
+   <addaction name="actionstats"/>
   </widget>
   <action name="historgram">
    <property name="text">
@@ -196,6 +188,18 @@
    </property>
    <property name="toolTip">
     <string>open</string>
+   </property>
+  </action>
+  <action name="actionstats">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/stats.png</normaloff>:/tool_icon/resource/stats.png</iconset>
+   </property>
+   <property name="text">
+    <string>stats</string>
+   </property>
+   <property name="toolTip">
+    <string>统计信息</string>
    </property>
   </action>
  </widget>

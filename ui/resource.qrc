@@ -7,5 +7,6 @@
         <file>resource/stop.png</file>
         <file>resource/main.png</file>
         <file>resource/open.png</file>
+        <file>resource/stats.png</file>
     </qresource>
 </RCC>
