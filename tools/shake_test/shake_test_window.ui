@@ -50,34 +50,10 @@
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="1" column="0">
           <layout class="QGridLayout" name="gridLayout_6">
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>跳过帧数</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>ROI上边界</string>
-             </property>
-            </widget>
-           </item>
            <item row="3" column="1">
             <widget class="QSlider" name="corner_num">
              <property name="sliderPosition">
               <number>50</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QSlider" name="corner_size">
-             <property name="sliderPosition">
-              <number>40</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -91,16 +67,6 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QSpinBox" name="skipframes">
-             <property name="maximum">
-              <number>10000</number>
-             </property>
-             <property name="singleStep">
-              <number>10</number>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="1">
             <widget class="QSpinBox" name="set_roi_up">
              <property name="maximum">
@@ -108,13 +74,6 @@
              </property>
              <property name="singleStep">
               <number>50</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>特征点数量</string>
              </property>
             </widget>
            </item>
@@ -131,6 +90,64 @@
               <number>1000</number>
              </property>
              <property name="singleStep">
+              <number>50</number>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>跳过帧数</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QSlider" name="corner_size">
+             <property name="sliderPosition">
+              <number>40</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>ROI上边界</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="skipframes">
+             <property name="maximum">
+              <number>10000</number>
+             </property>
+             <property name="singleStep">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>特征点数量</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_19">
+             <property name="text">
+              <string>计算间隔（帧）</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QSpinBox" name="calc_inter_frams">
+             <property name="maximum">
+              <number>1000</number>
+             </property>
+             <property name="value">
               <number>50</number>
              </property>
             </widget>

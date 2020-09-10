@@ -27,10 +27,7 @@ class ShakeTestTool(object):
     roi_down_crop = 0
     horizon_direction = Direction.left
     vertical_direction = Direction.up
-    max_x_pl = None
-    min_x_pl = None
-    max_y_pl = None
-    min_y_pl = None
+    inter_frames = 50
 
     def __init__(self):
         self.window = QMainWindow()
@@ -49,6 +46,7 @@ class ShakeTestTool(object):
             self.set_find_move_point)
         self.ui.set_roi_up.editingFinished.connect(self.set_roi_up)
         self.ui.set_roi_down.editingFinished.connect(self.set_roi_down)
+        self.ui.calc_inter_frams.editingFinished.connect(self.set_inter_frames)
         self.video_timer = QTimer()
         self.skip_frames = 0
 
@@ -106,6 +104,9 @@ class ShakeTestTool(object):
     def cancel_process_video(self):
         self.video_timer.stop()
 
+    def set_inter_frames(self):
+        self.inter_frames = self.ui.calc_inter_frams.value()
+
     def open_video(self):
         videopath = QFileDialog.getOpenFileName(
             None, '打开文件', './', 'video files(*.mp4)')
@@ -123,7 +124,7 @@ class ShakeTestTool(object):
     def vertify_video(self):
         # 输出参数初始化
         self.dewarp_sum = 0
-        self.dewarp_count = 0
+        self.frame_count = 0
         self.vidcap = cv2.VideoCapture(self.ui.videopath.text())
         # 片头调过多少帧
         self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.skip_frames)
@@ -137,7 +138,7 @@ class ShakeTestTool(object):
             if(self.roi_up_crop + self.roi_down_crop < height):
                 mask[self.roi_up_crop:(height-self.roi_down_crop), :] = 1
             else:
-                critical_window_show('裁剪区域过大，请重新选取ROI区域')
+                self.critical_window_show('裁剪区域过大，请重新选取ROI区域')
                 self.video_valid = False
                 return
 
@@ -180,7 +181,7 @@ class ShakeTestTool(object):
 
             # 如果在距离中心直径300px的范围内没有找到，那么退出
             if (self.center_index == -1):
-                critical_window_show('图像中心没有找到特征点，请重新拍摄视频')
+                self.critical_window_show('图像中心没有找到特征点，请重新拍摄视频')
                 self.video_valid = False
             else:
                 # 初始化横纵方向上的坐标
@@ -194,14 +195,23 @@ class ShakeTestTool(object):
                     self.p0)
 
         else:
-            critical_window_show('视频打不开')
+            self.critical_window_show('视频打不开')
             self.video_valid = False
             return
 
     def open_frame(self):
-        self.dewarp_count += 1
         success, frame = self.vidcap.read()
         if success:
+            self.frame_count += 1
+            # 每隔一段时间初始化
+            if (self.frame_count % self.inter_frames == 1):
+                self.max_x_pl = np.zeros(self.p0.shape[0])
+                self.min_x_pl = np.zeros(self.p0.shape[0])
+                self.min_x_pl[:] = frame.shape[1]
+                self.max_y_pl = np.zeros(self.p0.shape[0])
+                self.min_y_pl = np.zeros(self.p0.shape[0])
+                self.min_y_pl[:] = frame.shape[0]
+
             new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             # 进行光流检测需要输入前一帧和当前图像及前一帧检测到的角点
@@ -213,16 +223,20 @@ class ShakeTestTool(object):
                                   criteria=(cv2.TERM_CRITERIA_MAX_ITER | cv2.TERM_CRITERIA_EPS, 30, 0.001))
 
             # 计算图片运动方向,并更新图像最左与最右的值
-            (horizon_trig, vertical_trig) = self.calc_center_direction(pl)
-            if(horizon_trig == 1):
-                ret = self.calc_direction_result(
-                    Direction.horizon, self.max_x_pl, self.min_x_pl)
-                self.set_result(Direction.horizon, ret)
+            # (horizon_trig, vertical_trig) = self.calc_center_direction(pl)
+            # if(horizon_trig == 1):
+            #     ret = self.calc_direction_result(
+            #         Direction.horizon, self.max_x_pl, self.min_x_pl)
+            #     self.set_result(Direction.horizon, ret)
 
-            if (vertical_trig == 1):
-                ret = self.calc_direction_result(
-                    Direction.vertical, self.max_y_pl, self.min_y_pl)
-                self.set_result(Direction.vertical, ret)
+            # if (vertical_trig == 1):
+            #     ret = self.calc_direction_result(
+            #         Direction.vertical, self.max_y_pl, self.min_y_pl)
+            #     self.set_result(Direction.vertical, ret)
+            self.update_bound_pl(pl)
+            # 每隔一个计算间隔显示一次结果
+            if (self.frame_count % self.inter_frames == 0):
+                self.calc_result()
 
             # 绘制轨迹
             self.draw_track(pl, new_gray)
@@ -235,6 +249,70 @@ class ShakeTestTool(object):
     #######################################################################################
     # 计算相关的函数
     #######################################################################################
+    def update_bound_pl(self, pl):
+        for i, point in enumerate(pl):
+            x, y = point.ravel()
+            if (x > self.max_x_pl[i]):
+                self.max_x_pl[i] = x
+            elif (x < self.min_x_pl[i]):
+                self.min_x_pl[i] = x
+
+            if (y > self.max_y_pl[i]):
+                self.max_y_pl[i] = y
+            elif (y > self.min_y_pl[i]):
+                self.min_y_pl[i] = y
+
+    def calc_result(self):
+        max_diff_x = 0
+        max_diff_y = 0
+        diff_x_sum = 0
+        diff_y_sum = 0
+        variance_sum_x = 0
+        variance_sum_y = 0
+        # 计算中心点的坐标
+        pl_size = self.max_x_pl.size
+        diff_center_x = self.max_x_pl[self.center_index] - \
+            self.min_x_pl[self.center_index]
+        diff_center_y = self.max_y_pl[self.center_index] - \
+            self.min_y_pl[self.center_index]
+
+        for i in range(pl_size):
+            diff_x = self.max_x_pl[i] - self.min_x_pl[i]
+            diff_y = self.max_y_pl[i] - self.min_y_pl[i]
+
+            # 求最大位移
+            if (diff_x > max_diff_x):
+                max_diff_x = diff_x
+            if (diff_y > max_diff_y):
+                max_diff_y = diff_y
+
+            # 求方差
+            variance_sum_x += (diff_x - diff_center_x) * \
+                (diff_x - diff_center_x)
+            variance_sum_y += (diff_y - diff_center_y) * \
+                (diff_y - diff_center_y)
+
+            diff_x_sum += diff_x
+            diff_y_sum += diff_y
+        # 求各点的平均位移
+        diff_average_x = diff_x_sum / pl_size
+        diff_average_y = diff_y_sum / pl_size
+        # 求扭曲程度
+        variance_x = variance_sum_x / \
+            ((pl_size - 1) * diff_center_x * diff_center_x)
+        variance_y = variance_sum_y / \
+            ((pl_size - 1) * diff_center_y * diff_center_y)
+
+        # set UI
+        self.ui.center_max_x_distance.setValue(diff_center_x)
+        self.ui.any_max_x_distance.setValue(max_diff_x)
+        self.ui.any_average_x_distance.setValue(diff_average_x)
+        self.ui.photo_warp_ratio_x.setValue(variance_x)
+        self.ui.center_max_y_distance.setValue(diff_center_y)
+        self.ui.any_max_y_distance.setValue(max_diff_y)
+        self.ui.any_average_y_distance.setValue(diff_average_y)
+        self.ui.photo_warp_ratio_y.setValue(variance_y)
+
     def calc_direction_result(self, direction, max_pl, min_pl):
         diff_sum = 0
         max_move = 0
@@ -303,21 +381,21 @@ class ShakeTestTool(object):
         vertical_once_trig = 0
         horizon_once_trig = 0
         if (self.horizon_direction == Direction.left):
-            if (center_point_x - old_center_point_x > 0):
+            if (center_point_x - old_center_point_x > 0.5):
                 self.horizon_direction = Direction.right
                 self.min_x_pl = self.p0
         else:
-            if (center_point_x - old_center_point_x < 0):
+            if (center_point_x - old_center_point_x < 0.5):
                 self.horizon_direction = Direction.left
                 self.max_x_pl = self.p0
                 horizon_once_trig = 1
 
         if (self.vertical_direction == Direction.up):
-            if (center_point_y - old_center_point_y < 0):
+            if (center_point_y - old_center_point_y < 0.5):
                 self.vertical_direction = Direction.down
                 self.max_y_pl = self.p0
         else:
-            if (center_point_y - old_center_point_y > 0):
+            if (center_point_y - old_center_point_y > 0.5):
                 self.vertical_direction = Direction.up
                 self.min_y_pl = self.p0
                 vertical_once_trig = 1
