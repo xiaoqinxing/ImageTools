@@ -20,7 +20,7 @@ class Ui_ShakeTestWindow(object):
     def setupUi(self, ShakeTestWindow):
         if not ShakeTestWindow.objectName():
             ShakeTestWindow.setObjectName(u"ShakeTestWindow")
-        ShakeTestWindow.resize(724, 722)
+        ShakeTestWindow.resize(792, 708)
         self.centralwidget = QWidget(ShakeTestWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -142,48 +142,51 @@ class Ui_ShakeTestWindow(object):
         self.groupBox_3.setMaximumSize(QSize(270, 16777215))
         self.gridLayout_4 = QGridLayout(self.groupBox_3)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.label_3 = QLabel(self.groupBox_3)
-        self.label_3.setObjectName(u"label_3")
-
-        self.horizontalLayout_5.addWidget(self.label_3)
-
-        self.warp_ratio = QDoubleSpinBox(self.groupBox_3)
-        self.warp_ratio.setObjectName(u"warp_ratio")
-        self.warp_ratio.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.warp_ratio.setDecimals(4)
-        self.warp_ratio.setMaximum(10.000000000000000)
-
-        self.horizontalLayout_5.addWidget(self.warp_ratio)
-
-
-        self.gridLayout_4.addLayout(self.horizontalLayout_5, 3, 0, 1, 1)
-
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.gridLayout_7 = QGridLayout()
+        self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.label_2 = QLabel(self.groupBox_3)
         self.label_2.setObjectName(u"label_2")
 
-        self.horizontalLayout_4.addWidget(self.label_2)
+        self.gridLayout_7.addWidget(self.label_2, 0, 0, 1, 1)
 
-        self.center_max_x_distance = QDoubleSpinBox(self.groupBox_3)
-        self.center_max_x_distance.setObjectName(u"center_max_x_distance")
-        self.center_max_x_distance.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.center_max_x_distance.setDecimals(4)
-        self.center_max_x_distance.setMaximum(1000.000000000000000)
+        self.center_max_y_distance_7 = QDoubleSpinBox(self.groupBox_3)
+        self.center_max_y_distance_7.setObjectName(u"center_max_y_distance_7")
+        self.center_max_y_distance_7.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_y_distance_7.setDecimals(4)
+        self.center_max_y_distance_7.setMaximum(1000.000000000000000)
 
-        self.horizontalLayout_4.addWidget(self.center_max_x_distance)
+        self.gridLayout_7.addWidget(self.center_max_y_distance_7, 1, 1, 1, 1)
 
+        self.label_11 = QLabel(self.groupBox_3)
+        self.label_11.setObjectName(u"label_11")
 
-        self.gridLayout_4.addLayout(self.horizontalLayout_4, 0, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.label_11, 5, 0, 1, 1)
 
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.center_max_y_distance_2 = QDoubleSpinBox(self.groupBox_3)
+        self.center_max_y_distance_2.setObjectName(u"center_max_y_distance_2")
+        self.center_max_y_distance_2.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_y_distance_2.setDecimals(4)
+        self.center_max_y_distance_2.setMaximum(1000.000000000000000)
+
+        self.gridLayout_7.addWidget(self.center_max_y_distance_2, 4, 1, 1, 1)
+
+        self.center_max_y_distance_3 = QDoubleSpinBox(self.groupBox_3)
+        self.center_max_y_distance_3.setObjectName(u"center_max_y_distance_3")
+        self.center_max_y_distance_3.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_y_distance_3.setDecimals(4)
+        self.center_max_y_distance_3.setMaximum(1000.000000000000000)
+
+        self.gridLayout_7.addWidget(self.center_max_y_distance_3, 5, 1, 1, 1)
+
+        self.label_3 = QLabel(self.groupBox_3)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayout_7.addWidget(self.label_3, 1, 0, 1, 1)
+
         self.label_4 = QLabel(self.groupBox_3)
         self.label_4.setObjectName(u"label_4")
 
-        self.horizontalLayout_6.addWidget(self.label_4)
+        self.gridLayout_7.addWidget(self.label_4, 2, 0, 1, 1)
 
         self.center_max_y_distance = QDoubleSpinBox(self.groupBox_3)
         self.center_max_y_distance.setObjectName(u"center_max_y_distance")
@@ -191,13 +194,108 @@ class Ui_ShakeTestWindow(object):
         self.center_max_y_distance.setDecimals(4)
         self.center_max_y_distance.setMaximum(1000.000000000000000)
 
-        self.horizontalLayout_6.addWidget(self.center_max_y_distance)
+        self.gridLayout_7.addWidget(self.center_max_y_distance, 2, 1, 1, 1)
+
+        self.center_max_x_distance = QDoubleSpinBox(self.groupBox_3)
+        self.center_max_x_distance.setObjectName(u"center_max_x_distance")
+        self.center_max_x_distance.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_x_distance.setDecimals(4)
+        self.center_max_x_distance.setMaximum(1000.000000000000000)
+
+        self.gridLayout_7.addWidget(self.center_max_x_distance, 0, 1, 1, 1)
+
+        self.label_10 = QLabel(self.groupBox_3)
+        self.label_10.setObjectName(u"label_10")
+
+        self.gridLayout_7.addWidget(self.label_10, 4, 0, 1, 1)
 
 
-        self.gridLayout_4.addLayout(self.horizontalLayout_6, 1, 0, 1, 1)
+        self.gridLayout_4.addLayout(self.gridLayout_7, 0, 0, 1, 1)
 
 
         self.verticalLayout.addWidget(self.groupBox_3)
+
+        self.verticalSpacer_4 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer_4)
+
+        self.groupBox_5 = QGroupBox(self.centralwidget)
+        self.groupBox_5.setObjectName(u"groupBox_5")
+        self.groupBox_5.setMaximumSize(QSize(270, 16777215))
+        self.gridLayout_8 = QGridLayout(self.groupBox_5)
+        self.gridLayout_8.setObjectName(u"gridLayout_8")
+        self.gridLayout_9 = QGridLayout()
+        self.gridLayout_9.setObjectName(u"gridLayout_9")
+        self.label_12 = QLabel(self.groupBox_5)
+        self.label_12.setObjectName(u"label_12")
+
+        self.gridLayout_9.addWidget(self.label_12, 4, 0, 1, 1)
+
+        self.center_max_y_distance_8 = QDoubleSpinBox(self.groupBox_5)
+        self.center_max_y_distance_8.setObjectName(u"center_max_y_distance_8")
+        self.center_max_y_distance_8.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_y_distance_8.setDecimals(4)
+        self.center_max_y_distance_8.setMaximum(1000.000000000000000)
+
+        self.gridLayout_9.addWidget(self.center_max_y_distance_8, 1, 1, 1, 1)
+
+        self.center_max_x_distance_2 = QDoubleSpinBox(self.groupBox_5)
+        self.center_max_x_distance_2.setObjectName(u"center_max_x_distance_2")
+        self.center_max_x_distance_2.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_x_distance_2.setDecimals(4)
+        self.center_max_x_distance_2.setMaximum(1000.000000000000000)
+
+        self.gridLayout_9.addWidget(self.center_max_x_distance_2, 0, 1, 1, 1)
+
+        self.center_max_y_distance_9 = QDoubleSpinBox(self.groupBox_5)
+        self.center_max_y_distance_9.setObjectName(u"center_max_y_distance_9")
+        self.center_max_y_distance_9.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_y_distance_9.setDecimals(4)
+        self.center_max_y_distance_9.setMaximum(1000.000000000000000)
+
+        self.gridLayout_9.addWidget(self.center_max_y_distance_9, 4, 1, 1, 1)
+
+        self.label_13 = QLabel(self.groupBox_5)
+        self.label_13.setObjectName(u"label_13")
+
+        self.gridLayout_9.addWidget(self.label_13, 2, 0, 1, 1)
+
+        self.label_14 = QLabel(self.groupBox_5)
+        self.label_14.setObjectName(u"label_14")
+
+        self.gridLayout_9.addWidget(self.label_14, 1, 0, 1, 1)
+
+        self.center_max_y_distance_4 = QDoubleSpinBox(self.groupBox_5)
+        self.center_max_y_distance_4.setObjectName(u"center_max_y_distance_4")
+        self.center_max_y_distance_4.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_y_distance_4.setDecimals(4)
+        self.center_max_y_distance_4.setMaximum(1000.000000000000000)
+
+        self.gridLayout_9.addWidget(self.center_max_y_distance_4, 2, 1, 1, 1)
+
+        self.label_15 = QLabel(self.groupBox_5)
+        self.label_15.setObjectName(u"label_15")
+
+        self.gridLayout_9.addWidget(self.label_15, 0, 0, 1, 1)
+
+        self.label_16 = QLabel(self.groupBox_5)
+        self.label_16.setObjectName(u"label_16")
+
+        self.gridLayout_9.addWidget(self.label_16, 5, 0, 1, 1)
+
+        self.center_max_y_distance_10 = QDoubleSpinBox(self.groupBox_5)
+        self.center_max_y_distance_10.setObjectName(u"center_max_y_distance_10")
+        self.center_max_y_distance_10.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.center_max_y_distance_10.setDecimals(4)
+        self.center_max_y_distance_10.setMaximum(1000.000000000000000)
+
+        self.gridLayout_9.addWidget(self.center_max_y_distance_10, 5, 1, 1, 1)
+
+
+        self.gridLayout_8.addLayout(self.gridLayout_9, 0, 0, 1, 1)
+
+
+        self.verticalLayout.addWidget(self.groupBox_5)
 
         self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -243,7 +341,7 @@ class Ui_ShakeTestWindow(object):
         ShakeTestWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ShakeTestWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 724, 23))
+        self.menubar.setGeometry(QRect(0, 0, 792, 23))
         ShakeTestWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(ShakeTestWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -265,10 +363,18 @@ class Ui_ShakeTestWindow(object):
         self.label.setText(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891\u6587\u4ef6", None))
         self.openvideo.setText(QCoreApplication.translate("ShakeTestWindow", u"\u6253\u5f00\u6587\u4ef6", None))
         self.remove_move_point_enable.setText(QCoreApplication.translate("ShakeTestWindow", u"\u53bb\u9664\u9759\u6b62\u7684\u7279\u5f81\u70b9", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u7ed3\u679c", None))
-        self.label_3.setText(QCoreApplication.translate("ShakeTestWindow", u"\u56fe\u7247\u6700\u5927\u53d8\u5f62\u7a0b\u5ea6", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u6c34\u5e73\u65b9\u5411\u7ed3\u679c", None))
         self.label_2.setText(QCoreApplication.translate("ShakeTestWindow", u"\u4e2d\u5fc3\u70b9\u6700\u5927\u6a2a\u5411\u4f4d\u79fb", None))
-        self.label_4.setText(QCoreApplication.translate("ShakeTestWindow", u"\u4e2d\u5fc3\u70b9\u6700\u5927\u7eb5\u5411\u4f4d\u79fb", None))
+        self.label_11.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5404\u70b9\u6a2a\u5411\u4f4d\u79fb\u65b9\u5dee", None))
+        self.label_3.setText(QCoreApplication.translate("ShakeTestWindow", u"\u4e2d\u5fc3\u70b9\u5b9e\u65f6\u6a2a\u5411\u4f4d\u79fb", None))
+        self.label_4.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5404\u70b9\u6700\u5927\u6a2a\u5411\u4f4d\u79fb", None))
+        self.label_10.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5404\u70b9\u5e73\u5747\u6a2a\u5411\u4f4d\u79fb", None))
+        self.groupBox_5.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u5782\u76f4\u65b9\u5411\u7ed3\u679c", None))
+        self.label_12.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5404\u70b9\u5e73\u5747\u7eb5\u5411\u4f4d\u79fb", None))
+        self.label_13.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5404\u70b9\u6700\u5927\u7eb5\u5411\u4f4d\u79fb", None))
+        self.label_14.setText(QCoreApplication.translate("ShakeTestWindow", u"\u4e2d\u5fc3\u70b9\u5b9e\u65f6\u7eb5\u5411\u4f4d\u79fb", None))
+        self.label_15.setText(QCoreApplication.translate("ShakeTestWindow", u"\u4e2d\u5fc3\u70b9\u6700\u5927\u7eb5\u5411\u4f4d\u79fb", None))
+        self.label_16.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5404\u70b9\u7eb5\u5411\u4f4d\u79fb\u65b9\u5dee", None))
         self.groupBox_4.setTitle("")
         self.isok.setText(QCoreApplication.translate("ShakeTestWindow", u"\u5f00\u59cb", None))
         self.cancel_button.setText(QCoreApplication.translate("ShakeTestWindow", u"\u505c\u6b62", None))
