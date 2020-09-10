@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>792</width>
-    <height>729</height>
+    <width>805</width>
+    <height>743</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -226,7 +226,7 @@
            <item row="0" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>中心点最大横向位移</string>
+              <string>中心点横向位移</string>
              </property>
             </widget>
            </item>
@@ -279,7 +279,7 @@
            <item row="1" column="0">
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>中心点实时横向位移</string>
+              <string>中心点平均横向位移</string>
              </property>
             </widget>
            </item>
@@ -405,7 +405,7 @@
            <item row="1" column="0">
             <widget class="QLabel" name="label_14">
              <property name="text">
-              <string>中心点实时纵向位移</string>
+              <string>中心点平均纵向位移</string>
              </property>
             </widget>
            </item>
@@ -458,7 +458,7 @@
            <item row="0" column="0">
             <widget class="QLabel" name="label_15">
              <property name="text">
-              <string>中心点最大纵向位移</string>
+              <string>中心点纵向位移</string>
              </property>
             </widget>
            </item>
@@ -590,8 +590,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>792</width>
-     <height>23</height>
+     <width>805</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
