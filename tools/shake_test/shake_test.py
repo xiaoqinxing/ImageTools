@@ -47,8 +47,11 @@ class ShakeTestTool(object):
         self.ui.set_roi_up.editingFinished.connect(self.set_roi_up)
         self.ui.set_roi_down.editingFinished.connect(self.set_roi_down)
         self.ui.calc_inter_frams.editingFinished.connect(self.set_inter_frames)
+        self.ui.direction_select.currentIndexChanged.connect(self.direction_change)
         self.video_timer = QTimer()
         self.skip_frames = 0
+        self.calc_direction = 0
+        self.set_ui_enable(False)
 
         # 构建角点检测所需参数
         self.feature_params = dict(maxCorners=30,
@@ -63,6 +66,16 @@ class ShakeTestTool(object):
     #######################################################################################
     # UI相关的函数
     #######################################################################################
+    def set_ui_enable(self, value):
+        self.ui.set_roi_up.setEnabled(value)
+        self.ui.set_roi_down.setEnabled(value)
+        self.ui.direction_select.setEnabled(value)
+        self.ui.skipframes.setEnabled(value)
+        self.ui.remove_move_point_enable.setEnabled(value)
+        self.ui.calc_inter_frams.setEnabled(value)
+
+    def direction_change(self, value):
+        self.calc_direction = value
 
     def show(self):
         self.window.show()
@@ -113,17 +126,22 @@ class ShakeTestTool(object):
         if(videopath[0] != ''):
             self.ui.videopath.setText(videopath[0])
             self.vertify_video()
+            self.set_ui_enable(True)
 
     def open_video_path(self, str):
         self.ui.videopath.setText(str)
         self.vertify_video()
+        self.set_ui_enable(True)
 
     #######################################################################################
     # 主要运行逻辑
     #######################################################################################
     def vertify_video(self):
         # 输出参数初始化
-        self.dewarp_sum = 0
+        self.diff_center_sum = 0
+        self.max_any_diff =0
+        self.warp_ratio_sum = 0
+        self.show_count = 0
         self.frame_count = 0
         self.vidcap = cv2.VideoCapture(self.ui.videopath.text())
         # 片头调过多少帧
@@ -205,12 +223,14 @@ class ShakeTestTool(object):
             self.frame_count += 1
             # 每隔一段时间初始化
             if (self.frame_count % self.inter_frames == 1):
-                self.max_x_pl = np.zeros(self.p0.shape[0])
-                self.min_x_pl = np.zeros(self.p0.shape[0])
-                self.min_x_pl[:] = frame.shape[1]
-                self.max_y_pl = np.zeros(self.p0.shape[0])
-                self.min_y_pl = np.zeros(self.p0.shape[0])
-                self.min_y_pl[:] = frame.shape[0]
+                if(self.calc_direction == 0):
+                    self.max_x_pl = np.zeros(self.p0.shape[0])
+                    self.min_x_pl = np.zeros(self.p0.shape[0])
+                    self.min_x_pl[:] = frame.shape[1]
+                else:
+                    self.max_y_pl = np.zeros(self.p0.shape[0])
+                    self.min_y_pl = np.zeros(self.p0.shape[0])
+                    self.min_y_pl[:] = frame.shape[0]
 
             new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -252,66 +272,66 @@ class ShakeTestTool(object):
     def update_bound_pl(self, pl):
         for i, point in enumerate(pl):
             x, y = point.ravel()
-            if (x > self.max_x_pl[i]):
-                self.max_x_pl[i] = x
-            elif (x < self.min_x_pl[i]):
-                self.min_x_pl[i] = x
-
-            if (y > self.max_y_pl[i]):
-                self.max_y_pl[i] = y
-            elif (y > self.min_y_pl[i]):
-                self.min_y_pl[i] = y
+            if(self.calc_direction == 0):
+                if (x > self.max_x_pl[i]):
+                    self.max_x_pl[i] = x
+                elif (x < self.min_x_pl[i]):
+                    self.min_x_pl[i] = x
+            else:
+                if (y > self.max_y_pl[i]):
+                    self.max_y_pl[i] = y
+                elif (y < self.min_y_pl[i]):
+                    self.min_y_pl[i] = y
 
     def calc_result(self):
-        max_diff_x = 0
-        max_diff_y = 0
-        diff_x_sum = 0
-        diff_y_sum = 0
-        variance_sum_x = 0
-        variance_sum_y = 0
+        max_diff = 0
+        diff_sum = 0
+        variance_sum = 0
         # 计算中心点的坐标
-        pl_size = self.max_x_pl.size
-        diff_center_x = self.max_x_pl[self.center_index] - \
-            self.min_x_pl[self.center_index]
-        diff_center_y = self.max_y_pl[self.center_index] - \
-            self.min_y_pl[self.center_index]
+        pl_size = self.p0.shape[0]
+        if(self.calc_direction == 0):
+            diff_center = self.max_x_pl[self.center_index] - \
+                self.min_x_pl[self.center_index]
+        else:
+            diff_center = self.max_y_pl[self.center_index] - \
+                self.min_y_pl[self.center_index]
 
         for i in range(pl_size):
-            diff_x = self.max_x_pl[i] - self.min_x_pl[i]
-            diff_y = self.max_y_pl[i] - self.min_y_pl[i]
+            if(self.calc_direction == 0):
+                diff = self.max_x_pl[i] - self.min_x_pl[i]
+            else:
+                diff = self.max_y_pl[i] - self.min_y_pl[i]
 
             # 求最大位移
-            if (diff_x > max_diff_x):
-                max_diff_x = diff_x
-            if (diff_y > max_diff_y):
-                max_diff_y = diff_y
+            if (diff > max_diff):
+                max_diff = diff
 
             # 求方差
-            variance_sum_x += (diff_x - diff_center_x) * \
-                (diff_x - diff_center_x)
-            variance_sum_y += (diff_y - diff_center_y) * \
-                (diff_y - diff_center_y)
+            variance_sum += (diff - diff_center) * (diff - diff_center)
 
-            diff_x_sum += diff_x
-            diff_y_sum += diff_y
+            diff_sum += diff
         # 求各点的平均位移
-        diff_average_x = diff_x_sum / pl_size
-        diff_average_y = diff_y_sum / pl_size
-        # 求扭曲程度
-        variance_x = variance_sum_x / \
-            ((pl_size - 1) * diff_center_x * diff_center_x)
-        variance_y = variance_sum_y / \
-            ((pl_size - 1) * diff_center_y * diff_center_y)
+        diff_average = diff_sum / pl_size
 
+        # 求扭曲程度
+        variance = variance_sum / \
+            ((pl_size - 1) * diff_center * diff_center)
+        
         # set UI
-        self.ui.center_max_x_distance.setValue(diff_center_x)
-        self.ui.any_max_x_distance.setValue(max_diff_x)
-        self.ui.any_average_x_distance.setValue(diff_average_x)
-        self.ui.photo_warp_ratio_x.setValue(variance_x)
-        self.ui.center_max_y_distance.setValue(diff_center_y)
-        self.ui.any_max_y_distance.setValue(max_diff_y)
-        self.ui.any_average_y_distance.setValue(diff_average_y)
-        self.ui.photo_warp_ratio_y.setValue(variance_y)
+        self.ui.center_max_distance.setValue(diff_center)
+        self.ui.any_max_distance.setValue(max_diff)
+        self.ui.any_average_distance.setValue(diff_average)
+        self.ui.photo_warp_ratio.setValue(variance)
+
+        # 求最终结果
+        self.show_count += 1
+        self.diff_center_sum += diff_center
+        if(max_diff > self.max_any_diff):
+            self.max_any_diff = max_diff
+        self.warp_ratio_sum += variance
+        self.ui.final_center_distance.setValue(self.diff_center_sum/self.show_count)
+        self.ui.final_any_max_distance.setValue(self.max_any_diff)
+        self.ui.final_photo_warp_ratio.setValue(self.warp_ratio_sum/self.show_count)
 
     def calc_direction_result(self, direction, max_pl, min_pl):
         diff_sum = 0
