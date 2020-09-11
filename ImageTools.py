@@ -5,6 +5,7 @@ from ui.customwidget import MainWindow
 from tools.depth_of_focus.depth_of_focus import FieldDepthWindow
 from tools.shake_test.shake_test import ShakeTestTool
 from tools.imageeditor.imageeditor import ImageEditor
+from tools.af_calc.af_calc import AfCalcTool
 
 
 class ImageTools(object):
@@ -19,6 +20,7 @@ class ImageTools(object):
             self.add_field_depth_tool_window)
         self.ui.shake_tool.triggered.connect(self.add_shake_tool_window)
         self.ui.imageeditor.triggered.connect(self.add_image_editor_window)
+        self.ui.af_calc_tool.triggered.connect(self.add_af_calc_window)
         self.window.show()
         self.sub_windows = list()
 
@@ -39,7 +41,12 @@ class ImageTools(object):
         self.subwindows_ui.addSubWindow(sub_window.window)
         sub_window.show()
         self.sub_windows.append(sub_window)
-
+    
+    def add_af_calc_window(self):
+        sub_window = AfCalcTool()
+        self.subwindows_ui.addSubWindow(sub_window.window)
+        sub_window.show()
+        self.sub_windows.append(sub_window)
 
 if __name__ == "__main__":
     apps = QApplication([])

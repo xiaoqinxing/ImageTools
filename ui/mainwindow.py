@@ -32,6 +32,8 @@ class Ui_MainWindow(object):
         self.shake_tool.setObjectName(u"shake_tool")
         self.imageeditor = QAction(MainWindow)
         self.imageeditor.setObjectName(u"imageeditor")
+        self.af_calc_tool = QAction(MainWindow)
+        self.af_calc_tool.setObjectName(u"af_calc_tool")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -52,7 +54,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1140, 21))
+        self.menubar.setGeometry(QRect(0, 0, 1140, 23))
         self.menu_2 = QMenu(self.menubar)
         self.menu_2.setObjectName(u"menu_2")
         MainWindow.setMenuBar(self.menubar)
@@ -61,6 +63,7 @@ class Ui_MainWindow(object):
         self.menu_2.addAction(self.field_depth_tool)
         self.menu_2.addAction(self.shake_tool)
         self.menu_2.addAction(self.imageeditor)
+        self.menu_2.addAction(self.af_calc_tool)
 
         self.retranslateUi(MainWindow)
 
@@ -72,6 +75,7 @@ class Ui_MainWindow(object):
         self.field_depth_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u8ba1\u7b97\u5668", None))
         self.shake_tool.setText(QCoreApplication.translate("MainWindow", u"\u6296\u52a8\u6d4b\u8bd5\u5de5\u5177", None))
         self.imageeditor.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u7247\u67e5\u770b\u5de5\u5177", None))
+        self.af_calc_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u66f2\u7ebf\u8ba1\u7b97\u5de5\u5177", None))
         self.menu_2.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
     # retranslateUi
 
