@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>784</width>
-    <height>649</height>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -144,19 +144,6 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="openvideo">
-             <property name="maximumSize">
-              <size>
-               <width>75</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>打开文件</string>
-             </property>
-            </widget>
-           </item>
            <item row="4" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
@@ -200,6 +187,33 @@
                <string>垂直</string>
               </property>
              </item>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="openvideo">
+             <property name="maximumSize">
+              <size>
+               <width>75</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>打开文件</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>视频路径</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="openrtsp">
+             <property name="text">
+              <string>打开设备</string>
+             </property>
             </widget>
            </item>
           </layout>

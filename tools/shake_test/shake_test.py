@@ -1,11 +1,13 @@
 import cv2
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QDialog
 from PySide2.QtGui import QImage, QPixmap
 from PySide2.QtCore import QTimer
 from tools.shake_test.shake_test_window import Ui_ShakeTestWindow
+from tools.shake_test.rtspconfigview import Ui_RtspConfigView
 from ui.customwidget import VideoView
 import numpy as np
 import math
+import os
 
 
 class Direction():
@@ -48,6 +50,9 @@ class ShakeTestTool(object):
         self.ui.set_roi_down.editingFinished.connect(self.set_roi_down)
         self.ui.calc_inter_frams.editingFinished.connect(self.set_inter_frames)
         self.ui.direction_select.currentIndexChanged.connect(self.direction_change)
+        self.ui.openrtsp.clicked.connect(self.open_rtsp)
+        self.rtsp_config_window = None
+        self.rtsp_config_ui = None
         self.video_timer = QTimer()
         self.skip_frames = 0
         self.calc_direction = 0
@@ -132,6 +137,27 @@ class ShakeTestTool(object):
         self.ui.videopath.setText(str)
         self.vertify_video()
         self.set_ui_enable(True)
+    
+    def open_rtsp(self):
+        self.rtsp_config_window = QDialog()
+        self.rtsp_config_ui = Ui_RtspConfigView()
+        self.rtsp_config_ui.setupUi(self.rtsp_config_window)
+        self.rtsp_config_window.show()
+        self.rtsp_config_ui.buttonBox.clicked.connect(self.rtsp_config)
+    
+    def rtsp_config(self):
+        username = self.rtsp_config_ui.username.text()
+        password = self.rtsp_config_ui.password.text()
+        ip = self.rtsp_config_ui.ip.text()
+        port = self.rtsp_config_ui.port.text()
+        # 移动设备需要通过adb映射端口
+        if(self.rtsp_config_ui.isphoto.isChecked() == True):
+            command = "forward tcp:" + port + ' ' + "tcp:" + port
+            os.system("adb " + command)
+            os.system("kdb " + command)
+        rtsp_path = "rtsp://"+username+":"+password+"@"+ip+":"+port
+        self.open_video_path(rtsp_path)
+
 
     #######################################################################################
     # 主要运行逻辑
@@ -517,3 +543,11 @@ class ShakeTestTool(object):
 
         # display
         self.display(img)
+
+class RtspConfigView(QDialog):
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+
+    def closeEvent(self, event):
+        return super().closeEvent(event)

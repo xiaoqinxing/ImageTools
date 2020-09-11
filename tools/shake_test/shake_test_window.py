@@ -20,7 +20,7 @@ class Ui_ShakeTestWindow(object):
     def setupUi(self, ShakeTestWindow):
         if not ShakeTestWindow.objectName():
             ShakeTestWindow.setObjectName(u"ShakeTestWindow")
-        ShakeTestWindow.resize(784, 649)
+        ShakeTestWindow.resize(784, 675)
         self.centralwidget = QWidget(ShakeTestWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -100,12 +100,6 @@ class Ui_ShakeTestWindow(object):
 
         self.gridLayout_6.addWidget(self.calc_inter_frams, 8, 1, 1, 1)
 
-        self.openvideo = QPushButton(self.groupBox_2)
-        self.openvideo.setObjectName(u"openvideo")
-        self.openvideo.setMaximumSize(QSize(75, 16777215))
-
-        self.gridLayout_6.addWidget(self.openvideo, 0, 0, 1, 1)
-
         self.label_9 = QLabel(self.groupBox_2)
         self.label_9.setObjectName(u"label_9")
 
@@ -134,6 +128,22 @@ class Ui_ShakeTestWindow(object):
         self.direction_select.setObjectName(u"direction_select")
 
         self.gridLayout_6.addWidget(self.direction_select, 9, 1, 1, 1)
+
+        self.openvideo = QPushButton(self.groupBox_2)
+        self.openvideo.setObjectName(u"openvideo")
+        self.openvideo.setMaximumSize(QSize(75, 16777215))
+
+        self.gridLayout_6.addWidget(self.openvideo, 1, 0, 1, 1)
+
+        self.label_12 = QLabel(self.groupBox_2)
+        self.label_12.setObjectName(u"label_12")
+
+        self.gridLayout_6.addWidget(self.label_12, 0, 0, 1, 1)
+
+        self.openrtsp = QPushButton(self.groupBox_2)
+        self.openrtsp.setObjectName(u"openrtsp")
+
+        self.gridLayout_6.addWidget(self.openrtsp, 1, 1, 1, 1)
 
 
         self.gridLayout_3.addLayout(self.gridLayout_6, 0, 0, 1, 1)
@@ -337,13 +347,15 @@ class Ui_ShakeTestWindow(object):
         self.label_8.setText(QCoreApplication.translate("ShakeTestWindow", u"ROI\u4e0a\u8fb9\u754c", None))
         self.label_5.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8df3\u8fc7\u5e27\u6570", None))
         self.label_19.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8ba1\u7b97\u95f4\u9694\uff08\u5e27\uff09", None))
-        self.openvideo.setText(QCoreApplication.translate("ShakeTestWindow", u"\u6253\u5f00\u6587\u4ef6", None))
         self.label_9.setText(QCoreApplication.translate("ShakeTestWindow", u"ROI\u4e0b\u8fb9\u754c", None))
         self.label_6.setText(QCoreApplication.translate("ShakeTestWindow", u"\u7279\u5f81\u70b9\u6570\u91cf", None))
         self.label.setText(QCoreApplication.translate("ShakeTestWindow", u"\u8ba1\u7b97\u65b9\u5411", None))
         self.direction_select.setItemText(0, QCoreApplication.translate("ShakeTestWindow", u"\u6c34\u5e73", None))
         self.direction_select.setItemText(1, QCoreApplication.translate("ShakeTestWindow", u"\u5782\u76f4", None))
 
+        self.openvideo.setText(QCoreApplication.translate("ShakeTestWindow", u"\u6253\u5f00\u6587\u4ef6", None))
+        self.label_12.setText(QCoreApplication.translate("ShakeTestWindow", u"\u89c6\u9891\u8def\u5f84", None))
+        self.openrtsp.setText(QCoreApplication.translate("ShakeTestWindow", u"\u6253\u5f00\u8bbe\u5907", None))
         self.remove_move_point_enable.setText(QCoreApplication.translate("ShakeTestWindow", u"\u53bb\u9664\u9759\u6b62\u7684\u7279\u5f81\u70b9", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ShakeTestWindow", u"\u5b9e\u65f6\u7ed3\u679c", None))
         self.label_17.setText(QCoreApplication.translate("ShakeTestWindow", u"\u56fe\u7247\u626d\u66f2\u7a0b\u5ea6", None))
