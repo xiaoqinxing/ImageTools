@@ -70,7 +70,14 @@
     <addaction name="imageeditor"/>
     <addaction name="af_calc_tool"/>
    </widget>
+   <widget class="QMenu" name="help_button">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="userguide"/>
+   </widget>
    <addaction name="menu_2"/>
+   <addaction name="help_button"/>
   </widget>
   <action name="field_depth_tool">
    <property name="checkable">
@@ -93,6 +100,16 @@
   <action name="af_calc_tool">
    <property name="text">
     <string>镜头曲线计算工具</string>
+   </property>
+  </action>
+  <action name="about">
+   <property name="text">
+    <string>关于</string>
+   </property>
+  </action>
+  <action name="userguide">
+   <property name="text">
+    <string>用户手册</string>
    </property>
   </action>
  </widget>
