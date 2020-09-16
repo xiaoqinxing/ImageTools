@@ -12,12 +12,12 @@ class ImageEffect(object):
         self.width = self.srcImage.shape[1]
         self.depth = self.srcImage.shape[2]
         # 根据不同的颜色通道，进行不同的颜色转换
-        if(self.depth == 3):
-            self.srcImage = cv2.cvtColor(self.srcImage, cv2.COLOR_BGR2RGB)
-        elif(self.depth == 4):
-            self.srcImage = cv2.cvtColor(self.srcImage, cv2.COLOR_BGR2BGRA)
-        else:
-            self.srcImage == None
+        # if(self.depth == 3):
+        #     self.srcImage = cv2.cvtColor(self.srcImage, cv2.COLOR_BGR2RGB)
+        # elif(self.depth == 4):
+        #     self.srcImage = cv2.cvtColor(self.srcImage, cv2.COLOR_BGR2BGRA)
+        # else:
+        #     self.srcImage == None
         if (self.srcImage is not None):
             self.srcqImage = self.convert_qImage(self.srcImage)
             self.dstImage = self.srcImage.copy()
@@ -34,7 +34,7 @@ class ImageEffect(object):
         if (img == self.srcImage):
             self.nowImage = self.srcImage
         elif (img == self.dstImage):
-            self.nowImage = self.srcImage
+            self.nowImage = self.dstImage
 
     def get_img_point(self, x, y):
         if(x > 0 and x < self.width and y > 0 and y < self.height):
@@ -51,10 +51,10 @@ class ImageEffect(object):
     def convert_qImage(self, img):
         if self.depth == 3:
             return QImage(img, img.shape[1],
-                          img.shape[0], QImage.Format_RGB888)
+                          img.shape[0], QImage.Format_BGR888)
         elif self.depth == 4:
             return QImage(img, img.shape[1],
-                          img.shape[0], QImage.Format_RGB32)
+                          img.shape[0], QImage.Format_BGR32)
         else:
             return
 
@@ -90,7 +90,7 @@ class ImageEffect(object):
             r_hist = (cv2.calcHist([chans[2]], [0], None, [
                 256], [0, 256]))
             # 转为灰度图，然后算亮度直方图
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             y_hist = (cv2.calcHist([image], [0], None, [
                 256], [0, 256]))
             r_hist.reshape(1, 256)

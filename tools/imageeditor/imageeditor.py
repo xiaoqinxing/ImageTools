@@ -24,8 +24,10 @@ class ImageEditor(object):
         self.ui.openimage.triggered.connect(self.on_open_img)
         # self.ui.historgram.triggered.connect(self.on_calc_hist)
         self.ui.actionstats.triggered.connect(self.on_calc_stats)
+        self.imageview.rubberBandChanged.connect(self.update_stats_range)
         self.img = None
         self.scale_ratio = 100
+        self.rect = [0,0,0,0]
 
     def show(self):
         self.window.show()
@@ -49,6 +51,14 @@ class ImageEditor(object):
                 rely = QMessageBox.critical(
                     self.window, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
                 return
+
+    def update_stats_range(self,viewportRect ,fromScenePoint,toScenePoint):
+        if(toScenePoint.x() == 0 and toScenePoint.y() ==0 and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
+            (self.r_hist, self.g_hist, self.b_hist, self.y_hist) = self.img.calcHist(self.now_image, self.rect[0], self.rect[1], self.rect[2], self.rect[3])
+            self.hist_show()
+        else:
+            self.rect = [int(fromScenePoint.x()), int(fromScenePoint.y()), int(toScenePoint.x()), int(toScenePoint.y())]
+        return
 
     def show_point_rgb(self, point):
         self.x = int(point.x())
