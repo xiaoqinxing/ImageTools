@@ -25,9 +25,7 @@ class ImageEditor(object):
         # self.ui.historgram.triggered.connect(self.on_calc_hist)
         self.ui.actionstats.triggered.connect(self.on_calc_stats)
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
-        self.img = None
         self.scale_ratio = 100
-        self.rect = [0,0,0,0]
 
     def show(self):
         self.window.show()
@@ -54,8 +52,10 @@ class ImageEditor(object):
 
     def update_stats_range(self,viewportRect ,fromScenePoint,toScenePoint):
         if(toScenePoint.x() == 0 and toScenePoint.y() ==0 and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
-            (self.r_hist, self.g_hist, self.b_hist, self.y_hist) = self.img.calcHist(self.now_image, self.rect[0], self.rect[1], self.rect[2], self.rect[3])
+            (self.r_hist, self.g_hist, self.b_hist, self.y_hist) = self.img.calcHist(self.now_image, self.rect)
             self.hist_show()
+            msg = self.img.calcStatics(self.now_image, self.rect)
+            self.stats_show(msg)
         else:
             self.rect = [int(fromScenePoint.x()), int(fromScenePoint.y()), int(toScenePoint.x()), int(toScenePoint.y())]
         return
@@ -64,12 +64,15 @@ class ImageEditor(object):
         self.x = int(point.x())
         self.y = int(point.y())
         # print(str(x) + ' ' + str(y))
-        if (self.img is not None):
-            rgb = self.img.get_img_point(self.x, self.y)
-            if (rgb is not None):
-                self.rgb = rgb
-                self.ui.statusBar.showMessage(
-                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+        try:
+            if (self.img is not None):
+                rgb = self.img.get_img_point(self.x, self.y)
+                if (rgb is not None):
+                    self.rgb = rgb
+                    self.ui.statusBar.showMessage(
+                        "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+        except:
+            return
 
     def update_wheel_ratio(self, ratio):
         self.scale_ratio = int(ratio * 100)
@@ -77,25 +80,30 @@ class ImageEditor(object):
             "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
 
     def on_calc_stats(self):
-        if (self.img is not None):
-            (self.r_hist, self.g_hist, self.b_hist, self.y_hist) = self.img.calcHist(self.now_image, 0, 0,
-                                                                                     self.img.width, self.img.height)
-            self.hist_window = HistViewDrag(self.imageview)
-            hist_view_ui = Ui_HistgramView()
-            hist_view_ui.setupUi(self.hist_window)
-            hist_view_ui.r_enable.stateChanged.connect(self.on_r_hist_enable)
-            hist_view_ui.g_enable.stateChanged.connect(self.on_g_hist_enable)
-            hist_view_ui.b_enable.stateChanged.connect(self.on_b_hist_enable)
-            hist_view_ui.y_enable.stateChanged.connect(self.on_y_hist_enable)
-            self.histview = MatplotlibWidget(hist_view_ui.gridLayout_10)
-            self.histview.label("亮度", "数量")
-            self.hist_window.show()
-            self.x_axis = np.linspace(0, 255, num=256)
-            self.r_hist_visible = 2
-            self.g_hist_visible = 2
-            self.b_hist_visible = 2
-            self.y_hist_visible = 2
-            self.hist_show()
+        try:
+            if (self.img is not None):
+                self.rect = [0, 0, self.img.width, self.img.height]
+                (self.r_hist, self.g_hist, self.b_hist, self.y_hist) = self.img.calcHist(self.now_image,self.rect)
+                self.hist_window = HistViewDrag(self.imageview)
+                self.hist_view_ui = Ui_HistgramView()
+                self.hist_view_ui.setupUi(self.hist_window)
+                self.hist_view_ui.r_enable.stateChanged.connect(self.on_r_hist_enable)
+                self.hist_view_ui.g_enable.stateChanged.connect(self.on_g_hist_enable)
+                self.hist_view_ui.b_enable.stateChanged.connect(self.on_b_hist_enable)
+                self.hist_view_ui.y_enable.stateChanged.connect(self.on_y_hist_enable)
+                self.histview = MatplotlibWidget(self.hist_view_ui.gridLayout_10)
+                self.histview.label("亮度", "数量")
+                self.hist_window.show()
+                self.x_axis = np.linspace(0, 255, num=256)
+                self.r_hist_visible = 2
+                self.g_hist_visible = 2
+                self.b_hist_visible = 2
+                self.y_hist_visible = 2
+                self.hist_show()
+                msg = self.img.calcStatics(self.now_image, self.rect)
+                self.stats_show(msg)
+        except:
+            return
 
     def on_r_hist_enable(self, type):
         self.r_hist_visible = type
@@ -125,6 +133,30 @@ class ImageEditor(object):
         if (self.y_hist_visible == 2):
             self.histview.input_y_hist(self.x_axis, self.y_hist)
         self.histview.draw()
+    
+    def stats_show(self, value):
+        (average_rgb,snr_rgb,average_yuv,snr_yuv,rgb_ratio,awb_gain,enable_rect) = value
+        self.hist_view_ui.average_r.setValue(average_rgb[2])
+        self.hist_view_ui.average_g.setValue(average_rgb[1])
+        self.hist_view_ui.average_b.setValue(average_rgb[0])
+        self.hist_view_ui.average_y.setValue(average_yuv[0])
+        self.hist_view_ui.average_cr.setValue(average_yuv[1])
+        self.hist_view_ui.average_cb.setValue(average_yuv[2])
+        self.hist_view_ui.rg_ratio.setValue(rgb_ratio[0])
+        self.hist_view_ui.bg_ratio.setValue(rgb_ratio[1])
+        self.hist_view_ui.r_gain.setValue(awb_gain[0])
+        self.hist_view_ui.g_gain.setValue(awb_gain[1])
+        self.hist_view_ui.b_gain.setValue(awb_gain[2])
+        self.hist_view_ui.section_x.setValue(enable_rect[0])
+        self.hist_view_ui.section_y.setValue(enable_rect[1])
+        self.hist_view_ui.section_height.setValue(enable_rect[2])
+        self.hist_view_ui.section_width.setValue(enable_rect[3])
+        self.hist_view_ui.snr_r.setValue(snr_rgb[2])
+        self.hist_view_ui.snr_g.setValue(snr_rgb[1])
+        self.hist_view_ui.snr_b.setValue(snr_rgb[0])
+        self.hist_view_ui.snr_y.setValue(snr_yuv[0])
+        self.hist_view_ui.snr_cr.setValue(snr_yuv[1])
+        self.hist_view_ui.snr_cb.setValue(snr_yuv[2])
 
 
 class HistViewDrag(QDialog):

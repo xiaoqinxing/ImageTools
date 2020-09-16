@@ -70,10 +70,34 @@ class ImageEffect(object):
             cv2.bilateralFilter(self.srcImage, self.dstImage, BlurType.BilateralSize,
                                 BlurType.BilateralSize * 2, BlurType.BilateralSize / 2)
 
-    def calcStatics(self, img, x1, y1, x2, y2):
+    def calcStatics(self, img, rect):
+        x1, y1, x2, y2 = rect
         self.imageconvert(img)
+        i1 = max(x1, 0)
+        i2 = min(x2, self.width)
+        j1 = max(y1, 0)
+        j2 = min(self.height, y2)
+        if (i2 > i1 and j2 > j1):
+            image = self.nowImage[j1:j2, i1:i2]
+            (average_rgb,stddv_rgb) = cv2.meanStdDev(image)
+            snr_rgb = average_rgb/stddv_rgb
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
+            (average_yuv,stddv_yuv) = cv2.meanStdDev(image)
+            snr_yuv = average_yuv/stddv_yuv
+            rgb_ratio = [0.0,0.0]
+            awb_gain = [0.0,0.0,0.0]
+            rgb_ratio[0] = average_rgb[2]/average_rgb[1]
+            rgb_ratio[1] = average_rgb[0]/average_rgb[1]
+            awb_gain[0] = 1/rgb_ratio[0]
+            awb_gain[1] = 1
+            awb_gain[2] = 1/rgb_ratio[1]
+            enable_rect = [i1,j1,i2-i1,j2-j1]
+            return (average_rgb,snr_rgb,average_yuv,snr_yuv,rgb_ratio,awb_gain,enable_rect)
+            
 
-    def calcHist(self, img, x1, y1, x2, y2):
+
+    def calcHist(self, img, rect):
+        x1, y1, x2, y2 = rect
         self.imageconvert(img)
         # height, width, depth = img.shape
         i1 = max(x1, 0)
