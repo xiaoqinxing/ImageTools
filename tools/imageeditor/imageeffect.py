@@ -4,13 +4,14 @@ import numpy as np
 
 
 class ImageEffect(object):
-    def __init__(self, filename):
+    def __init__(self):
+        self.is_load_image = False
+    
+    def load_image(self, filename):
         # 防止有中文
         # self.srcImage = cv2.imread(filename)
         self.srcImage = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), -1)
-        self.height = self.srcImage.shape[0]
-        self.width = self.srcImage.shape[1]
-        self.depth = self.srcImage.shape[2]
+
         # 根据不同的颜色通道，进行不同的颜色转换
         # if(self.depth == 3):
         #     self.srcImage = cv2.cvtColor(self.srcImage, cv2.COLOR_BGR2RGB)
@@ -19,8 +20,12 @@ class ImageEffect(object):
         # else:
         #     self.srcImage == None
         if (self.srcImage is not None):
+            self.height = self.srcImage.shape[0]
+            self.width = self.srcImage.shape[1]
+            self.depth = self.srcImage.shape[2]
             self.dstImage = self.srcImage.copy()
             self.nowImage = self.srcImage
+            self.is_load_image = True
 
     def save_image(self, img, filename):
         self.imageconvert(img)
@@ -130,16 +135,3 @@ class BlurType():
     medianSize = 5
     BilateralSize = 25
 
-
-class HistData():
-    R = np.zeros(256)
-    G = np.zeros(256)
-    G = np.zeros(256)
-    Y = np.zeros(256)
-
-
-def calc_process_time(proc):
-    e1 = cv2.getTickCount()
-    proc()
-    e2 = cv2.getTickCount()
-    time = (e2 - e1) / cv2.getTickFrequency()

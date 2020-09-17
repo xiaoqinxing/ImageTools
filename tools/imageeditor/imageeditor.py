@@ -32,6 +32,7 @@ class ImageEditor(object):
         self.ui.actionstats.triggered.connect(self.on_calc_stats)
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
         self.scale_ratio = 100
+        self.img = ImageEffect()
 
     def show(self):
         self.window.show()
@@ -48,7 +49,7 @@ class ImageEditor(object):
 
     def __init_img(self, filename):
         if (filename != ''):
-            self.img = ImageEffect(filename)
+            self.img.load_image(filename)
             if (self.img.get_src_image() is not None):
                 self.displayImage(self.img.get_src_image())
             else:
@@ -57,55 +58,37 @@ class ImageEditor(object):
                 return
     
     def boxblur_image(self):
-        try:
-            if(self.img is not None):
-                self.img.blur(BlurType.BoxBlur)
-                self.displayImage(self.img.get_dst_image())
-        except:
-            return
+        if(self.img.is_load_image == True):
+            self.img.blur(BlurType.BoxBlur)
+            self.displayImage(self.img.get_dst_image())
     
     def guassian_image(self):
-        try:
-            if(self.img is not None):
-                self.img.blur(BlurType.GaussianBlur)
-                self.displayImage(self.img.get_dst_image())
-        except:
-            return
+        if(self.img.is_load_image == True):
+            self.img.blur(BlurType.GaussianBlur)
+            self.displayImage(self.img.get_dst_image())
 
     def medianblur_image(self):
-        try:
-            if(self.img is not None):
-                self.img.blur(BlurType.MediaBlur)
-                self.displayImage(self.img.get_dst_image())
-        except:
-            return
+        if(self.img.is_load_image == True):
+            self.img.blur(BlurType.MediaBlur)
+            self.displayImage(self.img.get_dst_image())
 
     def bilateralblur_image(self):
-        try:
-            if(self.img is not None):
-                self.img.blur(BlurType.BilateralBlur)
-                self.displayImage(self.img.get_dst_image())
-        except:
-            return
+        if(self.img.is_load_image == True):
+            self.img.blur(BlurType.BilateralBlur)
+            self.displayImage(self.img.get_dst_image())
     
     def save_now_image(self):
-        try:
-            if(self.img is not None):
-                imagepath = QFileDialog.getSaveFileName(
-                    None, '保存图片', './', "Images (*.jpg)")
-                self.img.save_image(self.now_image,imagepath[0])
-        except:
-            return
+        if(self.img.is_load_image == True):
+            imagepath = QFileDialog.getSaveFileName(
+                None, '保存图片', './', "Images (*.jpg)")
+            self.img.save_image(self.now_image,imagepath[0])
     
     def compare_image(self):
-        try:
-            if(self.img is not None):
-                if(self.now_image == self.img.get_dst_image()):
-                    self.displayImage(self.img.get_src_image())
-                else:
-                    self.displayImage(self.img.get_dst_image())
-        except:
-            return
+        if(self.img.is_load_image == True):
+            if(self.now_image == self.img.get_dst_image()):
+                self.displayImage(self.img.get_src_image())
+            else:
+                self.displayImage(self.img.get_dst_image())
 
     def update_stats_range(self, viewportRect, fromScenePoint, toScenePoint):
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0 
@@ -123,52 +106,46 @@ class ImageEditor(object):
     def show_point_rgb(self, point):
         self.x = int(point.x())
         self.y = int(point.y())
-        # print(str(x) + ' ' + str(y))
-        try:
-            if (self.img is not None):
-                rgb = self.img.get_img_point(self.x, self.y)
-                if (rgb is not None):
-                    self.rgb = rgb
-                    self.ui.statusBar.showMessage(
-                        "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
-        except:
-            return
+        if(self.img.is_load_image == True):
+            rgb = self.img.get_img_point(self.x, self.y)
+            if (rgb is not None):
+                self.rgb = rgb
+                self.ui.statusBar.showMessage(
+                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
 
     def update_wheel_ratio(self, ratio):
-        self.scale_ratio = int(ratio * 100)
-        self.ui.statusBar.showMessage(
-            "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+        if(self.img.is_load_image == True):
+            self.scale_ratio = int(ratio * 100)
+            self.ui.statusBar.showMessage(
+                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
 
     def on_calc_stats(self):
-        try:
-            if (self.img is not None):
-                self.rect = [0, 0, self.img.width, self.img.height]
-                (self.r_hist, self.g_hist, self.b_hist,
-                 self.y_hist) = self.img.calcHist(self.now_image, self.rect)
-                self.hist_window = HistViewDrag(self.imageview)
-                self.hist_view_ui = Ui_HistgramView()
-                self.hist_view_ui.setupUi(self.hist_window)
-                self.hist_view_ui.r_enable.stateChanged.connect(
-                    self.on_r_hist_enable)
-                self.hist_view_ui.g_enable.stateChanged.connect(
-                    self.on_g_hist_enable)
-                self.hist_view_ui.b_enable.stateChanged.connect(
-                    self.on_b_hist_enable)
-                self.hist_view_ui.y_enable.stateChanged.connect(
-                    self.on_y_hist_enable)
-                self.histview = MatplotlibWidget(
-                    self.hist_view_ui.gridLayout_10)
-                self.hist_window.show()
-                self.x_axis = np.linspace(0, 255, num=256)
-                self.r_hist_visible = 2
-                self.g_hist_visible = 2
-                self.b_hist_visible = 2
-                self.y_hist_visible = 2
-                self.hist_show()
-                msg = self.img.calcStatics(self.now_image, self.rect)
-                self.stats_show(msg)
-        except:
-            return
+        if(self.img.is_load_image == True):
+            self.rect = [0, 0, self.img.width, self.img.height]
+            (self.r_hist, self.g_hist, self.b_hist,
+                self.y_hist) = self.img.calcHist(self.now_image, self.rect)
+            self.hist_window = HistViewDrag(self.imageview)
+            self.hist_view_ui = Ui_HistgramView()
+            self.hist_view_ui.setupUi(self.hist_window)
+            self.hist_view_ui.r_enable.stateChanged.connect(
+                self.on_r_hist_enable)
+            self.hist_view_ui.g_enable.stateChanged.connect(
+                self.on_g_hist_enable)
+            self.hist_view_ui.b_enable.stateChanged.connect(
+                self.on_b_hist_enable)
+            self.hist_view_ui.y_enable.stateChanged.connect(
+                self.on_y_hist_enable)
+            self.histview = MatplotlibWidget(
+                self.hist_view_ui.gridLayout_10)
+            self.hist_window.show()
+            self.x_axis = np.linspace(0, 255, num=256)
+            self.r_hist_visible = 2
+            self.g_hist_visible = 2
+            self.b_hist_visible = 2
+            self.y_hist_visible = 2
+            self.hist_show()
+            msg = self.img.calcStatics(self.now_image, self.rect)
+            self.stats_show(msg)
 
     def on_r_hist_enable(self, type):
         self.r_hist_visible = type
