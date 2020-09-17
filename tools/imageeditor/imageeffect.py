@@ -19,16 +19,14 @@ class ImageEffect(object):
         # else:
         #     self.srcImage == None
         if (self.srcImage is not None):
-            self.srcqImage = self.convert_qImage(self.srcImage)
             self.dstImage = self.srcImage.copy()
-            self.dstqImage = self.convert_qImage(self.dstImage)
             self.nowImage = self.srcImage
 
     def save_image(self, img, filename):
         self.imageconvert(img)
         # cv2.imwrite(filename, self.nowImage)
         # 解决中文路径的问题
-        cv2.imencode('.jpg', img)[1].tofile(filename)
+        cv2.imencode('.jpg', self.nowImage)[1].tofile(filename)
 
     def imageconvert(self, img):
         if (img == self.srcImage):
@@ -43,10 +41,10 @@ class ImageEffect(object):
             return None
 
     def get_src_image(self):
-        return self.srcqImage
+        return self.convert_qImage(self.srcImage)
 
     def get_dst_image(self):
-        return self.dstqImage
+        return self.convert_qImage(self.dstImage)
 
     def convert_qImage(self, img):
         if self.depth == 3:
@@ -60,14 +58,13 @@ class ImageEffect(object):
 
     def blur(self, type):
         if (type == BlurType.BoxBlur):
-            cv2.boxFilter(self.srcImage, self.dstImage, -1, BlurType.BlurSize)
+            self.dstImage = cv2.boxFilter(self.srcImage, -1, BlurType.BlurSize)
         elif (type == BlurType.GaussianBlur):
-            cv2.GaussianBlur(self.srcImage, self.dstImage,
-                             BlurType.BlurSize, 0, 0)
+            self.dstImage = cv2.GaussianBlur(self.srcImage, BlurType.BlurSize, 0, 0)
         elif (type == BlurType.MediaBlur):
-            cv2.medianBlur(self.srcImage, self.dstImage, BlurType.BlurSize)
+            self.dstImage = cv2.medianBlur(self.srcImage, BlurType.medianSize)
         elif (type == BlurType.BilateralBlur):
-            cv2.bilateralFilter(self.srcImage, self.dstImage, BlurType.BilateralSize,
+            self.dstImage = cv2.bilateralFilter(self.srcImage, BlurType.BilateralSize,
                                 BlurType.BilateralSize * 2, BlurType.BilateralSize / 2)
 
     def calcStatics(self, img, rect):
@@ -130,6 +127,7 @@ class BlurType():
     MediaBlur = 2
     BilateralBlur = 3
     BlurSize = (5, 5)
+    medianSize = 5
     BilateralSize = 25
 
 

@@ -66,7 +66,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_2">
@@ -115,7 +115,7 @@
    </attribute>
    <addaction name="openimage"/>
    <addaction name="saveimage"/>
-   <addaction name="actioncompare"/>
+   <addaction name="compareimage"/>
    <addaction name="actionstats"/>
   </widget>
   <action name="historgram">
@@ -166,7 +166,7 @@
     <string>双边滤波</string>
    </property>
   </action>
-  <action name="actioncompare">
+  <action name="compareimage">
    <property name="icon">
     <iconset resource="../../ui/resource.qrc">
      <normaloff>:/tool_icon/resource/compare.png</normaloff>:/tool_icon/resource/compare.png</iconset>

@@ -4,7 +4,7 @@ from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Slot
 from tools.imageeditor.imageeditor_window import Ui_ImageEditor
 from ui.customwidget import ImageView, MatplotlibWidget
-from tools.imageeditor.imageeffect import ImageEffect
+from tools.imageeditor.imageeffect import ImageEffect,BlurType
 from tools.imageeditor.histgramview import Ui_HistgramView
 import numpy as np
 
@@ -22,6 +22,12 @@ class ImageEditor(object):
         self.imageview.sigMouseMovePoint.connect(self.show_point_rgb)
         self.imageview.sigWheelEvent.connect(self.update_wheel_ratio)
         self.ui.openimage.triggered.connect(self.on_open_img)
+        self.ui.saveimage.triggered.connect(self.save_now_image)
+        self.ui.compareimage.triggered.connect(self.compare_image)
+        self.ui.boxblur.triggered.connect(self.boxblur_image)
+        self.ui.guassian.triggered.connect(self.guassian_image)
+        self.ui.medianblur.triggered.connect(self.medianblur_image)
+        self.ui.bilateralblur.triggered.connect(self.bilateralblur_image)
         # self.ui.historgram.triggered.connect(self.on_calc_hist)
         self.ui.actionstats.triggered.connect(self.on_calc_stats)
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
@@ -49,15 +55,69 @@ class ImageEditor(object):
                 rely = QMessageBox.critical(
                     self.window, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
                 return
+    
+    def boxblur_image(self):
+        try:
+            if(self.img is not None):
+                self.img.blur(BlurType.BoxBlur)
+                self.displayImage(self.img.get_dst_image())
+        except:
+            return
+    
+    def guassian_image(self):
+        try:
+            if(self.img is not None):
+                self.img.blur(BlurType.GaussianBlur)
+                self.displayImage(self.img.get_dst_image())
+        except:
+            return
 
-    def update_stats_range(self,viewportRect ,fromScenePoint,toScenePoint):
-        if(toScenePoint.x() == 0 and toScenePoint.y() ==0 and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
-            (self.r_hist, self.g_hist, self.b_hist, self.y_hist) = self.img.calcHist(self.now_image, self.rect)
+    def medianblur_image(self):
+        try:
+            if(self.img is not None):
+                self.img.blur(BlurType.MediaBlur)
+                self.displayImage(self.img.get_dst_image())
+        except:
+            return
+
+    def bilateralblur_image(self):
+        try:
+            if(self.img is not None):
+                self.img.blur(BlurType.BilateralBlur)
+                self.displayImage(self.img.get_dst_image())
+        except:
+            return
+    
+    def save_now_image(self):
+        try:
+            if(self.img is not None):
+                imagepath = QFileDialog.getSaveFileName(
+                    None, '保存图片', './', "Images (*.jpg)")
+                self.img.save_image(self.now_image,imagepath[0])
+        except:
+            return
+    
+    def compare_image(self):
+        try:
+            if(self.img is not None):
+                if(self.now_image == self.img.get_dst_image()):
+                    self.displayImage(self.img.get_src_image())
+                else:
+                    self.displayImage(self.img.get_dst_image())
+        except:
+            return
+
+    def update_stats_range(self, viewportRect, fromScenePoint, toScenePoint):
+        if(toScenePoint.x() == 0 and toScenePoint.y() == 0 
+        and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
+            (self.r_hist, self.g_hist, self.b_hist,
+             self.y_hist) = self.img.calcHist(self.now_image, self.rect)
             self.hist_show()
             msg = self.img.calcStatics(self.now_image, self.rect)
             self.stats_show(msg)
         else:
-            self.rect = [int(fromScenePoint.x()), int(fromScenePoint.y()), int(toScenePoint.x()), int(toScenePoint.y())]
+            self.rect = [int(fromScenePoint.x()), int(fromScenePoint.y()), int(
+                toScenePoint.x()), int(toScenePoint.y())]
         return
 
     def show_point_rgb(self, point):
@@ -83,16 +143,21 @@ class ImageEditor(object):
         try:
             if (self.img is not None):
                 self.rect = [0, 0, self.img.width, self.img.height]
-                (self.r_hist, self.g_hist, self.b_hist, self.y_hist) = self.img.calcHist(self.now_image,self.rect)
+                (self.r_hist, self.g_hist, self.b_hist,
+                 self.y_hist) = self.img.calcHist(self.now_image, self.rect)
                 self.hist_window = HistViewDrag(self.imageview)
                 self.hist_view_ui = Ui_HistgramView()
                 self.hist_view_ui.setupUi(self.hist_window)
-                self.hist_view_ui.r_enable.stateChanged.connect(self.on_r_hist_enable)
-                self.hist_view_ui.g_enable.stateChanged.connect(self.on_g_hist_enable)
-                self.hist_view_ui.b_enable.stateChanged.connect(self.on_b_hist_enable)
-                self.hist_view_ui.y_enable.stateChanged.connect(self.on_y_hist_enable)
-                self.histview = MatplotlibWidget(self.hist_view_ui.gridLayout_10)
-                self.histview.label("亮度", "数量")
+                self.hist_view_ui.r_enable.stateChanged.connect(
+                    self.on_r_hist_enable)
+                self.hist_view_ui.g_enable.stateChanged.connect(
+                    self.on_g_hist_enable)
+                self.hist_view_ui.b_enable.stateChanged.connect(
+                    self.on_b_hist_enable)
+                self.hist_view_ui.y_enable.stateChanged.connect(
+                    self.on_y_hist_enable)
+                self.histview = MatplotlibWidget(
+                    self.hist_view_ui.gridLayout_10)
                 self.hist_window.show()
                 self.x_axis = np.linspace(0, 255, num=256)
                 self.r_hist_visible = 2
@@ -133,9 +198,10 @@ class ImageEditor(object):
         if (self.y_hist_visible == 2):
             self.histview.input_y_hist(self.x_axis, self.y_hist)
         self.histview.draw()
-    
+
     def stats_show(self, value):
-        (average_rgb,snr_rgb,average_yuv,snr_yuv,rgb_ratio,awb_gain,enable_rect) = value
+        (average_rgb, snr_rgb, average_yuv, snr_yuv,
+         rgb_ratio, awb_gain, enable_rect) = value
         self.hist_view_ui.average_r.setValue(average_rgb[2])
         self.hist_view_ui.average_g.setValue(average_rgb[1])
         self.hist_view_ui.average_b.setValue(average_rgb[0])
