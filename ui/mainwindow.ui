@@ -69,6 +69,7 @@
     <addaction name="shake_tool"/>
     <addaction name="imageeditor"/>
     <addaction name="af_calc_tool"/>
+    <addaction name="rawimageeditor"/>
    </widget>
    <widget class="QMenu" name="help_button">
     <property name="title">
@@ -94,7 +95,7 @@
   </action>
   <action name="imageeditor">
    <property name="text">
-    <string>图片查看工具</string>
+    <string>图片分析工具</string>
    </property>
   </action>
   <action name="af_calc_tool">
@@ -110,6 +111,11 @@
   <action name="userguide">
    <property name="text">
     <string>用户手册</string>
+   </property>
+  </action>
+  <action name="rawimageeditor">
+   <property name="text">
+    <string>raw图分析工具</string>
    </property>
   </action>
  </widget>

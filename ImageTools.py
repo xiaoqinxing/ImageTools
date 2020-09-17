@@ -7,6 +7,7 @@ from tools.shake_test.shake_test import ShakeTestTool
 from tools.imageeditor.imageeditor import ImageEditor
 from tools.af_calc.af_calc import AfCalcTool
 from ui.help_doc import HelpDoc
+from tools.rawimageeditor.rawimageeditor import RawImageEditor
 
 
 class ImageTools(object):
@@ -23,6 +24,7 @@ class ImageTools(object):
         self.ui.imageeditor.triggered.connect(self.add_image_editor_window)
         self.ui.af_calc_tool.triggered.connect(self.add_af_calc_window)
         self.ui.userguide.triggered.connect(self.add_userguide_window)
+        self.ui.rawimageeditor.triggered.connect(self.add_raw_image_editor_window)
         self.window.show()
         self.sub_windows = list()
 
@@ -49,6 +51,10 @@ class ImageTools(object):
     
     def add_userguide_window(self):
         sub_window = HelpDoc()
+        self.add_sub_window(sub_window)
+    
+    def add_raw_image_editor_window(self):
+        sub_window = RawImageEditor()
         self.add_sub_window(sub_window)
 
 if __name__ == "__main__":
