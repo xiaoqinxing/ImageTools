@@ -57,6 +57,7 @@ class ShakeTestTool(object):
         self.skip_frames = 0
         self.calc_direction = 0
         self.set_ui_enable(False)
+        self.start_process = 0
 
         # 构建角点检测所需参数
         self.feature_params = dict(maxCorners=30,
@@ -95,7 +96,7 @@ class ShakeTestTool(object):
 
     def set_corner_num(self, num):
         self.feature_params = dict(maxCorners=30,
-                                   qualityLevel=(num/100),
+                                   qualityLevel=(1-num/100),
                                    minDistance=40)
         self.vertify_video()
 
@@ -114,10 +115,12 @@ class ShakeTestTool(object):
 
     def process_video(self):
         if(self.video_valid == True):
+            self.start_process = 1
             self.vertify_video()
             # 增加定时器，每100ms进行一帧的处理
             self.video_timer.start(100)
             self.video_timer.timeout.connect(self.open_frame)
+            self.start_process = 0
 
     def cancel_process_video(self):
         self.video_timer.stop()
@@ -223,20 +226,23 @@ class ShakeTestTool(object):
             img = cv2.add(frame, self.mask)
             self.display(img)
 
-            # 如果在距离中心直径300px的范围内没有找到，那么退出
-            if (self.center_index == -1):
-                self.critical_window_show('图像中心没有找到特征点，请重新拍摄视频')
-                self.video_valid = False
+            if(self.start_process == 1):
+                # 如果在距离中心直径300px的范围内没有找到，那么退出
+                if (self.center_index == -1):
+                    self.critical_window_show('图像中心没有找到特征点，请重新拍摄视频或者调整ROI区域')
+                    self.video_valid = False
+                else:
+                    # 初始化横纵方向上的坐标
+                    self.min_y_coord = self.max_y_coord = self.p0[self.center_index].ravel()[
+                        1]
+                    self.min_x_coord = self.max_x_coord = self.p0[self.center_index].ravel()[
+                        0]
+                    self.video_valid = True
+                    # 计算每个特征点到中心的距离
+                    self.old_distance_anypoint = self.calc_distance_anypoint(
+                        self.p0)
             else:
-                # 初始化横纵方向上的坐标
-                self.min_y_coord = self.max_y_coord = self.p0[self.center_index].ravel()[
-                    1]
-                self.min_x_coord = self.max_x_coord = self.p0[self.center_index].ravel()[
-                    0]
                 self.video_valid = True
-                # 计算每个特征点到中心的距离
-                self.old_distance_anypoint = self.calc_distance_anypoint(
-                    self.p0)
 
         else:
             self.critical_window_show('视频打不开')
