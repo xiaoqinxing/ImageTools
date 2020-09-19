@@ -58,6 +58,7 @@ class ShakeTestTool(object):
         self.calc_direction = 0
         self.set_ui_enable(False)
         self.start_process = 0
+        self.process_speed = 100
 
         # 构建角点检测所需参数
         self.feature_params = dict(maxCorners=30,
@@ -118,7 +119,7 @@ class ShakeTestTool(object):
             self.start_process = 1
             self.vertify_video()
             # 增加定时器，每100ms进行一帧的处理
-            self.video_timer.start(100)
+            self.video_timer.start(self.process_speed)
             self.video_timer.timeout.connect(self.open_frame)
             self.start_process = 0
 
@@ -132,14 +133,13 @@ class ShakeTestTool(object):
         videopath = QFileDialog.getOpenFileName(
             None, '打开文件', './', 'video files(*.mp4)')
         if(videopath[0] != ''):
-            self.ui.videopath.setText(videopath[0])
-            self.vertify_video()
-            self.set_ui_enable(True)
+            self.open_video_path(videopath[0])
 
     def open_video_path(self, str):
         self.ui.videopath.setText(str)
         self.vertify_video()
         self.set_ui_enable(True)
+        self.process_speed = 100
     
     def open_rtsp(self):
         self.rtsp_config_window = QDialog()
@@ -160,6 +160,7 @@ class ShakeTestTool(object):
             os.system("kdb " + command)
         rtsp_path = "rtsp://"+username+":"+password+"@"+ip+":"+port
         self.open_video_path(rtsp_path)
+        self.process_speed = 33
 
 
     #######################################################################################
