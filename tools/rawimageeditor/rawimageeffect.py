@@ -20,7 +20,7 @@ class ImageEffect(object):
     def load_image(self, filename):
         # 防止有中文
         # self.srcImage = cv2.imread(filename)
-        self.srcImage = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), -1)
+        self.srcImage = np.fromfile(filename, dtype="uint16", sep="").reshape([self.height,self.width])
 
         # 根据不同的颜色通道，进行不同的颜色转换
         # if(self.depth == 3):
@@ -36,6 +36,8 @@ class ImageEffect(object):
             self.dstImage = self.srcImage.copy()
             self.nowImage = self.srcImage
             self.is_load_image = True
+    def show_raw(self,img):
+        cv2.cvtColor(img,cv2.color_bay)
 
     def save_image(self, img, filename):
         self.imageconvert(img)

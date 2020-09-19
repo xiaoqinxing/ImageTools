@@ -21,7 +21,7 @@ class Ui_ImageEditor(object):
     def setupUi(self, ImageEditor):
         if not ImageEditor.objectName():
             ImageEditor.setObjectName(u"ImageEditor")
-        ImageEditor.resize(800, 600)
+        ImageEditor.resize(811, 621)
         ImageEditor.setToolTipDuration(-1)
         ImageEditor.setAnimated(True)
         ImageEditor.setDockOptions(QMainWindow.AllowTabbedDocks|QMainWindow.AnimatedDocks|QMainWindow.GroupedDragging|QMainWindow.VerticalTabs)
@@ -34,31 +34,11 @@ class Ui_ImageEditor(object):
         self.boxblur.setObjectName(u"boxblur")
         self.guassian = QAction(ImageEditor)
         self.guassian.setObjectName(u"guassian")
-        self.saveimage = QAction(ImageEditor)
-        self.saveimage.setObjectName(u"saveimage")
-        icon = QIcon()
-        icon.addFile(u":/tool_icon/resource/save_icon.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.saveimage.setIcon(icon)
         self.medianblur = QAction(ImageEditor)
         self.medianblur.setObjectName(u"medianblur")
         self.medianblur.setShortcutContext(Qt.WindowShortcut)
         self.bilateralblur = QAction(ImageEditor)
         self.bilateralblur.setObjectName(u"bilateralblur")
-        self.compareimage = QAction(ImageEditor)
-        self.compareimage.setObjectName(u"compareimage")
-        icon1 = QIcon()
-        icon1.addFile(u":/tool_icon/resource/compare.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.compareimage.setIcon(icon1)
-        self.openimage = QAction(ImageEditor)
-        self.openimage.setObjectName(u"openimage")
-        icon2 = QIcon()
-        icon2.addFile(u":/tool_icon/resource/open.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.openimage.setIcon(icon2)
-        self.actionstats = QAction(ImageEditor)
-        self.actionstats.setObjectName(u"actionstats")
-        icon3 = QIcon()
-        icon3.addFile(u":/tool_icon/resource/stats.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionstats.setIcon(icon3)
         self.centralwidget = QWidget(ImageEditor)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -75,12 +55,153 @@ class Ui_ImageEditor(object):
         self.graphicsView.setTransformationAnchor(QGraphicsView.AnchorViewCenter)
         self.graphicsView.setResizeAnchor(QGraphicsView.AnchorViewCenter)
 
-        self.gridLayout.addWidget(self.graphicsView, 0, 1, 3, 1)
+        self.gridLayout.addWidget(self.graphicsView, 1, 0, 1, 1)
+
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.groupBox = QGroupBox(self.centralwidget)
+        self.groupBox.setObjectName(u"groupBox")
+        self.gridLayout_3 = QGridLayout(self.groupBox)
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayout_4 = QGridLayout()
+        self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.label_6 = QLabel(self.groupBox)
+        self.label_6.setObjectName(u"label_6")
+
+        self.gridLayout_4.addWidget(self.label_6, 1, 0, 1, 1)
+
+        self.label_7 = QLabel(self.groupBox)
+        self.label_7.setObjectName(u"label_7")
+
+        self.gridLayout_4.addWidget(self.label_7, 0, 0, 1, 1)
+
+        self.label_8 = QLabel(self.groupBox)
+        self.label_8.setObjectName(u"label_8")
+
+        self.gridLayout_4.addWidget(self.label_8, 2, 0, 1, 1)
+
+        self.height = QSpinBox(self.groupBox)
+        self.height.setObjectName(u"height")
+        self.height.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.height.setMaximum(10000)
+
+        self.gridLayout_4.addWidget(self.height, 1, 1, 1, 1)
+
+        self.label_9 = QLabel(self.groupBox)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout_4.addWidget(self.label_9, 3, 0, 1, 1)
+
+        self.width = QSpinBox(self.groupBox)
+        self.width.setObjectName(u"width")
+        self.width.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.width.setMaximum(10000)
+
+        self.gridLayout_4.addWidget(self.width, 0, 1, 1, 1)
+
+        self.bit = QSpinBox(self.groupBox)
+        self.bit.setObjectName(u"bit")
+        self.bit.setButtonSymbols(QAbstractSpinBox.NoButtons)
+
+        self.gridLayout_4.addWidget(self.bit, 2, 1, 1, 1)
+
+        self.raw_format = QComboBox(self.groupBox)
+        self.raw_format.addItem("")
+        self.raw_format.addItem("")
+        self.raw_format.addItem("")
+        self.raw_format.setObjectName(u"raw_format")
+
+        self.gridLayout_4.addWidget(self.raw_format, 3, 1, 1, 1)
+
+        self.label_10 = QLabel(self.groupBox)
+        self.label_10.setObjectName(u"label_10")
+
+        self.gridLayout_4.addWidget(self.label_10, 4, 0, 1, 1)
+
+        self.pattern = QComboBox(self.groupBox)
+        self.pattern.addItem("")
+        self.pattern.addItem("")
+        self.pattern.addItem("")
+        self.pattern.addItem("")
+        self.pattern.setObjectName(u"pattern")
+
+        self.gridLayout_4.addWidget(self.pattern, 4, 1, 1, 1)
+
+
+        self.gridLayout_3.addLayout(self.gridLayout_4, 0, 0, 1, 1)
+
+
+        self.verticalLayout.addWidget(self.groupBox)
+
+        self.groupBox_2 = QGroupBox(self.centralwidget)
+        self.groupBox_2.setObjectName(u"groupBox_2")
+        self.gridLayout_2 = QGridLayout(self.groupBox_2)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.rolloff = QCheckBox(self.groupBox_2)
+        self.rolloff.setObjectName(u"rolloff")
+
+        self.gridLayout_2.addWidget(self.rolloff, 1, 0, 1, 1)
+
+        self.demosaic = QCheckBox(self.groupBox_2)
+        self.demosaic.setObjectName(u"demosaic")
+
+        self.gridLayout_2.addWidget(self.demosaic, 3, 0, 1, 1)
+
+        self.LTM = QCheckBox(self.groupBox_2)
+        self.LTM.setObjectName(u"LTM")
+
+        self.gridLayout_2.addWidget(self.LTM, 7, 0, 1, 1)
+
+        self.blacklevel = QCheckBox(self.groupBox_2)
+        self.blacklevel.setObjectName(u"blacklevel")
+
+        self.gridLayout_2.addWidget(self.blacklevel, 0, 0, 1, 1)
+
+        self.awb = QCheckBox(self.groupBox_2)
+        self.awb.setObjectName(u"awb")
+
+        self.gridLayout_2.addWidget(self.awb, 4, 0, 1, 1)
+
+        self.ABF = QCheckBox(self.groupBox_2)
+        self.ABF.setObjectName(u"ABF")
+
+        self.gridLayout_2.addWidget(self.ABF, 2, 0, 1, 1)
+
+        self.denoise = QCheckBox(self.groupBox_2)
+        self.denoise.setObjectName(u"denoise")
+
+        self.gridLayout_2.addWidget(self.denoise, 9, 0, 1, 1)
+
+        self.asf = QCheckBox(self.groupBox_2)
+        self.asf.setObjectName(u"asf")
+
+        self.gridLayout_2.addWidget(self.asf, 10, 0, 1, 1)
+
+        self.ccm = QCheckBox(self.groupBox_2)
+        self.ccm.setObjectName(u"ccm")
+
+        self.gridLayout_2.addWidget(self.ccm, 5, 0, 1, 1)
+
+        self.gamma = QCheckBox(self.groupBox_2)
+        self.gamma.setObjectName(u"gamma")
+
+        self.gridLayout_2.addWidget(self.gamma, 6, 0, 1, 1)
+
+        self.chroma_enhance = QCheckBox(self.groupBox_2)
+        self.chroma_enhance.setObjectName(u"chroma_enhance")
+
+        self.gridLayout_2.addWidget(self.chroma_enhance, 8, 0, 1, 1)
+
+
+        self.verticalLayout.addWidget(self.groupBox_2)
+
+
+        self.gridLayout.addLayout(self.verticalLayout, 1, 1, 1, 1)
 
         ImageEditor.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ImageEditor)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 23))
+        self.menubar.setGeometry(QRect(0, 0, 811, 23))
         self.menu_2 = QMenu(self.menubar)
         self.menu_2.setObjectName(u"menu_2")
         self.blur = QMenu(self.menu_2)
@@ -90,16 +211,6 @@ class Ui_ImageEditor(object):
         self.statusBar.setObjectName(u"statusBar")
         self.statusBar.setMouseTracking(True)
         ImageEditor.setStatusBar(self.statusBar)
-        self.toolBar = QToolBar(ImageEditor)
-        self.toolBar.setObjectName(u"toolBar")
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.toolBar.sizePolicy().hasHeightForWidth())
-        self.toolBar.setSizePolicy(sizePolicy)
-        self.toolBar.setAllowedAreas(Qt.AllToolBarAreas)
-        self.toolBar.setOrientation(Qt.Vertical)
-        ImageEditor.addToolBar(Qt.RightToolBarArea, self.toolBar)
 
         self.menubar.addAction(self.menu_2.menuAction())
         self.menu_2.addAction(self.blur.menuAction())
@@ -107,10 +218,6 @@ class Ui_ImageEditor(object):
         self.blur.addAction(self.guassian)
         self.blur.addAction(self.medianblur)
         self.blur.addAction(self.bilateralblur)
-        self.toolBar.addAction(self.openimage)
-        self.toolBar.addAction(self.saveimage)
-        self.toolBar.addAction(self.compareimage)
-        self.toolBar.addAction(self.actionstats)
 
         self.retranslateUi(ImageEditor)
 
@@ -126,26 +233,36 @@ class Ui_ImageEditor(object):
         self.statics.setText(QCoreApplication.translate("ImageEditor", u"\u7edf\u8ba1\u4fe1\u606f", None))
         self.boxblur.setText(QCoreApplication.translate("ImageEditor", u"\u65b9\u6846\u6ee4\u6ce2", None))
         self.guassian.setText(QCoreApplication.translate("ImageEditor", u"\u9ad8\u65af\u6ee4\u6ce2", None))
-        self.saveimage.setText(QCoreApplication.translate("ImageEditor", u"save", None))
-#if QT_CONFIG(shortcut)
-        self.saveimage.setShortcut(QCoreApplication.translate("ImageEditor", u"Ctrl+S", None))
-#endif // QT_CONFIG(shortcut)
         self.medianblur.setText(QCoreApplication.translate("ImageEditor", u"\u4e2d\u503c\u6ee4\u6ce2", None))
         self.bilateralblur.setText(QCoreApplication.translate("ImageEditor", u"\u53cc\u8fb9\u6ee4\u6ce2", None))
-        self.compareimage.setText(QCoreApplication.translate("ImageEditor", u"compare", None))
-#if QT_CONFIG(tooltip)
-        self.compareimage.setToolTip(QCoreApplication.translate("ImageEditor", u"compare", None))
-#endif // QT_CONFIG(tooltip)
-        self.openimage.setText(QCoreApplication.translate("ImageEditor", u"open", None))
-#if QT_CONFIG(tooltip)
-        self.openimage.setToolTip(QCoreApplication.translate("ImageEditor", u"open", None))
-#endif // QT_CONFIG(tooltip)
-        self.actionstats.setText(QCoreApplication.translate("ImageEditor", u"stats", None))
-#if QT_CONFIG(tooltip)
-        self.actionstats.setToolTip(QCoreApplication.translate("ImageEditor", u"\u7edf\u8ba1\u4fe1\u606f", None))
-#endif // QT_CONFIG(tooltip)
+        self.groupBox.setTitle(QCoreApplication.translate("ImageEditor", u"raw\u56fe\u8bbe\u7f6e", None))
+        self.label_6.setText(QCoreApplication.translate("ImageEditor", u"\u9ad8", None))
+        self.label_7.setText(QCoreApplication.translate("ImageEditor", u"\u5bbd", None))
+        self.label_8.setText(QCoreApplication.translate("ImageEditor", u"\u50cf\u7d20\u70b9\u4f4d\u6570", None))
+        self.label_9.setText(QCoreApplication.translate("ImageEditor", u"RAW\u683c\u5f0f", None))
+        self.raw_format.setItemText(0, QCoreApplication.translate("ImageEditor", u"MIPI", None))
+        self.raw_format.setItemText(1, QCoreApplication.translate("ImageEditor", u"PACKED", None))
+        self.raw_format.setItemText(2, QCoreApplication.translate("ImageEditor", u"UNPACKED", None))
+
+        self.label_10.setText(QCoreApplication.translate("ImageEditor", u"pattern", None))
+        self.pattern.setItemText(0, QCoreApplication.translate("ImageEditor", u"RGGB", None))
+        self.pattern.setItemText(1, QCoreApplication.translate("ImageEditor", u"GRBG", None))
+        self.pattern.setItemText(2, QCoreApplication.translate("ImageEditor", u"BGGR", None))
+        self.pattern.setItemText(3, QCoreApplication.translate("ImageEditor", u"GBRG", None))
+
+        self.groupBox_2.setTitle(QCoreApplication.translate("ImageEditor", u"ISP\u5904\u7406\u6d41\u7a0b", None))
+        self.rolloff.setText(QCoreApplication.translate("ImageEditor", u"rolloff", None))
+        self.demosaic.setText(QCoreApplication.translate("ImageEditor", u"demosaic", None))
+        self.LTM.setText(QCoreApplication.translate("ImageEditor", u"LTM", None))
+        self.blacklevel.setText(QCoreApplication.translate("ImageEditor", u"black level", None))
+        self.awb.setText(QCoreApplication.translate("ImageEditor", u"awb", None))
+        self.ABF.setText(QCoreApplication.translate("ImageEditor", u"ABF", None))
+        self.denoise.setText(QCoreApplication.translate("ImageEditor", u"wavelet denoise", None))
+        self.asf.setText(QCoreApplication.translate("ImageEditor", u"adaptive spatial filter", None))
+        self.ccm.setText(QCoreApplication.translate("ImageEditor", u"ccm", None))
+        self.gamma.setText(QCoreApplication.translate("ImageEditor", u"gamma", None))
+        self.chroma_enhance.setText(QCoreApplication.translate("ImageEditor", u"advanced chroma enhancement", None))
         self.menu_2.setTitle(QCoreApplication.translate("ImageEditor", u"\u56fe\u50cf\u5904\u7406", None))
         self.blur.setTitle(QCoreApplication.translate("ImageEditor", u"\u6ee4\u6ce2", None))
-        self.toolBar.setWindowTitle(QCoreApplication.translate("ImageEditor", u"toolBar_2", None))
     # retranslateUi
 
