@@ -44,7 +44,7 @@ class RawImageEditor(object):
 
     def on_open_img(self):
         imagepath = QFileDialog.getOpenFileName(
-            None, '打开图片', './', "Images (*.jpg *.png *.bmp)")
+            None, '打开图片', './', "Images (*.raw)")
         self.__init_img(imagepath[0])
 
     def __init_img(self, filename):
