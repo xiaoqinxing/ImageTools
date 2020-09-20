@@ -6,9 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>811</width>
-    <height>621</height>
+    <width>656</width>
+    <height>538</height>
    </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>RAW图处理工具</string>
@@ -27,238 +30,522 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QGraphicsView" name="graphicsView">
-      <property name="mouseTracking">
-       <bool>true</bool>
-      </property>
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
-      <property name="toolTipDuration">
-       <number>-1</number>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAsNeeded</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAsNeeded</enum>
-      </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QAbstractScrollArea::AdjustToContents</enum>
-      </property>
-      <property name="dragMode">
-       <enum>QGraphicsView::ScrollHandDrag</enum>
-      </property>
-      <property name="transformationAnchor">
-       <enum>QGraphicsView::AnchorViewCenter</enum>
-      </property>
-      <property name="resizeAnchor">
-       <enum>QGraphicsView::AnchorViewCenter</enum>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="1">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QGroupBox" name="groupBox">
-        <property name="title">
-         <string>raw图设置</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <layout class="QGridLayout" name="gridLayout_4">
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>高</string>
-             </property>
-            </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="maximumSize">
+           <size>
+            <width>400</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>raw图设置</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>高</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>宽</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>像素点位数</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="height">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="maximum">
+                <number>10000</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>RAW格式</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="width">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="maximum">
+                <number>10000</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="bit">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="raw_format">
+               <item>
+                <property name="text">
+                 <string>MIPI</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>PACKED</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>UNPACKED</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>pattern</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QComboBox" name="pattern">
+               <item>
+                <property name="text">
+                 <string>RGGB</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>GRBG</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>BGGR</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>GBRG</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>宽</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>像素点位数</string>
-             </property>
-            </widget>
-           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="maximumSize">
+           <size>
+            <width>400</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>ISP处理流程</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
            <item row="1" column="1">
-            <widget class="QSpinBox" name="height">
-             <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
+            <widget class="QListWidget" name="pipeline">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
              </property>
-             <property name="maximum">
-              <number>10000</number>
+             <property name="editTriggers">
+              <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
              </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>RAW格式</string>
+             <property name="dragDropMode">
+              <enum>QAbstractItemView::DragDrop</enum>
              </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QSpinBox" name="width">
-             <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
+             <property name="defaultDropAction">
+              <enum>Qt::MoveAction</enum>
              </property>
-             <property name="maximum">
-              <number>10000</number>
+             <property name="alternatingRowColors">
+              <bool>false</bool>
              </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QSpinBox" name="bit">
-             <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::SingleSelection</enum>
              </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QComboBox" name="raw_format">
+             <property name="movement">
+              <enum>QListView::Free</enum>
+             </property>
+             <property name="resizeMode">
+              <enum>QListView::Adjust</enum>
+             </property>
+             <property name="layoutMode">
+              <enum>QListView::SinglePass</enum>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+             <property name="selectionRectVisible">
+              <bool>true</bool>
+             </property>
+             <property name="sortingEnabled">
+              <bool>false</bool>
+             </property>
              <item>
               <property name="text">
-               <string>MIPI</string>
+               <string>black level</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
+                 <green>255</green>
+                 <blue>127</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>PACKED</string>
+               <string>rolloff</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
+                 <green>255</green>
+                 <blue>127</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>UNPACKED</string>
+               <string>ABF</string>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_10">
-             <property name="text">
-              <string>pattern</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QComboBox" name="pattern">
-             <item>
-              <property name="text">
-               <string>RGGB</string>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
+                 <green>255</green>
+                 <blue>127</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>GRBG</string>
+               <string>demosaic</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>BGGR</string>
+               <string>awb</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>127</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>GBRG</string>
+               <string>ccm</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>127</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gamma</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>127</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>LTM</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>127</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>advanced chroma enhancement</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>wavelet denoise</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>170</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>adaptive spatial filter</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>170</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
               </property>
              </item>
             </widget>
            </item>
           </layout>
-         </item>
-        </layout>
-       </widget>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <widget class="QGroupBox" name="groupBox_2">
+       <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
-         <string>ISP处理流程</string>
+         <string>ISP参数</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="rolloff">
-           <property name="text">
-            <string>rolloff</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QCheckBox" name="demosaic">
-           <property name="text">
-            <string>demosaic</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QCheckBox" name="LTM">
-           <property name="text">
-            <string>LTM</string>
-           </property>
-          </widget>
-         </item>
+        <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
-          <widget class="QCheckBox" name="blacklevel">
-           <property name="text">
-            <string>black level</string>
+          <widget class="QScrollArea" name="scrollArea">
+           <property name="widgetResizable">
+            <bool>true</bool>
            </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QCheckBox" name="awb">
-           <property name="text">
-            <string>awb</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QCheckBox" name="ABF">
-           <property name="text">
-            <string>ABF</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QCheckBox" name="denoise">
-           <property name="text">
-            <string>wavelet denoise</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0">
-          <widget class="QCheckBox" name="asf">
-           <property name="text">
-            <string>adaptive spatial filter</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QCheckBox" name="ccm">
-           <property name="text">
-            <string>ccm</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QCheckBox" name="gamma">
-           <property name="text">
-            <string>gamma</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
-          <widget class="QCheckBox" name="chroma_enhance">
-           <property name="text">
-            <string>advanced chroma enhancement</string>
-           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>510</width>
+              <height>432</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="8" column="0">
+              <widget class="QGroupBox" name="groupBox_13">
+               <property name="title">
+                <string>advanced chroma enhancement</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="0">
+              <widget class="QGroupBox" name="groupBox_14">
+               <property name="title">
+                <string>wavelet denoise</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QGroupBox" name="groupBox_10">
+               <property name="title">
+                <string>ccm</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QGroupBox" name="groupBox_9">
+               <property name="title">
+                <string>awb</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QGroupBox" name="groupBox_5">
+               <property name="title">
+                <string>rolloff</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="0">
+              <widget class="QGroupBox" name="groupBox_12">
+               <property name="title">
+                <string>LTM</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QGroupBox" name="groupBox_4">
+               <property name="title">
+                <string>black level</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_3">
+                <item row="0" column="2">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>GR</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="6">
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>B</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="5">
+                 <widget class="QSpinBox" name="spinBox_3"/>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QSpinBox" name="spinBox_2"/>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>R</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QSpinBox" name="spinBox"/>
+                </item>
+                <item row="0" column="4">
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>GB</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="7">
+                 <widget class="QSpinBox" name="spinBox_4"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QGroupBox" name="groupBox_8">
+               <property name="title">
+                <string>demosaic</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QGroupBox" name="groupBox_11">
+               <property name="title">
+                <string>gamma</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QGroupBox" name="groupBox_7">
+               <property name="title">
+                <string>ABF</string>
+               </property>
+              </widget>
+             </item>
+             <item row="10" column="0">
+              <widget class="QGroupBox" name="groupBox_15">
+               <property name="title">
+                <string>adaptive spatial filter</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </widget>
          </item>
         </layout>
@@ -266,33 +553,19 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="title">
+       <string>图片预览</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="graphicsView"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>811</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>图像处理</string>
-    </property>
-    <widget class="QMenu" name="blur">
-     <property name="title">
-      <string>滤波</string>
-     </property>
-     <addaction name="boxblur"/>
-     <addaction name="guassian"/>
-     <addaction name="medianblur"/>
-     <addaction name="bilateralblur"/>
-    </widget>
-    <addaction name="blur"/>
-   </widget>
-   <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="mouseTracking">

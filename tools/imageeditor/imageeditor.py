@@ -4,7 +4,7 @@ from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Slot
 from tools.imageeditor.imageeditor_window import Ui_ImageEditor
 from ui.customwidget import ImageView, MatplotlibWidget
-from tools.imageeditor.imageeffect import ImageEffect,BlurType
+from tools.imageeditor.imageeffect import ImageEffect, BlurType
 from tools.imageeditor.histgramview import Ui_HistgramView
 import numpy as np
 
@@ -15,7 +15,7 @@ class ImageEditor(object):
         self.ui = Ui_ImageEditor()
         self.ui.setupUi(self.window)
         self.scene = QGraphicsScene()
-        self.imageview = ImageView(self.scene, self.ui.graphicsView)
+        self.imageview = ImageView(self.scene)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.gridLayout.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
@@ -56,12 +56,12 @@ class ImageEditor(object):
                 rely = QMessageBox.critical(
                     self.window, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
                 return
-    
+
     def boxblur_image(self):
         if(self.img.is_load_image == True):
             self.img.blur(BlurType.BoxBlur)
             self.displayImage(self.img.get_dst_image())
-    
+
     def guassian_image(self):
         if(self.img.is_load_image == True):
             self.img.blur(BlurType.GaussianBlur)
@@ -76,13 +76,13 @@ class ImageEditor(object):
         if(self.img.is_load_image == True):
             self.img.blur(BlurType.BilateralBlur)
             self.displayImage(self.img.get_dst_image())
-    
+
     def save_now_image(self):
         if(self.img.is_load_image == True):
             imagepath = QFileDialog.getSaveFileName(
                 None, '保存图片', './', "Images (*.jpg)")
-            self.img.save_image(self.now_image,imagepath[0])
-    
+            self.img.save_image(self.now_image, imagepath[0])
+
     def compare_image(self):
         if(self.img.is_load_image == True):
             if(self.now_image == self.img.get_dst_image()):
@@ -91,8 +91,8 @@ class ImageEditor(object):
                 self.displayImage(self.img.get_dst_image())
 
     def update_stats_range(self, viewportRect, fromScenePoint, toScenePoint):
-        if(toScenePoint.x() == 0 and toScenePoint.y() == 0 
-        and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
+        if(toScenePoint.x() == 0 and toScenePoint.y() == 0
+           and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
             (self.r_hist, self.g_hist, self.b_hist,
              self.y_hist) = self.img.calcHist(self.now_image, self.rect)
             self.hist_show()
@@ -111,13 +111,13 @@ class ImageEditor(object):
             if (rgb is not None):
                 self.rgb = rgb
                 self.ui.statusBar.showMessage(
-                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], self.scale_ratio))
 
     def update_wheel_ratio(self, ratio):
         if(self.img.is_load_image == True):
             self.scale_ratio = int(ratio * 100)
             self.ui.statusBar.showMessage(
-                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], self.scale_ratio))
 
     def on_calc_stats(self):
         if(self.img.is_load_image == True):

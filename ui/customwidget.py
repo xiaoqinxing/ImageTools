@@ -163,8 +163,8 @@ class ImageView(QGraphicsView):
     sigWheelEvent = Signal(float)
     sigDragEvent = Signal(str)
 
-    def __init__(self, scene, parent):
-        super().__init__(scene, parent)
+    def __init__(self, scene):
+        super().__init__(scene)
         self.setUi()
 
     def setUi(self):

@@ -6,7 +6,7 @@ import numpy as np
 class ImageEffect(object):
     def __init__(self):
         self.is_load_image = False
-    
+
     def load_image(self, filename):
         # 防止有中文
         # self.srcImage = cv2.imread(filename)
@@ -40,6 +40,9 @@ class ImageEffect(object):
             self.nowImage = self.dstImage
 
     def get_img_point(self, x, y):
+        """
+        获取图像中一个点的RGB值，注意颜色顺序是BGR
+        """
         if(x > 0 and x < self.width and y > 0 and y < self.height):
             return self.nowImage[y, x]
         else:
@@ -65,12 +68,13 @@ class ImageEffect(object):
         if (type == BlurType.BoxBlur):
             self.dstImage = cv2.boxFilter(self.srcImage, -1, BlurType.BlurSize)
         elif (type == BlurType.GaussianBlur):
-            self.dstImage = cv2.GaussianBlur(self.srcImage, BlurType.BlurSize, 0, 0)
+            self.dstImage = cv2.GaussianBlur(
+                self.srcImage, BlurType.BlurSize, 0, 0)
         elif (type == BlurType.MediaBlur):
             self.dstImage = cv2.medianBlur(self.srcImage, BlurType.medianSize)
         elif (type == BlurType.BilateralBlur):
             self.dstImage = cv2.bilateralFilter(self.srcImage, BlurType.BilateralSize,
-                                BlurType.BilateralSize * 2, BlurType.BilateralSize / 2)
+                                                BlurType.BilateralSize * 2, BlurType.BilateralSize / 2)
 
     def calcStatics(self, img, rect):
         x1, y1, x2, y2 = rect
@@ -81,22 +85,20 @@ class ImageEffect(object):
         j2 = min(self.height, y2)
         if (i2 > i1 and j2 > j1):
             image = self.nowImage[j1:j2, i1:i2]
-            (average_rgb,stddv_rgb) = cv2.meanStdDev(image)
+            (average_rgb, stddv_rgb) = cv2.meanStdDev(image)
             snr_rgb = average_rgb/stddv_rgb
             image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
-            (average_yuv,stddv_yuv) = cv2.meanStdDev(image)
+            (average_yuv, stddv_yuv) = cv2.meanStdDev(image)
             snr_yuv = average_yuv/stddv_yuv
-            rgb_ratio = [0.0,0.0]
-            awb_gain = [0.0,0.0,0.0]
+            rgb_ratio = [0.0, 0.0]
+            awb_gain = [0.0, 0.0, 0.0]
             rgb_ratio[0] = average_rgb[2]/average_rgb[1]
             rgb_ratio[1] = average_rgb[0]/average_rgb[1]
             awb_gain[0] = 1/rgb_ratio[0]
             awb_gain[1] = 1
             awb_gain[2] = 1/rgb_ratio[1]
-            enable_rect = [i1,j1,i2-i1,j2-j1]
-            return (average_rgb,snr_rgb,average_yuv,snr_yuv,rgb_ratio,awb_gain,enable_rect)
-            
-
+            enable_rect = [i1, j1, i2-i1, j2-j1]
+            return (average_rgb, snr_rgb, average_yuv, snr_yuv, rgb_ratio, awb_gain, enable_rect)
 
     def calcHist(self, img, rect):
         x1, y1, x2, y2 = rect
@@ -134,4 +136,3 @@ class BlurType():
     BlurSize = (5, 5)
     medianSize = 5
     BilateralSize = 25
-
