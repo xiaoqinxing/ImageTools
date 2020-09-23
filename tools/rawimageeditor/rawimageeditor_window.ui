@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>656</width>
-    <height>538</height>
+    <width>680</width>
+    <height>577</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -47,110 +47,121 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <layout class="QGridLayout" name="gridLayout_4">
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_6">
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="4" column="1">
+                <widget class="QComboBox" name="pattern">
+                 <item>
+                  <property name="text">
+                   <string>RGGB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>GRBG</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>BGGR</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>GBRG</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>高</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QComboBox" name="raw_format">
+                 <item>
+                  <property name="text">
+                   <string>MIPI</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>PACKED</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>UNPACKED</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QSpinBox" name="height">
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>10000</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QSpinBox" name="width">
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>10000</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QSpinBox" name="bit">
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>RAW格式</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>pattern</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>宽</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>像素点位数</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="open_image">
                <property name="text">
-                <string>高</string>
+                <string>打开图片</string>
                </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>宽</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>像素点位数</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QSpinBox" name="height">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <number>10000</number>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_9">
-               <property name="text">
-                <string>RAW格式</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QSpinBox" name="width">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <number>10000</number>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QSpinBox" name="bit">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QComboBox" name="raw_format">
-               <item>
-                <property name="text">
-                 <string>MIPI</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>PACKED</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>UNPACKED</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>pattern</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QComboBox" name="pattern">
-               <item>
-                <property name="text">
-                 <string>RGGB</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>GRBG</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>BGGR</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>GBRG</string>
-                </property>
-               </item>
               </widget>
              </item>
             </layout>
@@ -399,6 +410,13 @@
              </item>
             </widget>
            </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="pipeline_ok">
+             <property name="text">
+              <string>确定</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -410,7 +428,7 @@
          <string>ISP参数</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="QScrollArea" name="scrollArea">
            <property name="widgetResizable">
             <bool>true</bool>
@@ -420,8 +438,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>510</width>
-              <height>432</height>
+              <width>549</width>
+              <height>249</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">

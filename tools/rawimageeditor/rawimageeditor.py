@@ -4,12 +4,26 @@ from PySide2.QtGui import QPixmap, Qt
 from PySide2.QtCore import Slot
 from tools.rawimageeditor.rawimageeditor_window import Ui_ImageEditor
 from ui.customwidget import ImageView, MatplotlibWidget
-from tools.rawimageeditor.rawImage import RawImageInfo
+from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from tools.rawimageeditor.rawhistgramview import Ui_HistgramView
 import numpy as np
 
 
 class RawImageEditor(object):
+    pipeline_dict = {
+        "black level":  0,
+        "rolloff":      1,
+        "ABF":          2,
+        "demosaic":     3,
+        "awb":          4,
+        "ccm":          5,
+        "gamma":        6,
+        "LTM":          7,
+        "advanced chroma enhancement":  8,
+        "wavelet denoise":              9,
+        "adaptive spatial filter":      10
+    }
+
     def __init__(self):
         self.window = QMainWindow()
         self.ui = Ui_ImageEditor()
@@ -21,47 +35,94 @@ class RawImageEditor(object):
         self.imageview.sigDragEvent.connect(self.__init_img)
         self.imageview.sigMouseMovePoint.connect(self.show_point_rgb)
         self.imageview.sigWheelEvent.connect(self.update_wheel_ratio)
-        self.ui.pipeline.doubleClicked.connect(self.update_pipeline_show)
-        # self.ui.pipeline.indexesMoved.connect(self.update_pipeline_show)
+        self.ui.width.editingFinished.connect(self.update_width)
+        self.ui.height.editingFinished.connect(self.update_height)
+        self.ui.bit.editingFinished.connect(self.update_bit_depth)
+        self.ui.raw_format.currentTextChanged.connect(self.update_raw_format)
+        self.ui.pattern.currentTextChanged.connect(self.update_pattern)
+        self.ui.pipeline.doubleClicked.connect(self.update_img_index)
+        self.ui.pipeline_ok.clicked.connect(self.update_pipeline)
+        self.ui.open_image.clicked.connect(self.open_image)
         self.scale_ratio = 100
         self.img = RawImageInfo()
+        self.img_params = RawImageParams()
+        self.pipeline_list = []
+        self.img_list = []
+        self.img_list_start_index = 0
+        self.img_list_end_index = 0
+        self.img_index = 0
 
     def show(self):
         self.window.show()
+
+    def update_width(self):
+        self.img_params.set_width(self.ui.width.value())
+        print(self.img_params.get_width())
+
+    def update_height(self):
+        self.img_params.set_height(self.ui.height.value())
+        print(self.img_params.get_height())
+
+    def update_bit_depth(self):
+        self.img_params.set_bit_depth(self.ui.bit.value())
+        print(self.img_params.get_bit_depth())
+
+    def update_raw_format(self):
+        self.img_params.set_raw_format(self.ui.raw_format.currentText())
+        print(self.img_params.get_raw_format())
+
+    def update_pattern(self):
+        self.img_params.set_pattern(self.ui.pattern.currentText().lower())
+        print(self.img_params.get_pattern())
 
     def displayImage(self, img):
         self.scene.clear()
         self.scene.addPixmap(QPixmap(img))
         self.now_image = img
 
-    def update_pipeline_show(self, item):
-        print("you have clicked :" + item.data())
+    def update_pipeline(self, item):
+        new_pipeline_list = []
         for i in range(self.ui.pipeline.count()):
-            print("item: " + self.ui.pipeline.item(i).data(0) + " checked: " +
-                  str(self.ui.pipeline.item(i).checkState() == Qt.Checked))
-        # def on_open_img(self):
-        #     imagepath = QFileDialog.getOpenFileName(
-        #         None, '打开图片', './', "Images (*.raw)")
-        #     self.__init_img(imagepath[0])
+            if (self.ui.pipeline.item(i).checkState() == Qt.Checked):
+                new_pipeline_list.append(
+                    self.pipeline_dict[self.ui.pipeline.item(i).data(0)])
+        self.img_params.set_pipeline(new_pipeline_list)
+        print(self.img_params.get_pipeline())
+
+    def update_img_index(self, item):
+        if (self.ui.pipeline.item(item.row()).checkState() == Qt.Checked):
+            self.img_params.img_show_index = self.img_params.get_pipeline().index(
+                self.pipeline_dict[item.data()])
+            print(self.img_params.img_show_index)
+
+    def open_image(self):
+        imagepath = QFileDialog.getOpenFileName(
+            None, '打开RAW图', './', "raw (*.raw)")
+        self.__init_img(imagepath[0])
 
     def __init_img(self, filename):
-        if (filename != ''):
-            self.img.load_image(filename)
-            if (self.img.get_src_image() is not None):
-                self.displayImage(self.img.get_src_image())
+        width = self.img_params.get_width()
+        height = self.img_params.get_height()
+        bit_depth = self.img_params.get_bit_depth()
+        if (filename != "" and width != 0 and height != 0 and bit_depth != 0):
+            self.img.load_image(filename, height, width, bit_depth)
+            self.img.set_bayer_pattern(self.img_params.get_pattern())
+            if (self.img.get_raw_data() is not None):
+                self.displayImage(self.img.get_qimage())
             else:
                 rely = QMessageBox.critical(
                     self.window, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
-                return
+                return rely
 
     def save_now_image(self):
-        if(self.img.is_load_image == True):
+        if(self.img.get_raw_data() is not None):
             imagepath = QFileDialog.getSaveFileName(
                 None, '保存图片', './', "Images (*.jpg)")
-            self.img.save_image(self.now_image, imagepath[0])
+            if(imagepath[0] != ""):
+                self.img.save_image(self.now_image, imagepath[0])
 
     # def compare_image(self):
-    #     if(self.img.is_load_image == True):
+    #     if(self.img.get_raw_data() is not None):
     #         if(self.now_image == self.img.get_dst_image()):
     #             self.displayImage(self.img.get_src_image())
     #         else:
@@ -83,7 +144,7 @@ class RawImageEditor(object):
     def show_point_rgb(self, point):
         self.x = int(point.x())
         self.y = int(point.y())
-        if(self.img.is_load_image == True):
+        if(self.img.get_raw_data() is not None):
             rgb = self.img.get_img_point(self.x, self.y)
             if (rgb is not None):
                 self.rgb = rgb
@@ -91,13 +152,13 @@ class RawImageEditor(object):
                     "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
 
     def update_wheel_ratio(self, ratio):
-        if(self.img.is_load_image == True):
+        if(self.img.get_raw_data() is not None):
             self.scale_ratio = int(ratio * 100)
             self.ui.statusBar.showMessage(
                 "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
 
     def on_calc_stats(self):
-        if(self.img.is_load_image == True):
+        if(self.img.get_raw_data() is not None):
             self.rect = [0, 0, self.img.width, self.img.height]
             (self.r_hist, self.g_hist, self.b_hist,
                 self.y_hist) = self.img.calcHist(self.now_image, self.rect)

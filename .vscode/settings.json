@@ -1,3 +1,14 @@
 {
-    "python.pythonPath": "C:\\Users\\qinxing\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe"
+    "python.pythonPath": "C:\\Users\\qinxing\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
+    // 默认对Python文件进行静态检查
+    "python.linting.enabled": true,
+
+    // 默认在Python文件保存时进行静态检查
+    "python.linting.lintOnSave": true,
+
+    // 默认使用pylint对Python文件进行静态检查
+    "python.linting.pylintEnabled": true,
+
+    // 静态检查时是否使用pylint的最小规则集（minimal set of rules）
+    "python.linting.pylintUseMinimalCheckers": true
 }
