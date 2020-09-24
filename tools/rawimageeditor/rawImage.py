@@ -3,6 +3,7 @@
 # =============================================================
 import numpy as np  # array operations
 from PySide2.QtGui import QImage
+import cv2
 
 
 # =============================================================
@@ -10,7 +11,7 @@ from PySide2.QtGui import QImage
 
 #   Helps set up necessary information/metadata of the image
 # =============================================================
-class RawImageParams:
+class RawImageParams():
     def __init__(self):
         self.channel_gain = (1.0, 1.0, 1.0, 1.0)
         self.black_level = (0, 0, 0, 0)
@@ -106,25 +107,30 @@ class RawImageParams:
 # =============================================================
 
 
-class RawImageInfo:
+class RawImageInfo():
     def __init__(self):
         self.data = None
+        self.show_data = None # 用来显示图像
         self.__color_space = "raw"
-        self.__bayer_pattern = "unknown"
+        self.__bayer_pattern = "rggb"
         # 默认以14位进行处理
         self.__bit_depth = 14
         self.__size = [0, 0]
 
     def load_image(self, filename, height, width, bit_depth):
+        """
+        function: 加载图像
+        input: 图像宽高和位深
+        brief: 由于RAW图不同的bit深度，同样的ISP流程会导致出来的亮度不一样
+        所以在RawImageInfor将原始raw图统一对齐为14bit
+        """
         if(height > 0 and width > 0):
             self.data = np.fromfile(
-                filename, dtype="uint16", sep="").reshape([height, width])
+                filename, dtype="uint16", sep="").reshape((height, width))
 
         if (self.data is not None):
             self.name = filename.split('/')[-1]
             self.__size = np.shape(self.data)
-            # 由于RAW图不同的bit深度，同样的ISP流程会导致出来的亮度不一样
-            # 所以在一开始需要将原始数据对齐为14bit！！
             if (bit_depth < 14):
                 self.data = np.left_shift(self.data, 14-bit_depth)
 
@@ -132,10 +138,14 @@ class RawImageInfo:
         return self.data
 
     def get_qimage(self):
+        """
+        function: convert to QImage
+        brief: 把图像转换为QImage，用于显示
+        """
         if (self.__color_space == "raw"):
-            data = np.left_shift(self.data, 2)
-            return QImage(data, self.__size[1],
-                          self.__size[0], QImage.Format_Grayscale16)
+            self.show_data = self.convert_bayer2color()
+            return QImage(self.show_data, self.show_data.shape[1],
+                          self.show_data.shape[0], QImage.Format_BGR888)
         elif (self.__color_space == "RGB"):
             return QImage(self.data, self.__size[1],
                           self.__size[0], QImage.Format_BGR888)
@@ -242,6 +252,38 @@ class RawImageInfo:
             print("pattern must be one of these: rggb, grbg, gbrg, bggr")
             return
 
+        return data
+    
+    def convert_bayer2color(self):
+        """
+        function: convert bayer to color
+        brief: 将bayer用8位的rgb显示，不进行demosaic
+        """
+        data = np.zeros((self.get_height(), self.get_width(),3),dtype="uint8")
+        right_shift_num = self.get_bit_depth() - 8
+        if (self.__bayer_pattern == "rggb"):
+            data[::2, ::2, 2] = np.right_shift(self.data[::2, ::2], right_shift_num)
+            data[::2, 1::2, 1] = np.right_shift(self.data[::2, 1::2], right_shift_num)
+            data[1::2, ::2, 1] = np.right_shift(self.data[1::2, ::2], right_shift_num)
+            data[1::2, 1::2, 0] = np.right_shift(self.data[1::2, 1::2], right_shift_num)
+        elif (self.__bayer_pattern == "grbg"):
+            data[::2, ::2, 1] = np.right_shift(self.data[::2, ::2], right_shift_num)
+            data[::2, 1::2, 2] = np.right_shift(self.data[::2, 1::2], right_shift_num)
+            data[1::2, ::2, 0] = np.right_shift(self.data[1::2, ::2], right_shift_num)
+            data[1::2, 1::2, 1] = np.right_shift(self.data[1::2, 1::2], right_shift_num)
+        elif (self.__bayer_pattern == "gbrg"):
+            data[::2, ::2, 1] = np.right_shift(self.data[::2, ::2], right_shift_num)
+            data[::2, 1::2, 0] = np.right_shift(self.data[::2, 1::2], right_shift_num)
+            data[1::2, ::2, 2] = np.right_shift(self.data[1::2, ::2], right_shift_num)
+            data[1::2, 1::2, 1] = np.right_shift(self.data[1::2, 1::2], right_shift_num)
+        elif (self.__bayer_pattern == "bggr"):
+            data[::2, ::2, 0] = np.right_shift(self.data[::2, ::2], right_shift_num)
+            data[::2, 1::2, 1] = np.right_shift(self.data[::2, 1::2], right_shift_num)
+            data[1::2, ::2, 1] = np.right_shift(self.data[1::2, ::2], right_shift_num)
+            data[1::2, 1::2, 2] = np.right_shift(self.data[1::2, 1::2], right_shift_num)
+        else:
+            print("pattern must be one of these: rggb, grbg, gbrg, bggr")
+            return None
         return data
 
     def bilinear_interpolation(self, x, y):

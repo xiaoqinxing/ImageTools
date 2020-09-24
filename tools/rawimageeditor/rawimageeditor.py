@@ -57,30 +57,25 @@ class RawImageEditor(object):
 
     def update_width(self):
         self.img_params.set_width(self.ui.width.value())
-        print(self.img_params.get_width())
 
     def update_height(self):
         self.img_params.set_height(self.ui.height.value())
-        print(self.img_params.get_height())
 
     def update_bit_depth(self):
         self.img_params.set_bit_depth(self.ui.bit.value())
-        print(self.img_params.get_bit_depth())
 
     def update_raw_format(self):
         self.img_params.set_raw_format(self.ui.raw_format.currentText())
-        print(self.img_params.get_raw_format())
 
     def update_pattern(self):
         self.img_params.set_pattern(self.ui.pattern.currentText().lower())
-        print(self.img_params.get_pattern())
 
     def displayImage(self, img):
         self.scene.clear()
         self.scene.addPixmap(QPixmap(img))
         self.now_image = img
 
-    def update_pipeline(self, item):
+    def update_pipeline(self):
         new_pipeline_list = []
         for i in range(self.ui.pipeline.count()):
             if (self.ui.pipeline.item(i).checkState() == Qt.Checked):
@@ -111,8 +106,12 @@ class RawImageEditor(object):
                 self.displayImage(self.img.get_qimage())
             else:
                 rely = QMessageBox.critical(
-                    self.window, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
-                return rely
+                    self.window, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
+                return
+        else:
+            rely = QMessageBox.critical(
+                self.window, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
+            return
 
     def save_now_image(self):
         if(self.img.get_raw_data() is not None):
@@ -142,20 +141,22 @@ class RawImageEditor(object):
         return
 
     def show_point_rgb(self, point):
-        self.x = int(point.x())
-        self.y = int(point.y())
-        if(self.img.get_raw_data() is not None):
-            rgb = self.img.get_img_point(self.x, self.y)
-            if (rgb is not None):
-                self.rgb = rgb
-                self.ui.statusBar.showMessage(
-                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+        # self.x = int(point.x())
+        # self.y = int(point.y())
+        return
+        # if(self.img.get_raw_data() is not None):
+        #     rgb = self.img.get_img_point(self.x, self.y)
+        #     if (rgb is not None):
+        #         self.rgb = rgb
+        #         self.ui.statusBar.showMessage(
+        #             "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
 
     def update_wheel_ratio(self, ratio):
-        if(self.img.get_raw_data() is not None):
-            self.scale_ratio = int(ratio * 100)
-            self.ui.statusBar.showMessage(
-                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+        return
+        # if(self.img.get_raw_data() is not None):
+        #     self.scale_ratio = int(ratio * 100)
+        #     self.ui.statusBar.showMessage(
+        #         "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
 
     def on_calc_stats(self):
         if(self.img.get_raw_data() is not None):

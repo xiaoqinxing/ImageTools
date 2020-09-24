@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\qinxing\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
+    "python.pythonPath": "C:\\Users\\keda\\AppData\\Local\\Programs\\Python\\Python38\\python.exe",
     // 默认对Python文件进行静态检查
     "python.linting.enabled": true,
 
@@ -10,5 +10,9 @@
     "python.linting.pylintEnabled": true,
 
     // 静态检查时是否使用pylint的最小规则集（minimal set of rules）
-    "python.linting.pylintUseMinimalCheckers": true
+    "python.linting.pylintUseMinimalCheckers": true,
+
+    "python.linting.pylintArgs": [
+        "--extension-pkg-whitelist=PySide2,cv2"
+    ]
 }

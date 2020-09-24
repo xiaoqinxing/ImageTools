@@ -21,7 +21,7 @@ class Ui_ImageEditor(object):
     def setupUi(self, ImageEditor):
         if not ImageEditor.objectName():
             ImageEditor.setObjectName(u"ImageEditor")
-        ImageEditor.resize(680, 577)
+        ImageEditor.resize(495, 577)
         ImageEditor.setContextMenuPolicy(Qt.DefaultContextMenu)
         ImageEditor.setToolTipDuration(-1)
         ImageEditor.setAnimated(True)
@@ -50,7 +50,7 @@ class Ui_ImageEditor(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setMaximumSize(QSize(400, 16777215))
+        self.groupBox.setMaximumSize(QSize(164, 16777215))
         self.horizontalLayout = QHBoxLayout(self.groupBox)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.verticalLayout_2 = QVBoxLayout()
@@ -83,6 +83,7 @@ class Ui_ImageEditor(object):
         self.height.setObjectName(u"height")
         self.height.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.height.setMaximum(10000)
+        self.height.setValue(0)
 
         self.gridLayout_4.addWidget(self.height, 1, 1, 1, 1)
 
@@ -90,12 +91,14 @@ class Ui_ImageEditor(object):
         self.width.setObjectName(u"width")
         self.width.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.width.setMaximum(10000)
+        self.width.setValue(0)
 
         self.gridLayout_4.addWidget(self.width, 0, 1, 1, 1)
 
         self.bit = QSpinBox(self.groupBox)
         self.bit.setObjectName(u"bit")
         self.bit.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.bit.setValue(0)
 
         self.gridLayout_4.addWidget(self.bit, 2, 1, 1, 1)
 
@@ -135,7 +138,7 @@ class Ui_ImageEditor(object):
 
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setMaximumSize(QSize(400, 16777215))
+        self.groupBox_2.setMaximumSize(QSize(227, 16777215))
         self.gridLayout_2 = QGridLayout(self.groupBox_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.pipeline = QListWidget(self.groupBox_2)
@@ -211,6 +214,7 @@ class Ui_ImageEditor(object):
 
         self.groupBox_3 = QGroupBox(self.centralwidget)
         self.groupBox_3.setObjectName(u"groupBox_3")
+        self.groupBox_3.setMaximumSize(QSize(399, 16777215))
         self.gridLayout_6 = QGridLayout(self.groupBox_3)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.scrollArea = QScrollArea(self.groupBox_3)
@@ -218,7 +222,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 549, 249))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 360, 250))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)

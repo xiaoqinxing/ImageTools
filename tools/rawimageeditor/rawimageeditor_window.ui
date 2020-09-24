@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
+    <width>495</width>
     <height>577</height>
    </rect>
   </property>
@@ -38,7 +38,7 @@
          <widget class="QGroupBox" name="groupBox">
           <property name="maximumSize">
            <size>
-            <width>400</width>
+            <width>164</width>
             <height>16777215</height>
            </size>
           </property>
@@ -108,6 +108,9 @@
                  <property name="maximum">
                   <number>10000</number>
                  </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
                 </widget>
                </item>
                <item row="0" column="1">
@@ -118,12 +121,18 @@
                  <property name="maximum">
                   <number>10000</number>
                  </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
                 </widget>
                </item>
                <item row="2" column="1">
                 <widget class="QSpinBox" name="bit">
                  <property name="buttonSymbols">
                   <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -173,7 +182,7 @@
          <widget class="QGroupBox" name="groupBox_2">
           <property name="maximumSize">
            <size>
-            <width>400</width>
+            <width>227</width>
             <height>16777215</height>
            </size>
           </property>
@@ -424,6 +433,12 @@
       </item>
       <item>
        <widget class="QGroupBox" name="groupBox_3">
+        <property name="maximumSize">
+         <size>
+          <width>399</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="title">
          <string>ISP参数</string>
         </property>
@@ -438,8 +453,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>549</width>
-              <height>249</height>
+              <width>360</width>
+              <height>250</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
