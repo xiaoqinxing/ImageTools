@@ -51,6 +51,7 @@ class RawImageEditor(object):
         self.img_list_start_index = 0
         self.img_list_end_index = 0
         self.img_index = 0
+        self.point_data = 0
 
     def show(self):
         self.window.show()
@@ -141,22 +142,28 @@ class RawImageEditor(object):
         return
 
     def show_point_rgb(self, point):
-        # self.x = int(point.x())
-        # self.y = int(point.y())
-        return
-        # if(self.img.get_raw_data() is not None):
-        #     rgb = self.img.get_img_point(self.x, self.y)
-        #     if (rgb is not None):
-        #         self.rgb = rgb
-        #         self.ui.statusBar.showMessage(
-        #             "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+        self.x = int(point.x())
+        self.y = int(point.y())
+        if(self.img.get_raw_data() is not None):
+            point_data = self.img.get_img_point(self.x, self.y)
+            if (point_data is not None):
+                self.point_data = point_data
+                if(self.point_data.size == 1):
+                    self.ui.statusBar.showMessage(
+                        "x:{},y:{} : 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.point_data, self.scale_ratio))
+                elif(self.point_data.size == 3):
+                    self.ui.statusBar.showMessage(
+                        "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
 
     def update_wheel_ratio(self, ratio):
-        return
-        # if(self.img.get_raw_data() is not None):
-        #     self.scale_ratio = int(ratio * 100)
-        #     self.ui.statusBar.showMessage(
-        #         "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[0], self.rgb[1], self.rgb[2], self.scale_ratio))
+        if(self.img.get_raw_data() is not None):
+            self.scale_ratio = int(ratio * 100)
+            if(self.point_data.size == 1):
+                self.ui.statusBar.showMessage(
+                    "x:{},y:{} : 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.point_data, self.scale_ratio))
+            elif(self.point_data.size == 3):
+                self.ui.statusBar.showMessage(
+                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
 
     def on_calc_stats(self):
         if(self.img.get_raw_data() is not None):

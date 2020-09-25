@@ -113,6 +113,7 @@ class RawImageInfo():
         self.show_data = None # 用来显示图像
         self.__color_space = "raw"
         self.__bayer_pattern = "rggb"
+        self.__raw_bit_depth = 12
         # 默认以14位进行处理
         self.__bit_depth = 14
         self.__size = [0, 0]
@@ -131,6 +132,7 @@ class RawImageInfo():
         if (self.data is not None):
             self.name = filename.split('/')[-1]
             self.__size = np.shape(self.data)
+            self.__raw_bit_depth = bit_depth
             if (bit_depth < 14):
                 self.data = np.left_shift(self.data, 14-bit_depth)
 
@@ -184,17 +186,25 @@ class RawImageInfo():
 
     def get_bit_depth(self):
         return self.__bit_depth
+    
+    def get_img_point(self,x,y):
+        """
+        获取图像中一个点的亮度值，注意颜色顺序是BGR
+        如果是raw图，获取的就是当前颜色的亮度
+        如果是RGB，获取的就是BGR
+        如果是YUV，获取的就是YCRCB
+        """
+        if(x > 0 and x < self.get_width() and y > 0 and y < self.get_height()):
+            right_shift_num = self.__bit_depth - self.__raw_bit_depth
+            return np.right_shift(self.data[y, x], right_shift_num)
+        else:
+            return None
 
     def bayer_channel_separation(self):
-        # ------------------------------------------------------
-        # function: bayer_channel_separation
-        #   Objective: Outputs four channels of the bayer pattern
-        #   Input:
-        #       data:   the bayer data
-        #       pattern:    rggb, grbg, gbrg, or bggr
-        #   Output:
-        #       R, G1, G2, B (Quarter resolution images)
-        # ------------------------------------------------------
+        """
+        function: bayer_channel_separation
+        Output: R, G1, G2, B (Quarter resolution images)
+        """
         if (self.__bayer_pattern == "rggb"):
             R = self.data[::2, ::2]
             Gr = self.data[::2, 1::2]
