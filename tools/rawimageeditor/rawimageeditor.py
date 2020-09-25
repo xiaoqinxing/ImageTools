@@ -77,19 +77,16 @@ class RawImageEditor(object):
         self.now_image = img
 
     def update_pipeline(self):
-        new_pipeline_list = []
+        self.img_params.pipeline_clear()
         for i in range(self.ui.pipeline.count()):
             if (self.ui.pipeline.item(i).checkState() == Qt.Checked):
-                new_pipeline_list.append(
-                    self.pipeline_dict[self.ui.pipeline.item(i).data(0)])
-        self.img_params.set_pipeline(new_pipeline_list)
+                self.img_params.add_pipeline_node(self.ui.pipeline.item(i).data(0))
         print(self.img_params.get_pipeline())
+        print(self.img_params.compare_pipeline())
 
     def update_img_index(self, item):
         if (self.ui.pipeline.item(item.row()).checkState() == Qt.Checked):
-            self.img_params.img_show_index = self.img_params.get_pipeline().index(
-                self.pipeline_dict[item.data()])
-            print(self.img_params.img_show_index)
+            print(self.img_params.get_pipeline_node_index(item.data()))
 
     def open_image(self):
         imagepath = QFileDialog.getOpenFileName(

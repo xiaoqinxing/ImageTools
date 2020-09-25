@@ -12,6 +12,26 @@ import cv2
 #   Helps set up necessary information/metadata of the image
 # =============================================================
 class RawImageParams():
+    pipeline_dict = {
+        "black level":  0,
+        "BLC":          0,
+        "rolloff":      1,
+        "ABF":          2,
+        "demosaic":     3,
+        "awb":          4,
+        "AWB":          4,
+        "ccm":          5,
+        "CCM":          5,
+        "gamma":        6,
+        "LTM":          7,
+        "advanced chroma enhancement":  8,
+        "ACE":                          8,
+        "wavelet denoise":              9,
+        "WNR":                          9,
+        "adaptive spatial filter":      10,
+        "ASF":                          10
+    }
+
     def __init__(self):
         self.channel_gain = (1.0, 1.0, 1.0, 1.0)
         self.black_level = (0, 0, 0, 0)
@@ -33,6 +53,36 @@ class RawImageParams():
     def set_pipeline(self, pipeline):
         self.old_pipeline = self.pipeline
         self.pipeline = pipeline
+    
+    def pipeline_clear(self):
+        self.old_pipeline = self.pipeline
+        self.pipeline = []
+    
+    def add_pipeline_node(self, node):
+        """
+        function: 为pipeline添加一个节点
+        输入是pipeline_dict的字符串
+        """
+        if(node in self.pipeline_dict):
+            self.pipeline.append(self.pipeline_dict[node])
+    
+    def get_pipeline_node_index(self, node):
+        """
+        返回该node在pipeline的index
+        """
+        if(node in self.pipeline_dict and self.pipeline_dict[node] in self.pipeline):
+            return self.pipeline.index(self.pipeline_dict[node])
+    
+    def compare_pipeline(self):
+        """
+        对比新老pipeline的区别
+        如果不同的话，会返回一个index，表示从第index个值开始不一样的,注意这个index可能不存在于老的pipeline中
+        如果相同的话，会返回0
+        """
+        for i,node in enumerate(self.pipeline):
+            if(i > len(self.old_pipeline) -1 or node != self.old_pipeline[i]):
+                return i
+        return 0
 
     def get_pipeline(self):
         return self.pipeline
