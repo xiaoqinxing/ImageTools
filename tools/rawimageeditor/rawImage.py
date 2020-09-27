@@ -13,36 +13,37 @@ import cv2
 # =============================================================
 class RawImageParams():
     pipeline_dict = {
-        "black level":  0,
-        "BLC":          0,
-        "rolloff":      1,
-        "ABF":          2,
-        "demosaic":     3,
-        "awb":          4,
-        "AWB":          4,
-        "ccm":          5,
-        "CCM":          5,
-        "gamma":        6,
-        "LTM":          7,
-        "advanced chroma enhancement":  8,
-        "ACE":                          8,
-        "wavelet denoise":              9,
-        "WNR":                          9,
-        "adaptive spatial filter":      10,
-        "ASF":                          10
+        "raw":          0,
+        "black level":  1,
+        "BLC":          1,
+        "rolloff":      2,
+        "ABF":          3,
+        "demosaic":     4,
+        "awb":          5,
+        "AWB":          5,
+        "ccm":          6,
+        "CCM":          6,
+        "gamma":        7,
+        "LTM":          8,
+        "advanced chroma enhancement":  9,
+        "ACE":                          9,
+        "wavelet denoise":              10,
+        "WNR":                          10,
+        "adaptive spatial filter":      11,
+        "ASF":                          11
     }
 
     def __init__(self):
         self.channel_gain = (1.0, 1.0, 1.0, 1.0)
-        self.awb_gain = (1.,1.,1.)
+        self.awb_gain = (1., 1., 1.)
         self.black_level = (0, 0, 0, 0)
         self.white_level = (1, 1, 1, 1)
         self.color_matrix = [[1., .0, .0],
                              [.0, 1., .0],
                              [.0, .0, 1.]]  # xyz2cam
         self.is_load_image = False
-        self.old_pipeline = []
-        self.pipeline = []
+        self.old_pipeline = [0]
+        self.pipeline = [0]
         self.img_show_index = 0
         self.error_str = ""
         self.height = 0
@@ -54,11 +55,11 @@ class RawImageParams():
     def set_pipeline(self, pipeline):
         self.old_pipeline = self.pipeline
         self.pipeline = pipeline
-    
+
     def pipeline_clear(self):
         self.old_pipeline = self.pipeline
-        self.pipeline = []
-    
+        self.pipeline = [0]
+
     def add_pipeline_node(self, node):
         """
         function: 为pipeline添加一个节点
@@ -66,22 +67,22 @@ class RawImageParams():
         """
         if(node in self.pipeline_dict):
             self.pipeline.append(self.pipeline_dict[node])
-    
+
     def get_pipeline_node_index(self, node):
         """
         返回该node在pipeline的index
         """
         if(node in self.pipeline_dict and self.pipeline_dict[node] in self.pipeline):
             return self.pipeline.index(self.pipeline_dict[node])
-    
+
     def compare_pipeline(self):
         """
-        对比新老pipeline的区别
+        function: 对比新老pipeline的区别
         如果不同的话，会返回一个index，表示从第index个值开始不一样的,注意这个index可能不存在于老的pipeline中
         如果相同的话，会返回0
         """
-        for i,node in enumerate(self.pipeline):
-            if(i > len(self.old_pipeline) -1 or node != self.old_pipeline[i]):
+        for i, node in enumerate(self.pipeline):
+            if(i > len(self.old_pipeline) - 1 or node != self.old_pipeline[i]):
                 return i
         return 0
 
@@ -108,10 +109,10 @@ class RawImageParams():
 
     def get_black_level(self):
         return self.black_level
-    
+
     def set_awb_gain(self, awb_gain):
         self.awb_gain = awb_gain
-    
+
     def get_awb_gain(self):
         return self.awb_gain
 
@@ -167,7 +168,7 @@ class RawImageParams():
 class RawImageInfo():
     def __init__(self):
         self.data = None
-        self.show_data = None # 用来显示图像
+        self.show_data = None  # 用来显示图像
         self.__color_space = "raw"
         self.__bayer_pattern = "rggb"
         self.__raw_bit_depth = 12
@@ -246,14 +247,14 @@ class RawImageInfo():
         获取当前raw图的位深
         """
         return self.__bit_depth
-    
+
     def get_raw_bit_depth(self):
         """
         获取原始输入raw图的位深
         """
         return self.__raw_bit_depth
-    
-    def get_img_point(self,x,y):
+
+    def get_img_point(self, x, y):
         """
         获取图像中一个点的亮度值，注意颜色顺序是BGR
         如果是raw图，获取的就是当前颜色的亮度
@@ -329,34 +330,51 @@ class RawImageInfo():
             return
 
         return data
-    
+
     def convert_bayer2color(self):
         """
         function: convert bayer to color
         brief: 将bayer用8位的rgb显示，不进行demosaic
         """
-        data = np.zeros((self.get_height(), self.get_width(),3),dtype="uint8")
+        data = np.zeros(
+            (self.get_height(), self.get_width(), 3), dtype="uint8")
         right_shift_num = self.get_bit_depth() - 8
         if (self.__bayer_pattern == "rggb"):
-            data[::2, ::2, 2] = np.right_shift(self.data[::2, ::2], right_shift_num)
-            data[::2, 1::2, 1] = np.right_shift(self.data[::2, 1::2], right_shift_num)
-            data[1::2, ::2, 1] = np.right_shift(self.data[1::2, ::2], right_shift_num)
-            data[1::2, 1::2, 0] = np.right_shift(self.data[1::2, 1::2], right_shift_num)
+            data[::2, ::2, 2] = np.right_shift(
+                self.data[::2, ::2], right_shift_num)
+            data[::2, 1::2, 1] = np.right_shift(
+                self.data[::2, 1::2], right_shift_num)
+            data[1::2, ::2, 1] = np.right_shift(
+                self.data[1::2, ::2], right_shift_num)
+            data[1::2, 1::2, 0] = np.right_shift(
+                self.data[1::2, 1::2], right_shift_num)
         elif (self.__bayer_pattern == "grbg"):
-            data[::2, ::2, 1] = np.right_shift(self.data[::2, ::2], right_shift_num)
-            data[::2, 1::2, 2] = np.right_shift(self.data[::2, 1::2], right_shift_num)
-            data[1::2, ::2, 0] = np.right_shift(self.data[1::2, ::2], right_shift_num)
-            data[1::2, 1::2, 1] = np.right_shift(self.data[1::2, 1::2], right_shift_num)
+            data[::2, ::2, 1] = np.right_shift(
+                self.data[::2, ::2], right_shift_num)
+            data[::2, 1::2, 2] = np.right_shift(
+                self.data[::2, 1::2], right_shift_num)
+            data[1::2, ::2, 0] = np.right_shift(
+                self.data[1::2, ::2], right_shift_num)
+            data[1::2, 1::2, 1] = np.right_shift(
+                self.data[1::2, 1::2], right_shift_num)
         elif (self.__bayer_pattern == "gbrg"):
-            data[::2, ::2, 1] = np.right_shift(self.data[::2, ::2], right_shift_num)
-            data[::2, 1::2, 0] = np.right_shift(self.data[::2, 1::2], right_shift_num)
-            data[1::2, ::2, 2] = np.right_shift(self.data[1::2, ::2], right_shift_num)
-            data[1::2, 1::2, 1] = np.right_shift(self.data[1::2, 1::2], right_shift_num)
+            data[::2, ::2, 1] = np.right_shift(
+                self.data[::2, ::2], right_shift_num)
+            data[::2, 1::2, 0] = np.right_shift(
+                self.data[::2, 1::2], right_shift_num)
+            data[1::2, ::2, 2] = np.right_shift(
+                self.data[1::2, ::2], right_shift_num)
+            data[1::2, 1::2, 1] = np.right_shift(
+                self.data[1::2, 1::2], right_shift_num)
         elif (self.__bayer_pattern == "bggr"):
-            data[::2, ::2, 0] = np.right_shift(self.data[::2, ::2], right_shift_num)
-            data[::2, 1::2, 1] = np.right_shift(self.data[::2, 1::2], right_shift_num)
-            data[1::2, ::2, 1] = np.right_shift(self.data[1::2, ::2], right_shift_num)
-            data[1::2, 1::2, 2] = np.right_shift(self.data[1::2, 1::2], right_shift_num)
+            data[::2, ::2, 0] = np.right_shift(
+                self.data[::2, ::2], right_shift_num)
+            data[::2, 1::2, 1] = np.right_shift(
+                self.data[::2, 1::2], right_shift_num)
+            data[1::2, ::2, 1] = np.right_shift(
+                self.data[1::2, ::2], right_shift_num)
+            data[1::2, 1::2, 2] = np.right_shift(
+                self.data[1::2, 1::2], right_shift_num)
         else:
             print("pattern must be one of these: rggb, grbg, gbrg, bggr")
             return None

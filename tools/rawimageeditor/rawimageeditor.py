@@ -10,20 +10,6 @@ import numpy as np
 
 
 class RawImageEditor(object):
-    pipeline_dict = {
-        "black level":  0,
-        "rolloff":      1,
-        "ABF":          2,
-        "demosaic":     3,
-        "awb":          4,
-        "ccm":          5,
-        "gamma":        6,
-        "LTM":          7,
-        "advanced chroma enhancement":  8,
-        "wavelet denoise":              9,
-        "adaptive spatial filter":      10
-    }
-
     def __init__(self):
         self.window = QMainWindow()
         self.ui = Ui_ImageEditor()
@@ -44,10 +30,10 @@ class RawImageEditor(object):
         self.ui.pipeline_ok.clicked.connect(self.update_pipeline)
         self.ui.open_image.clicked.connect(self.open_image)
         self.scale_ratio = 100
-        self.img = RawImageInfo()
+
         self.img_params = RawImageParams()
-        self.pipeline_list = []
-        self.img_list = []
+        self.img_list = PipelineProcImageList()
+        self.img = self.img_list.get_image(0)
         self.img_list_start_index = 0
         self.img_list_end_index = 0
         self.img_index = 0
@@ -80,7 +66,8 @@ class RawImageEditor(object):
         self.img_params.pipeline_clear()
         for i in range(self.ui.pipeline.count()):
             if (self.ui.pipeline.item(i).checkState() == Qt.Checked):
-                self.img_params.add_pipeline_node(self.ui.pipeline.item(i).data(0))
+                self.img_params.add_pipeline_node(
+                    self.ui.pipeline.item(i).data(0))
         print(self.img_params.get_pipeline())
         print(self.img_params.compare_pipeline())
 
@@ -254,3 +241,27 @@ class HistViewDrag(QDialog):
     def closeEvent(self, event):
         self.parent.setDragMode(QGraphicsView.ScrollHandDrag)
         return super().closeEvent(event)
+
+
+class PipelineProcImageList():
+    def __init__(self):
+        self.img_list = []
+        self.img_list.append(RawImageInfo())
+
+    def add_nodes(self, num):
+        for i in range(num):
+            self.img_list.append(RawImageInfo())
+
+    def add_node_img(self, img):
+        self.img_list.append(img)
+
+    def remove_node_tail(self, index):
+        """
+        function: 去除>=index之后的node
+        """
+        while index < len(self.img_list):
+            self.img_list.pop()
+
+    def get_image(self, index):
+        if (index < len(self.img_list)):
+            return self.img_list[index]
