@@ -34,6 +34,7 @@ class RawImageParams():
 
     def __init__(self):
         self.channel_gain = (1.0, 1.0, 1.0, 1.0)
+        self.awb_gain = (1.,1.,1.)
         self.black_level = (0, 0, 0, 0)
         self.white_level = (1, 1, 1, 1)
         self.color_matrix = [[1., .0, .0],
@@ -107,6 +108,12 @@ class RawImageParams():
 
     def get_black_level(self):
         return self.black_level
+    
+    def set_awb_gain(self, awb_gain):
+        self.awb_gain = awb_gain
+    
+    def get_awb_gain(self):
+        return self.awb_gain
 
     def set_error_str(self, string):
         self.error_str = string
@@ -235,7 +242,16 @@ class RawImageInfo():
         self.__bit_depth = bit_depth
 
     def get_bit_depth(self):
+        """
+        获取当前raw图的位深
+        """
         return self.__bit_depth
+    
+    def get_raw_bit_depth(self):
+        """
+        获取原始输入raw图的位深
+        """
+        return self.__raw_bit_depth
     
     def get_img_point(self,x,y):
         """

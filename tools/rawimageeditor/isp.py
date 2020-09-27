@@ -7,48 +7,31 @@ from matplotlib import pylab as plt
 import time         # measure runtime
 import tools.rawimageeditor.utility
 import tools.rawimageeditor.debayer
-import tools.rawimageeditor.rawImage
+from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 import sys          # float precision
 from scipy import signal        # convolutions
 from scipy import interpolate   # for interpolation
 
-
-def black_level_correction(raw, params):
+def black_level_correction(raw:RawImageInfo, params:RawImageParams):
     """
     function: black_level_correction
     brief: subtracts the black level channel wise
+    input: raw:RawImageInfo() params:RawImageParams()
     根据不同的bit_depth，需要对black_level进行移位
     """
-    print("----------------------------------------------------")
-    print("Running black level correction...")
     black_level = params.get_black_level()
     bayer_pattern = raw.get_bayer_pattern()
-    bit_depth = raw.get_set_bit_depth()
+    bit_depth = raw.get_raw_bit_depth()
     raw_data = raw.get_raw_data()
+    if(raw_data is None):
+        params.set_error_str("RAW data is None")
+        return None
+
     if (bit_depth < 14):
         black_level = np.left_shift(black_level, 14 - bit_depth)
 
     if(params.get_color_space() == "raw"):
-        if (bayer_pattern == "RGGB"):
-            first_pattern = black_level[0]
-            second_pattern = black_level[1]
-            third_pattern = black_level[2]
-            fourth_pattern = black_level[3]
-        elif (bayer_pattern == "GRBG"):
-            first_pattern = black_level[1]
-            second_pattern = black_level[0]
-            third_pattern = black_level[3]
-            fourth_pattern = black_level[2]
-        elif (bayer_pattern == "BGGR"):
-            first_pattern = black_level[3]
-            second_pattern = black_level[2]
-            third_pattern = black_level[1]
-            fourth_pattern = black_level[0]
-        elif (bayer_pattern == "GBRG"):
-            first_pattern = black_level[2]
-            second_pattern = black_level[3]
-            third_pattern = black_level[0]
-            fourth_pattern = black_level[1]
+        black_level = resort_with_bayer_pattern(black_level,bayer_pattern)
 
         # create new data so that original raw data do not change
         data = np.zeros(raw_data.shape)
@@ -56,157 +39,125 @@ def black_level_correction(raw, params):
         # bring data in range 0 to 1
         # list[i:j:2] 数组从取i 到 j 但加入了步长 这里步长为2
         # list[::2 ] 就是取奇数位，list[1::2]就是取偶数位
-        data[::2, ::2] = raw_data[::2, ::2] - first_pattern
-        data[::2, 1::2] = raw_data[::2, 1::2] - second_pattern
-        data[1::2, ::2] = raw_data[1::2, ::2] - third_pattern
-        data[1::2, 1::2] = raw_data[1::2, 1::2] - fourth_pattern
+        data[::2, ::2] = raw_data[::2, ::2] - black_level[0]
+        data[::2, 1::2] = raw_data[::2, 1::2] - black_level[1]
+        data[1::2, ::2] = raw_data[1::2, ::2] - black_level[2]
+        data[1::2, 1::2] = raw_data[1::2, 1::2] - black_level[3]
         return data
 
     else:
-        self.error_str = "black level correction need RAW data"
+        params.set_error_str("black level correction need RAW data")
         return None
 
-
-def channel_gain_white_balance(raw, params):
+def channel_gain_white_balance(raw:RawImageInfo, params:RawImageParams):
     """
     function: channel_gain_white_balance
     brief: multiply with the white balance channel gains
+    input: raw:RawImageInfo() params:RawImageParams()
     """
-    print("----------------------------------------------------")
-    print("Running channel gain white balance...")
+    # get params
+    channel_gain = params.get_channel_gain()
+    bayer_pattern = raw.get_bayer_pattern()
+    raw_data = raw.get_raw_data()
+    # check error
+    if(raw_data is None):
+        params.set_error_str("RAW data is None")
+        return None
+    
+    # ensure input color space and process
     if(params.get_color_space() == "raw"):
-        # convert into float32 in case they were not
-        channel_gain = np.float32(channel_gain)
-
+        data = np.zeros(raw_data.shape)
+        channel_gain = resort_with_bayer_pattern(channel_gain,bayer_pattern)
         # multiply with the channel gains
-        data[::2, ::2] = raw[::2, ::2] * channel_gain[0]
-        data[::2, 1::2] = raw[::2, 1::2] * channel_gain[1]
-        data[1::2, ::2] = raw[1::2, ::2] * channel_gain[2]
-        data[1::2, 1::2] = raw[1::2, 1::2] * channel_gain[3]
-
-        # clipping within range
-        # data = np.clip(data, 0., None)  # upper level not necessary
+        data[::2, ::2] = raw_data[::2, ::2] * channel_gain[0]
+        data[::2, 1::2] = raw_data[::2, 1::2] * channel_gain[1]
+        data[1::2, ::2] = raw_data[1::2, ::2] * channel_gain[2]
+        data[1::2, 1::2] = raw_data[1::2, 1::2] * channel_gain[3]
 
         return data
     else:
-        self.error_str = "white balance correction need RAW data"
+        params.set_error_str("white balance correction need RAW data")
         return None
 
 
-def bad_pixel_correction(raw, neighborhood_size):
+def bad_pixel_correction(raw:RawImageInfo, params:RawImageParams, neighborhood_size):
     """
     function: bad_pixel_correction
     correct for the bad (dead, stuck, or hot) pixels
+    input: raw:RawImageInfo() params:RawImageParams()
     """
-
-    print("----------------------------------------------------")
-    print("Running bad pixel correction...")
 
     if ((neighborhood_size % 2) == 0):
         print("neighborhood_size shoud be odd number, recommended value 3")
         return raw
 
-    # convert to float32 in case they were not
-    # Being consistent in data format to be float32
-    data = raw.copy()
+    raw_data = raw.get_raw_data()
+    if(raw_data is None):
+        params.set_error_str("RAW data is None")
+        return None
 
-    # Separate out the quarter resolution images
-    D = {}  # Empty dictionary
-    D[0] = data[::2, ::2]
-    D[1] = data[::2, 1::2]
-    D[2] = data[1::2, ::2]
-    D[3] = data[1::2, 1::2]
+    if(params.get_color_space() == "raw"):
+        data = np.zeros(raw_data.shape)
+        # Separate out the quarter resolution images
+        D = split_raw_data(raw_data)
 
-    # number of pixels to be padded at the borders
-    no_of_pixel_pad = math.floor(neighborhood_size / 2.)
+        # number of pixels to be padded at the borders
+        #no_of_pixel_pad = math.floor(neighborhood_size / 2.)
+        no_of_pixel_pad = neighborhood_size // 2
 
-    for idx in range(0, len(D)):  # perform same operation for each quarter
+        for idx in range(0, len(D)):  # perform same operation for each quarter
 
-        # display progress
-        print("bad pixel correction: Quarter " + str(idx+1) + " of 4")
+            # display progress
+            print("bad pixel correction: Quarter " + str(idx+1) + " of 4")
 
-        img = D[idx]
-        width, height = utility.helpers(img).get_width_height()
+            img = D[idx]
+            width, height = img.shape[1],img.shape[0]
 
-        # pad pixels at the borders
-        img = np.pad(img,
-                     (no_of_pixel_pad, no_of_pixel_pad),
-                     'reflect')  # reflect would not repeat the border value
+            # pad pixels at the borders, 扩充边缘
+            img = np.pad(img,
+                        (no_of_pixel_pad, no_of_pixel_pad),
+                        'reflect')  # reflect would not repeat the border value
 
-        for i in range(no_of_pixel_pad, height + no_of_pixel_pad):
-            for j in range(no_of_pixel_pad, width + no_of_pixel_pad):
+            for i in range(no_of_pixel_pad, height + no_of_pixel_pad):
+                for j in range(no_of_pixel_pad, width + no_of_pixel_pad):
 
-                # save the middle pixel value
-                mid_pixel_val = img[i, j]
+                    # save the middle pixel value
+                    mid_pixel_val = img[i, j]
 
-                # extract the neighborhood
-                neighborhood = img[i - no_of_pixel_pad: i + no_of_pixel_pad+1,
-                                   j - no_of_pixel_pad: j + no_of_pixel_pad+1]
+                    # extract the neighborhood
+                    neighborhood = img[i - no_of_pixel_pad: i + no_of_pixel_pad+1,
+                                    j - no_of_pixel_pad: j + no_of_pixel_pad+1]
 
-                # set the center pixels value same as the left pixel
-                # Does not matter replace with right or left pixel
-                # is used to replace the center pixels value
-                neighborhood[no_of_pixel_pad,
-                             no_of_pixel_pad] = neighborhood[no_of_pixel_pad, no_of_pixel_pad-1]
+                    # set the center pixels value same as the left pixel
+                    # Does not matter replace with right or left pixel
+                    # is used to replace the center pixels value
+                    neighborhood[no_of_pixel_pad,
+                                no_of_pixel_pad] = neighborhood[no_of_pixel_pad, no_of_pixel_pad-1]
 
-                min_neighborhood = np.min(neighborhood)
-                max_neighborhood = np.max(neighborhood)
+                    min_neighborhood = np.min(neighborhood)
+                    max_neighborhood = np.max(neighborhood)
 
-                if (mid_pixel_val < min_neighborhood):
-                    img[i, j] = min_neighborhood
-                elif (mid_pixel_val > max_neighborhood):
-                    img[i, j] = max_neighborhood
-                else:
-                    img[i, j] = mid_pixel_val
+                    if (mid_pixel_val < min_neighborhood):
+                        img[i, j] = min_neighborhood
+                    elif (mid_pixel_val > max_neighborhood):
+                        img[i, j] = max_neighborhood
+                    else:
+                        img[i, j] = mid_pixel_val
 
-        # Put the corrected image to the dictionary
-        D[idx] = img[no_of_pixel_pad: height + no_of_pixel_pad,
-                     no_of_pixel_pad: width + no_of_pixel_pad]
+            # Put the corrected image to the dictionary
+            D[idx] = img[no_of_pixel_pad: height + no_of_pixel_pad,
+                        no_of_pixel_pad: width + no_of_pixel_pad]
 
-    # Regrouping the data
-    data[::2, ::2] = D[0]
-    data[::2, 1::2] = D[1]
-    data[1::2, ::2] = D[2]
-    data[1::2, 1::2] = D[3]
+        # Regrouping the data
+        data[::2, ::2] = D[0]
+        data[::2, 1::2] = D[1]
+        data[1::2, ::2] = D[2]
+        data[1::2, 1::2] = D[3]
 
-    return data
-
-
-def bayer_channel_separation(data, pattern):
-    """
-    function: bayer_channel_separation
-        Objective: Outputs four channels of the bayer pattern
-        Input:
-            data:   the bayer data
-            pattern:    rggb, grbg, gbrg, or bggr
-        Output:
-            R, G1, G2, B (Quarter resolution images)
-    """
-    if (pattern == "RGGB"):
-        R = data[::2, ::2]
-        GR = data[::2, 1::2]
-        GB = data[1::2, ::2]
-        B = data[1::2, 1::2]
-    elif (pattern == "GRBG"):
-        GR = data[::2, ::2]
-        R = data[::2, 1::2]
-        B = data[1::2, ::2]
-        GR = data[1::2, 1::2]
-    elif (pattern == "GBRG"):
-        GB = data[::2, ::2]
-        B = data[::2, 1::2]
-        R = data[1::2, ::2]
-        GR = data[1::2, 1::2]
-    elif (pattern == "BGGR"):
-        B = data[::2, ::2]
-        GB = data[::2, 1::2]
-        GR = data[1::2, ::2]
-        R = data[1::2, 1::2]
+        return data
     else:
-        print("pattern must be one of these: rggb, grbg, gbrg, bggr")
-        return
-
-    return R, GR, GB, B
+        params.set_error_str("bad pixel correction need RAW data")
+        return None
 # =============================================================
 # class: demosaic
 # =============================================================
@@ -1317,3 +1268,76 @@ class chromatic_aberration_correction:
 
     def __str__(self):
         return self.name
+
+
+def resort_with_bayer_pattern(data, bayer_pattern):
+    """
+    将data按照pattern格式重新排列成raw图上的顺序
+    """
+    ret = [0,0,0,0]
+    if (bayer_pattern == "rggb"):
+        ret[0] = data[0]
+        ret[1] = data[1]
+        ret[2] = data[2]
+        ret[3] = data[3]
+    elif (bayer_pattern == "grbg"):
+        ret[0] = data[1]
+        ret[1] = data[0]
+        ret[2] = data[3]
+        ret[3] = data[2]
+    elif (bayer_pattern == "bggr"):
+        ret[0] = data[3]
+        ret[1] = data[2]
+        ret[2] = data[1]
+        ret[3] = data[0]
+    elif (bayer_pattern == "gbrg"):
+        ret[0] = data[2]
+        ret[1] = data[3]
+        ret[2] = data[0]
+        ret[3] = data[1]
+    
+    return ret
+
+def bayer_channel_separation(data, pattern):
+    """
+    function: bayer_channel_separation
+        Objective: Outputs four channels of the bayer pattern
+        Input:
+            data:   the bayer data
+            pattern:    rggb, grbg, gbrg, or bggr
+        Output:
+            R, G1, G2, B (Quarter resolution images)
+    """
+    if (pattern == "rggb"):
+        R = data[::2, ::2]
+        Gr = data[::2, 1::2]
+        Gb = data[1::2, ::2]
+        B = data[1::2, 1::2]
+    elif (pattern == "grbg"):
+        Gr = data[::2, ::2]
+        R = data[::2, 1::2]
+        B = data[1::2, ::2]
+        Gb = data[1::2, 1::2]
+    elif (pattern == "gbrg"):
+        Gb = data[::2, ::2]
+        B = data[::2, 1::2]
+        R = data[1::2, ::2]
+        Gr = data[1::2, 1::2]
+    elif (pattern == "bggr"):
+        B = data[::2, ::2]
+        Gb = data[::2, 1::2]
+        Gr = data[1::2, ::2]
+        R = data[1::2, 1::2]
+    else:
+        print("pattern must be one of these: rggb, grbg, gbrg, bggr")
+        return
+
+    return R, Gr, Gb, B
+
+def split_raw_data(data):
+    ret = []
+    ret.append(data[::2, ::2])
+    ret.append(data[::2, 1::2])
+    ret.append(data[1::2, ::2])
+    ret.append(data[1::2, 1::2])
+    return ret
