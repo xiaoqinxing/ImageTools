@@ -34,6 +34,9 @@ class RawImageEditor(object):
         self.ui.blc_gr.editingFinished.connect(self.update_black_level)
         self.ui.blc_gb.editingFinished.connect(self.update_black_level)
         self.ui.blc_b.editingFinished.connect(self.update_black_level)
+        self.ui.awb_r.editingFinished.connect(self.update_awb)
+        self.ui.awb_g.editingFinished.connect(self.update_awb)
+        self.ui.awb_b.editingFinished.connect(self.update_awb)
         self.scale_ratio = 100
 
         self.img_pipeline = IspPipeline()
@@ -71,6 +74,10 @@ class RawImageEditor(object):
     def update_black_level(self):
         self.img_params.set_black_level([self.ui.blc_r.value(
         ), self.ui.blc_gr.value(), self.ui.blc_gb.value(), self.ui.blc_b.value()])
+        self.img_pipeline.flush_pipeline()
+    
+    def update_awb(self):
+        self.img_params.set_awb_gain((self.ui.awb_r.value(),self.ui.awb_g.value(),self.ui.awb_b.value()))
         self.img_pipeline.flush_pipeline()
 
     def update_pipeline(self):

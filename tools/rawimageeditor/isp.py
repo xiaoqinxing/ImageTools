@@ -56,9 +56,11 @@ def channel_gain_white_balance(raw:RawImageInfo, params:RawImageParams):
     input: raw:RawImageInfo() params:RawImageParams()
     """
     # get params
-    channel_gain = params.get_channel_gain()
+    (r_gain, g_gain, b_gain) = params.get_awb_gain()
+    channel_gain = (r_gain, g_gain,g_gain, b_gain)
     bayer_pattern = raw.get_bayer_pattern()
     raw_data = raw.get_raw_data()
+    ret_img = RawImageInfo()
     # check error
     if(raw_data is None):
         params.set_error_str("RAW data is None")
@@ -66,15 +68,15 @@ def channel_gain_white_balance(raw:RawImageInfo, params:RawImageParams):
     
     # ensure input color space and process
     if(raw.get_color_space() == "raw"):
-        data = np.zeros(raw_data.shape)
+        ret_img.create_image('after awb', raw_data.shape)
         channel_gain = resort_with_bayer_pattern(channel_gain,bayer_pattern)
         # multiply with the channel gains
-        data[::2, ::2] = raw_data[::2, ::2] * channel_gain[0]
-        data[::2, 1::2] = raw_data[::2, 1::2] * channel_gain[1]
-        data[1::2, ::2] = raw_data[1::2, ::2] * channel_gain[2]
-        data[1::2, 1::2] = raw_data[1::2, 1::2] * channel_gain[3]
+        ret_img.data[::2, ::2] = raw_data[::2, ::2] * channel_gain[0]
+        ret_img.data[::2, 1::2] = raw_data[::2, 1::2] * channel_gain[1]
+        ret_img.data[1::2, ::2] = raw_data[1::2, ::2] * channel_gain[2]
+        ret_img.data[1::2, 1::2] = raw_data[1::2, 1::2] * channel_gain[3]
 
-        return data
+        return ret_img
     else:
         params.set_error_str("white balance correction need RAW data")
         return None
