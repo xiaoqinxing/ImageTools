@@ -269,35 +269,35 @@ class Ui_ImageEditor(object):
 
         self.gridLayout_3.addWidget(self.label_4, 0, 6, 1, 1)
 
-        self.spinBox_3 = QSpinBox(self.groupBox_4)
-        self.spinBox_3.setObjectName(u"spinBox_3")
+        self.blc_gb = QSpinBox(self.groupBox_4)
+        self.blc_gb.setObjectName(u"blc_gb")
 
-        self.gridLayout_3.addWidget(self.spinBox_3, 0, 5, 1, 1)
+        self.gridLayout_3.addWidget(self.blc_gb, 0, 5, 1, 1)
 
-        self.spinBox_2 = QSpinBox(self.groupBox_4)
-        self.spinBox_2.setObjectName(u"spinBox_2")
+        self.blc_gr = QSpinBox(self.groupBox_4)
+        self.blc_gr.setObjectName(u"blc_gr")
 
-        self.gridLayout_3.addWidget(self.spinBox_2, 0, 3, 1, 1)
+        self.gridLayout_3.addWidget(self.blc_gr, 0, 3, 1, 1)
 
         self.label = QLabel(self.groupBox_4)
         self.label.setObjectName(u"label")
 
         self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
 
-        self.spinBox = QSpinBox(self.groupBox_4)
-        self.spinBox.setObjectName(u"spinBox")
+        self.blc_r = QSpinBox(self.groupBox_4)
+        self.blc_r.setObjectName(u"blc_r")
 
-        self.gridLayout_3.addWidget(self.spinBox, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.blc_r, 0, 1, 1, 1)
 
         self.label_3 = QLabel(self.groupBox_4)
         self.label_3.setObjectName(u"label_3")
 
         self.gridLayout_3.addWidget(self.label_3, 0, 4, 1, 1)
 
-        self.spinBox_4 = QSpinBox(self.groupBox_4)
-        self.spinBox_4.setObjectName(u"spinBox_4")
+        self.blc_b = QSpinBox(self.groupBox_4)
+        self.blc_b.setObjectName(u"blc_b")
 
-        self.gridLayout_3.addWidget(self.spinBox_4, 0, 7, 1, 1)
+        self.gridLayout_3.addWidget(self.blc_b, 0, 7, 1, 1)
 
 
         self.gridLayout_7.addWidget(self.groupBox_4, 0, 0, 1, 1)

@@ -5,6 +5,7 @@ from PySide2.QtCore import Slot
 from tools.rawimageeditor.rawimageeditor_window import Ui_ImageEditor
 from ui.customwidget import ImageView, MatplotlibWidget
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
+from tools.rawimageeditor.isppipeline import IspPipeline
 from tools.rawimageeditor.rawhistgramview import Ui_HistgramView
 import numpy as np
 
@@ -29,13 +30,15 @@ class RawImageEditor(object):
         self.ui.pipeline.doubleClicked.connect(self.update_img_index)
         self.ui.pipeline_ok.clicked.connect(self.update_pipeline)
         self.ui.open_image.clicked.connect(self.open_image)
+        self.ui.blc_r.editingFinished.connect(self.update_black_level)
+        self.ui.blc_gr.editingFinished.connect(self.update_black_level)
+        self.ui.blc_gb.editingFinished.connect(self.update_black_level)
+        self.ui.blc_b.editingFinished.connect(self.update_black_level)
         self.scale_ratio = 100
 
-        self.img_params = RawImageParams()
-        self.img_list = PipelineProcImageList()
-        self.img = self.img_list.get_image(0)
-        self.img_list_start_index = 0
-        self.img_list_end_index = 0
+        self.img_pipeline = IspPipeline()
+        self.img_params = self.img_pipeline.params
+        self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0
 
@@ -58,22 +61,32 @@ class RawImageEditor(object):
         self.img_params.set_pattern(self.ui.pattern.currentText().lower())
 
     def displayImage(self, img):
+        """
+        显示图像 输入需要是RawImageInfo
+        """
         self.scene.clear()
-        self.scene.addPixmap(QPixmap(img))
-        self.now_image = img
+        self.img = img
+        self.scene.addPixmap(QPixmap(img.get_qimage()))
+
+    def update_black_level(self):
+        self.img_params.set_black_level([self.ui.blc_r.value(
+        ), self.ui.blc_gr.value(), self.ui.blc_gb.value(), self.ui.blc_b.value()])
 
     def update_pipeline(self):
-        self.img_params.pipeline_clear()
+        self.img_pipeline.pipeline_clear()
         for i in range(self.ui.pipeline.count()):
             if (self.ui.pipeline.item(i).checkState() == Qt.Checked):
-                self.img_params.add_pipeline_node(
+                self.img_pipeline.add_pipeline_node(
                     self.ui.pipeline.item(i).data(0))
-        print(self.img_params.get_pipeline())
-        print(self.img_params.compare_pipeline())
+        self.img_pipeline.run_pipeline()
+        self.displayImage(self.img_pipeline.get_image(0))
+        print(self.img_pipeline.get_pipeline())
+        print(self.img_pipeline.compare_pipeline())
 
     def update_img_index(self, item):
         if (self.ui.pipeline.item(item.row()).checkState() == Qt.Checked):
-            print(self.img_params.get_pipeline_node_index(item.data()))
+            index = self.img_pipeline.get_pipeline_node_index(item.data())
+            self.displayImage(self.img_pipeline.get_image(index))
 
     def open_image(self):
         imagepath = QFileDialog.getOpenFileName(
@@ -88,7 +101,7 @@ class RawImageEditor(object):
             self.img.load_image(filename, height, width, bit_depth)
             self.img.set_bayer_pattern(self.img_params.get_pattern())
             if (self.img.get_raw_data() is not None):
-                self.displayImage(self.img.get_qimage())
+                self.displayImage(self.img)
             else:
                 rely = QMessageBox.critical(
                     self.window, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
@@ -241,27 +254,3 @@ class HistViewDrag(QDialog):
     def closeEvent(self, event):
         self.parent.setDragMode(QGraphicsView.ScrollHandDrag)
         return super().closeEvent(event)
-
-
-class PipelineProcImageList():
-    def __init__(self):
-        self.img_list = []
-        self.img_list.append(RawImageInfo())
-
-    def add_nodes(self, num):
-        for i in range(num):
-            self.img_list.append(RawImageInfo())
-
-    def add_node_img(self, img):
-        self.img_list.append(img)
-
-    def remove_node_tail(self, index):
-        """
-        function: 去除>=index之后的node
-        """
-        while index < len(self.img_list):
-            self.img_list.pop()
-
-    def get_image(self, index):
-        if (index < len(self.img_list)):
-            return self.img_list[index]

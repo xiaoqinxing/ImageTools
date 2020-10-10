@@ -30,20 +30,20 @@ def black_level_correction(raw:RawImageInfo, params:RawImageParams):
     if (bit_depth < 14):
         black_level = np.left_shift(black_level, 14 - bit_depth)
 
-    if(params.get_color_space() == "raw"):
+    if(raw.get_color_space() == "raw"):
         black_level = resort_with_bayer_pattern(black_level,bayer_pattern)
-
+        ret_img = RawImageInfo()
+        ret_img.create_image('after black level', raw_data.shape)
         # create new data so that original raw data do not change
-        data = np.zeros(raw_data.shape)
 
         # bring data in range 0 to 1
         # list[i:j:2] 数组从取i 到 j 但加入了步长 这里步长为2
         # list[::2 ] 就是取奇数位，list[1::2]就是取偶数位
-        data[::2, ::2] = raw_data[::2, ::2] - black_level[0]
-        data[::2, 1::2] = raw_data[::2, 1::2] - black_level[1]
-        data[1::2, ::2] = raw_data[1::2, ::2] - black_level[2]
-        data[1::2, 1::2] = raw_data[1::2, 1::2] - black_level[3]
-        return data
+        ret_img.data[::2, ::2] = raw_data[::2, ::2] - black_level[0]
+        ret_img.data[::2, 1::2] = raw_data[::2, 1::2] - black_level[1]
+        ret_img.data[1::2, ::2] = raw_data[1::2, ::2] - black_level[2]
+        ret_img.data[1::2, 1::2] = raw_data[1::2, 1::2] - black_level[3]
+        return ret_img
 
     else:
         params.set_error_str("black level correction need RAW data")
@@ -65,7 +65,7 @@ def channel_gain_white_balance(raw:RawImageInfo, params:RawImageParams):
         return None
     
     # ensure input color space and process
-    if(params.get_color_space() == "raw"):
+    if(raw.get_color_space() == "raw"):
         data = np.zeros(raw_data.shape)
         channel_gain = resort_with_bayer_pattern(channel_gain,bayer_pattern)
         # multiply with the channel gains
@@ -96,7 +96,7 @@ def bad_pixel_correction(raw:RawImageInfo, params:RawImageParams, neighborhood_s
         params.set_error_str("RAW data is None")
         return None
 
-    if(params.get_color_space() == "raw"):
+    if(raw.get_color_space() == "raw"):
         data = np.zeros(raw_data.shape)
         # Separate out the quarter resolution images
         D = split_raw_data(raw_data)

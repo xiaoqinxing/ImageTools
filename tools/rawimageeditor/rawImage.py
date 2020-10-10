@@ -12,27 +12,6 @@ import cv2
 #   Helps set up necessary information/metadata of the image
 # =============================================================
 class RawImageParams():
-    pipeline_dict = {
-        "raw":          0,
-        "black level":  1,
-        "BLC":          1,
-        "rolloff":      2,
-        "ABF":          3,
-        "demosaic":     4,
-        "awb":          5,
-        "AWB":          5,
-        "ccm":          6,
-        "CCM":          6,
-        "gamma":        7,
-        "LTM":          8,
-        "advanced chroma enhancement":  9,
-        "ACE":                          9,
-        "wavelet denoise":              10,
-        "WNR":                          10,
-        "adaptive spatial filter":      11,
-        "ASF":                          11
-    }
-
     def __init__(self):
         self.channel_gain = (1.0, 1.0, 1.0, 1.0)
         self.awb_gain = (1., 1., 1.)
@@ -42,8 +21,6 @@ class RawImageParams():
                              [.0, 1., .0],
                              [.0, .0, 1.]]  # xyz2cam
         self.is_load_image = False
-        self.old_pipeline = [0]
-        self.pipeline = [0]
         self.img_show_index = 0
         self.error_str = ""
         self.height = 0
@@ -51,46 +28,6 @@ class RawImageParams():
         self.bit_depth = 0
         self.raw_format = "MIPI"
         self.pattern = "rggb"
-
-    def set_pipeline(self, pipeline):
-        self.old_pipeline = self.pipeline
-        self.pipeline = pipeline
-
-    def pipeline_clear(self):
-        self.old_pipeline = self.pipeline
-        self.pipeline = [0]
-
-    def add_pipeline_node(self, node):
-        """
-        function: 为pipeline添加一个节点
-        输入是pipeline_dict的字符串
-        """
-        if(node in self.pipeline_dict):
-            self.pipeline.append(self.pipeline_dict[node])
-
-    def get_pipeline_node_index(self, node):
-        """
-        返回该node在pipeline的index
-        """
-        if(node in self.pipeline_dict and self.pipeline_dict[node] in self.pipeline):
-            return self.pipeline.index(self.pipeline_dict[node])
-
-    def compare_pipeline(self):
-        """
-        function: 对比新老pipeline的区别
-        如果不同的话，会返回一个index，表示从第index个值开始不一样的,注意这个index可能不存在于老的pipeline中
-        如果相同的话，会返回0
-        """
-        for i, node in enumerate(self.pipeline):
-            if(i > len(self.old_pipeline) - 1 or node != self.old_pipeline[i]):
-                return i
-        return 0
-
-    def get_pipeline(self):
-        return self.pipeline
-
-    def update_pipeline(self, pipeline):
-        self.pipeline = pipeline
 
     def set_channel_gain(self, channel_gain):
         self.channel_gain = channel_gain
@@ -193,6 +130,17 @@ class RawImageInfo():
             self.__raw_bit_depth = bit_depth
             if (bit_depth < 14):
                 self.data = np.left_shift(self.data, 14-bit_depth)
+    
+    def create_image(self, name, shape):
+        """
+        function: 创建一个空图像
+        input: 图像名称和shape
+        """
+        self.data = np.zeros(shape,dtype="uint16")
+
+        if (self.data is not None):
+            self.name = name
+            self.__size = np.shape(self.data)
 
     def get_raw_data(self):
         return self.data
