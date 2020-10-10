@@ -71,6 +71,7 @@ class RawImageEditor(object):
     def update_black_level(self):
         self.img_params.set_black_level([self.ui.blc_r.value(
         ), self.ui.blc_gr.value(), self.ui.blc_gb.value(), self.ui.blc_b.value()])
+        self.img_pipeline.flush_pipeline()
 
     def update_pipeline(self):
         self.img_pipeline.pipeline_clear()
@@ -117,13 +118,6 @@ class RawImageEditor(object):
                 None, '保存图片', './', "Images (*.jpg)")
             if(imagepath[0] != ""):
                 self.img.save_image(self.now_image, imagepath[0])
-
-    # def compare_image(self):
-    #     if(self.img.get_raw_data() is not None):
-    #         if(self.now_image == self.img.get_dst_image()):
-    #             self.displayImage(self.img.get_src_image())
-    #         else:
-    #             self.displayImage(self.img.get_dst_image())
 
     def update_stats_range(self, viewportRect, fromScenePoint, toScenePoint):
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0

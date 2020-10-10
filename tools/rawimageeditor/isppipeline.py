@@ -32,6 +32,7 @@ class IspPipeline():
         # img_list存储了pipeline中途所有的图像
         self.img_list = []
         self.img_list.append(RawImageInfo())
+        self.need_flush = False
 
     def set_pipeline(self, pipeline):
         self.old_pipeline = self.pipeline
@@ -70,17 +71,23 @@ class IspPipeline():
     def check_pipeline(self):
         """
         检查pipeline，如果有不同的，修改img_list
-        ret: 如果pipeline不需要修改，就返回true，如果需要修改，就返回false
+        ret: 如果pipeline不需要修改，就返回None，如果需要修改，就返回需要修改的pipeline
         """
-        index = self.compare_pipeline()
-        if(index != 0):
-            self.remove_img_node_tail(index)
-            return False
-        return True
+        if(self.need_flush == False):
+            index = self.compare_pipeline()
+            if(index != 0):
+                self.remove_img_node_tail(index)
+                return self.pipeline[index:]
+            return None
+        else:
+            self.remove_img_node_tail(1)
+            self.need_flush = False
+            return self.pipeline
     
     def run_pipeline(self):
-        if(self.check_pipeline() == False):
-            for node,data in zip(self.pipeline,self.img_list):
+        pipeline = self.check_pipeline()
+        if(pipeline != None):
+            for node,data in zip(pipeline,self.img_list):
                 self.img_list.append(self.run_node(node, data))
     
     def run_node(self, node, data):
@@ -119,3 +126,9 @@ class IspPipeline():
             return self.img_list[index]
         else:
             return None
+    
+    def flush_pipeline(self):
+        """
+        刷新pipeline的参数，防止设置参数没有生效
+        """
+        self.need_flush = True
