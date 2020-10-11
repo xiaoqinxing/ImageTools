@@ -12,12 +12,15 @@ from scipy import signal
 
 
 def debayer_mhc(raw, bayer_pattern="rggb", clip_range=[0, 65535], timeshow=False):
-
+    """
+    demosaicing using Malvar-He-Cutler algorithm
+    http://www.ipol.im/pub/art/2011/g_mhcd/
+    """
     # convert to float32 in case it was not
     raw = np.float32(raw)
 
     # dimensions
-    width, height = utility.helpers(raw).get_width_height()
+    width, height = raw.shape[1], raw.shape[0]
 
     # number of pixels to pad
     no_of_pixel_pad = 2

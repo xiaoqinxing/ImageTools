@@ -29,6 +29,38 @@ class RawImageParams():
         self.raw_format = "MIPI"
         self.pattern = "rggb"
         self.__neighborhood_size_for_bad_pixel_correction = 3
+        self.__demosaic_func_type = 0
+        self.__demosaic_need_proc_color = 1
+        self.__demosaic_need_media_filter = 1
+
+    def set_demosaic_func_type(self, type):
+        """
+        demosaic有两种算法，设置demosaic的算法
+        0: Malvar-He-Cutler algorithm
+        1: directionally weighted gradient based interpolation algorithm
+        """
+        self.__demosaic_func_type = type
+
+    def get_demosaic_funct_type(self):
+        return self.__demosaic_func_type
+
+    def set_demosaic_need_proc_color(self, value):
+        """
+        是否在demosaic之后启用色度抑制
+        """
+        self.__demosaic_need_proc_color = value
+
+    def get_demosaic_need_proc_color(self):
+        return self.__demosaic_need_proc_color
+
+    def set_demosaic_need_media_filter(self, value):
+        """
+        是否在demosaic之后启用中值滤波
+        """
+        self.__demosaic_need_media_filter = value
+
+    def get_demosaic_need_media_filter(self):
+        return self.__demosaic_need_media_filter
 
     def set_channel_gain(self, channel_gain):
         """
@@ -179,6 +211,12 @@ class RawImageInfo():
                           self.__size[0], QImage.Format_BGR888)
         else:
             return
+
+    def set_name(self, name):
+        self.name = name
+
+    def set_size(self, size):
+        self.__size = size
 
     def get_size(self):
         return self.__size
