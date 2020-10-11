@@ -12,7 +12,29 @@ import sys          # float precision
 from scipy import signal        # convolutions
 from scipy import interpolate   # for interpolation
 
-def black_level_correction(raw:RawImageInfo, params:RawImageParams):
+pipeline_dict = {
+        "raw":          0,
+        "black level":  1,
+        "BLC":          1,
+        "rolloff":      2,
+        "ABF":          3,
+        "demosaic":     4,
+        "awb":          5,
+        "AWB":          5,
+        "ccm":          6,
+        "CCM":          6,
+        "gamma":        7,
+        "LTM":          8,
+        "advanced chroma enhancement":  9,
+        "ACE":                          9,
+        "wavelet denoise":              10,
+        "WNR":                          10,
+        "adaptive spatial filter":      11,
+        "ASF":                          11,
+        "bad pixel correction":         12
+    }
+
+def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     """
     function: black_level_correction
     brief: subtracts the black level channel wise
@@ -31,7 +53,7 @@ def black_level_correction(raw:RawImageInfo, params:RawImageParams):
         black_level = np.left_shift(black_level, 14 - bit_depth)
 
     if(raw.get_color_space() == "raw"):
-        black_level = resort_with_bayer_pattern(black_level,bayer_pattern)
+        black_level = resort_with_bayer_pattern(black_level, bayer_pattern)
         ret_img = RawImageInfo()
         ret_img.create_image('after black level', raw_data.shape)
         # create new data so that original raw data do not change
@@ -49,7 +71,8 @@ def black_level_correction(raw:RawImageInfo, params:RawImageParams):
         params.set_error_str("black level correction need RAW data")
         return None
 
-def channel_gain_white_balance(raw:RawImageInfo, params:RawImageParams):
+
+def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
     """
     function: channel_gain_white_balance
     brief: multiply with the white balance channel gains
@@ -57,7 +80,7 @@ def channel_gain_white_balance(raw:RawImageInfo, params:RawImageParams):
     """
     # get params
     (r_gain, g_gain, b_gain) = params.get_awb_gain()
-    channel_gain = (r_gain, g_gain,g_gain, b_gain)
+    channel_gain = (r_gain, g_gain, g_gain, b_gain)
     bayer_pattern = raw.get_bayer_pattern()
     raw_data = raw.get_raw_data()
     ret_img = RawImageInfo()
@@ -65,11 +88,11 @@ def channel_gain_white_balance(raw:RawImageInfo, params:RawImageParams):
     if(raw_data is None):
         params.set_error_str("RAW data is None")
         return None
-    
+
     # ensure input color space and process
     if(raw.get_color_space() == "raw"):
         ret_img.create_image('after awb', raw_data.shape)
-        channel_gain = resort_with_bayer_pattern(channel_gain,bayer_pattern)
+        channel_gain = resort_with_bayer_pattern(channel_gain, bayer_pattern)
         # multiply with the channel gains
         ret_img.data[::2, ::2] = raw_data[::2, ::2] * channel_gain[0]
         ret_img.data[::2, 1::2] = raw_data[::2, 1::2] * channel_gain[1]
@@ -82,13 +105,15 @@ def channel_gain_white_balance(raw:RawImageInfo, params:RawImageParams):
         return None
 
 
-def bad_pixel_correction(raw:RawImageInfo, params:RawImageParams, neighborhood_size):
+def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
     """
     function: bad_pixel_correction
     correct for the bad (dead, stuck, or hot) pixels
     input: raw:RawImageInfo() params:RawImageParams()
+    卷积核neighborhood_size * neighborhood_size，当这个值大于卷积核内最大的值或者小于最小的值，会将这个值替代掉
+    这个算法应该会损失不少分辨率
     """
-
+    neighborhood_size = params.get_size_for_bad_pixel_correction()
     if ((neighborhood_size % 2) == 0):
         print("neighborhood_size shoud be odd number, recommended value 3")
         return raw
@@ -98,8 +123,9 @@ def bad_pixel_correction(raw:RawImageInfo, params:RawImageParams, neighborhood_s
         params.set_error_str("RAW data is None")
         return None
 
-    if(raw.get_color_space() == "raw"):
-        data = np.zeros(raw_data.shape)
+    if (raw.get_color_space() == "raw"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after bad pixel correction', raw_data.shape)
         # Separate out the quarter resolution images
         D = split_raw_data(raw_data)
 
@@ -113,12 +139,12 @@ def bad_pixel_correction(raw:RawImageInfo, params:RawImageParams, neighborhood_s
             print("bad pixel correction: Quarter " + str(idx+1) + " of 4")
 
             img = D[idx]
-            width, height = img.shape[1],img.shape[0]
+            width, height = img.shape[1], img.shape[0]
 
             # pad pixels at the borders, 扩充边缘
             img = np.pad(img,
-                        (no_of_pixel_pad, no_of_pixel_pad),
-                        'reflect')  # reflect would not repeat the border value
+                         (no_of_pixel_pad, no_of_pixel_pad),
+                         'reflect')  # reflect would not repeat the border value
 
             for i in range(no_of_pixel_pad, height + no_of_pixel_pad):
                 for j in range(no_of_pixel_pad, width + no_of_pixel_pad):
@@ -128,13 +154,13 @@ def bad_pixel_correction(raw:RawImageInfo, params:RawImageParams, neighborhood_s
 
                     # extract the neighborhood
                     neighborhood = img[i - no_of_pixel_pad: i + no_of_pixel_pad+1,
-                                    j - no_of_pixel_pad: j + no_of_pixel_pad+1]
+                                       j - no_of_pixel_pad: j + no_of_pixel_pad+1]
 
                     # set the center pixels value same as the left pixel
                     # Does not matter replace with right or left pixel
                     # is used to replace the center pixels value
                     neighborhood[no_of_pixel_pad,
-                                no_of_pixel_pad] = neighborhood[no_of_pixel_pad, no_of_pixel_pad-1]
+                                 no_of_pixel_pad] = neighborhood[no_of_pixel_pad, no_of_pixel_pad-1]
 
                     min_neighborhood = np.min(neighborhood)
                     max_neighborhood = np.max(neighborhood)
@@ -148,15 +174,15 @@ def bad_pixel_correction(raw:RawImageInfo, params:RawImageParams, neighborhood_s
 
             # Put the corrected image to the dictionary
             D[idx] = img[no_of_pixel_pad: height + no_of_pixel_pad,
-                        no_of_pixel_pad: width + no_of_pixel_pad]
+                         no_of_pixel_pad: width + no_of_pixel_pad]
 
         # Regrouping the data
-        data[::2, ::2] = D[0]
-        data[::2, 1::2] = D[1]
-        data[1::2, ::2] = D[2]
-        data[1::2, 1::2] = D[3]
+        ret_img.data[::2, ::2] = D[0]
+        ret_img.data[::2, 1::2] = D[1]
+        ret_img.data[1::2, ::2] = D[2]
+        ret_img.data[1::2, 1::2] = D[3]
 
-        return data
+        return ret_img
     else:
         params.set_error_str("bad pixel correction need RAW data")
         return None
@@ -1276,7 +1302,7 @@ def resort_with_bayer_pattern(data, bayer_pattern):
     """
     将data按照pattern格式重新排列成raw图上的顺序
     """
-    ret = [0,0,0,0]
+    ret = [0, 0, 0, 0]
     if (bayer_pattern == "rggb"):
         ret[0] = data[0]
         ret[1] = data[1]
@@ -1297,8 +1323,9 @@ def resort_with_bayer_pattern(data, bayer_pattern):
         ret[1] = data[3]
         ret[2] = data[0]
         ret[3] = data[1]
-    
+
     return ret
+
 
 def bayer_channel_separation(data, pattern):
     """
@@ -1335,6 +1362,7 @@ def bayer_channel_separation(data, pattern):
         return
 
     return R, Gr, Gb, B
+
 
 def split_raw_data(data):
     ret = []

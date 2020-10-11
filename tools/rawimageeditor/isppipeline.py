@@ -1,28 +1,8 @@
 import tools.rawimageeditor.isp as isp
-from tools.rawimageeditor.rawImage import RawImageInfo,RawImageParams
+from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
+
 
 class IspPipeline():
-    pipeline_dict = {
-        "raw":          0,
-        "black level":  1,
-        "BLC":          1,
-        "rolloff":      2,
-        "ABF":          3,
-        "demosaic":     4,
-        "awb":          5,
-        "AWB":          5,
-        "ccm":          6,
-        "CCM":          6,
-        "gamma":        7,
-        "LTM":          8,
-        "advanced chroma enhancement":  9,
-        "ACE":                          9,
-        "wavelet denoise":              10,
-        "WNR":                          10,
-        "adaptive spatial filter":      11,
-        "ASF":                          11
-    }
-
     def __init__(self):
         self.old_pipeline = [0]
         self.pipeline = [0]
@@ -47,15 +27,15 @@ class IspPipeline():
         function: 为pipeline添加一个节点
         输入是pipeline_dict的字符串
         """
-        if(node in self.pipeline_dict):
-            self.pipeline.append(self.pipeline_dict[node])
+        if(node in isp.pipeline_dict):
+            self.pipeline.append(isp.pipeline_dict[node])
 
     def get_pipeline_node_index(self, node):
         """
         返回该node在pipeline的index
         """
-        if(node in self.pipeline_dict and self.pipeline_dict[node] in self.pipeline):
-            return self.pipeline.index(self.pipeline_dict[node])+1
+        if(node in isp.pipeline_dict and isp.pipeline_dict[node] in self.pipeline):
+            return self.pipeline.index(isp.pipeline_dict[node])+1
 
     def compare_pipeline(self):
         """
@@ -67,7 +47,7 @@ class IspPipeline():
             if(i > len(self.old_pipeline) - 1 or node != self.old_pipeline[i]):
                 return i
         return 0
-    
+
     def check_pipeline(self):
         """
         检查pipeline，如果有不同的，修改img_list
@@ -83,41 +63,57 @@ class IspPipeline():
             self.remove_img_node_tail(1)
             self.need_flush = False
             return self.pipeline
-    
-    def run_pipeline(self):
+
+    def run_pipeline(self, process_bar=None):
+        """
+        运行pipeline，process_bar是用于显示进度的process bar
+        """
         pipeline = self.check_pipeline()
-        if(pipeline != None):
-            for node,data in zip(pipeline,self.img_list):
+        if (process_bar is not None):
+            process_bar.setValue(0)
+
+        if (pipeline is not None):
+            length = len(pipeline)
+            i = 1
+            for node, data in zip(pipeline, self.img_list):
                 self.img_list.append(self.run_node(node, data))
-    
+                if (process_bar is not None):
+                    process_bar.setValue(i / length * 100)
+                    i += 1
+        else:
+            if (process_bar is not None):
+                process_bar.setValue(100)
+
     def run_node(self, node, data):
-        if(node == self.pipeline_dict["BLC"]):
-            return isp.black_level_correction(data,self.params)
-        elif(node == self.pipeline_dict["awb"]):
-            return isp.channel_gain_white_balance(data,self.params)
-        elif(node == self.pipeline_dict["raw"]):
+        if(node == isp.pipeline_dict["raw"]):
             return data
+        elif(node == isp.pipeline_dict["BLC"]):
+            return isp.black_level_correction(data, self.params)
+        elif(node == isp.pipeline_dict["awb"]):
+            return isp.channel_gain_white_balance(data, self.params)
+        elif (node == isp.pipeline_dict["bad pixel correction"]):
+            return isp.bad_pixel_correction(data, self.params)
 
     def get_pipeline(self):
         return self.pipeline
 
     def update_pipeline(self, pipeline):
         self.pipeline = pipeline
-    
+
     def add_img_nodes(self, num):
         for i in range(num):
             self.img_list.append(RawImageInfo())
-    
+
     def add_img_node(self, img):
         self.img_list.append(img)
-    
+
     def remove_img_node_tail(self, index):
         """
         function: 去除>=index之后的node
         """
         while index < len(self.img_list):
             self.img_list.pop()
-    
+
     def get_image(self, index):
         """
         获取pipeline中的一幅图像
@@ -126,7 +122,7 @@ class IspPipeline():
             return self.img_list[index]
         else:
             return None
-    
+
     def flush_pipeline(self):
         """
         刷新pipeline的参数，防止设置参数没有生效

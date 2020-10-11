@@ -1,5 +1,5 @@
 import cv2
-from PySide2.QtWidgets import QMainWindow, QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog, QDialog
+from PySide2.QtWidgets import QMainWindow, QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog, QDialog, QProgressBar, QLabel
 from PySide2.QtGui import QPixmap, Qt
 from PySide2.QtCore import Slot
 from tools.rawimageeditor.rawimageeditor_window import Ui_ImageEditor
@@ -15,6 +15,14 @@ class RawImageEditor(object):
         self.window = QMainWindow()
         self.ui = Ui_ImageEditor()
         self.ui.setupUi(self.window)
+        # add 进度条和详细信息显示
+        self.progress_bar = QProgressBar()
+        self.info_bar = QLabel()
+        self.ui.statusBar.addPermanentWidget(self.info_bar, stretch=4)
+        self.ui.statusBar.addPermanentWidget(self.progress_bar, stretch=1)
+        self.progress_bar.setRange(0, 100)  # 设置进度条的范围
+        self.progress_bar.setValue(0)
+
         self.scene = QGraphicsScene()
         self.imageview = ImageView(self.scene)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
@@ -75,9 +83,10 @@ class RawImageEditor(object):
         self.img_params.set_black_level([self.ui.blc_r.value(
         ), self.ui.blc_gr.value(), self.ui.blc_gb.value(), self.ui.blc_b.value()])
         self.img_pipeline.flush_pipeline()
-    
+
     def update_awb(self):
-        self.img_params.set_awb_gain((self.ui.awb_r.value(),self.ui.awb_g.value(),self.ui.awb_b.value()))
+        self.img_params.set_awb_gain(
+            (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
         self.img_pipeline.flush_pipeline()
 
     def update_pipeline(self):
@@ -86,7 +95,7 @@ class RawImageEditor(object):
             if (self.ui.pipeline.item(i).checkState() == Qt.Checked):
                 self.img_pipeline.add_pipeline_node(
                     self.ui.pipeline.item(i).data(0))
-        self.img_pipeline.run_pipeline()
+        self.img_pipeline.run_pipeline(self.progress_bar)
         self.displayImage(self.img_pipeline.get_image(0))
         print(self.img_pipeline.get_pipeline())
         print(self.img_pipeline.compare_pipeline())
@@ -146,22 +155,12 @@ class RawImageEditor(object):
             point_data = self.img.get_img_point(self.x, self.y)
             if (point_data is not None):
                 self.point_data = point_data
-                if(self.point_data.size == 1):
-                    self.ui.statusBar.showMessage(
-                        "x:{},y:{} : 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.point_data, self.scale_ratio))
-                elif(self.point_data.size == 3):
-                    self.ui.statusBar.showMessage(
-                        "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
+                self.set_img_info_show()
 
     def update_wheel_ratio(self, ratio):
         if(self.img.get_raw_data() is not None):
             self.scale_ratio = int(ratio * 100)
-            if(self.point_data.size == 1):
-                self.ui.statusBar.showMessage(
-                    "x:{},y:{} : 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.point_data, self.scale_ratio))
-            elif(self.point_data.size == 3):
-                self.ui.statusBar.showMessage(
-                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
+            self.set_img_info_show()
 
     def on_calc_stats(self):
         if(self.img.get_raw_data() is not None):
@@ -244,6 +243,14 @@ class RawImageEditor(object):
         self.hist_view_ui.snr_y.setValue(snr_yuv[0])
         self.hist_view_ui.snr_cr.setValue(snr_yuv[1])
         self.hist_view_ui.snr_cb.setValue(snr_yuv[2])
+
+    def set_img_info_show(self):
+        if(self.point_data.size == 1):
+            self.info_bar.setText(
+                "x:{},y:{} : 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.point_data, self.scale_ratio))
+        elif(self.point_data.size == 3):
+            self.info_bar.setText(
+                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
 
 
 class HistViewDrag(QDialog):

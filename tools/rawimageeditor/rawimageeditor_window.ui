@@ -249,6 +249,23 @@
              </item>
              <item>
               <property name="text">
+               <string>bad pixel correction</string>
+              </property>
+              <property name="background">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
+                 <green>255</green>
+                 <blue>127</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="checkState">
+               <enum>Unchecked</enum>
+              </property>
+             </item>
+             <item>
+              <property name="text">
                <string>rolloff</string>
               </property>
               <property name="background">
@@ -453,8 +470,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>360</width>
-              <height>290</height>
+              <width>364</width>
+              <height>288</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">

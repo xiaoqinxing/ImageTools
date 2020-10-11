@@ -28,14 +28,31 @@ class RawImageParams():
         self.bit_depth = 0
         self.raw_format = "MIPI"
         self.pattern = "rggb"
+        self.__neighborhood_size_for_bad_pixel_correction = 3
 
     def set_channel_gain(self, channel_gain):
+        """
+        设置raw图上RGGB每个通道的增益
+        """
         self.channel_gain = channel_gain
 
     def get_channel_gain(self):
         return self.channel_gain
 
+    def set_size_for_bad_pixel_correction(self, value):
+        """
+        设置bad pixel correction的检测核大小
+        默认值为3，代表在3x3的范围内检测，这个范围内如果超过两个坏点则不生效
+        """
+        self.__neighborhood_size_for_bad_pixel_correction = value
+
+    def get_size_for_bad_pixel_correction(self):
+        return self.__neighborhood_size_for_bad_pixel_correction
+
     def set_color_matrix(self, color_matrix):
+        """
+        设置CCM 3x3
+        """
         self.color_matrix = color_matrix
 
     def get_color_matrix(self):
@@ -48,6 +65,9 @@ class RawImageParams():
         return self.black_level
 
     def set_awb_gain(self, awb_gain):
+        """
+        设置AWB的增益 1x3
+        """
         self.awb_gain = awb_gain
 
     def get_awb_gain(self):
@@ -130,13 +150,13 @@ class RawImageInfo():
             self.__raw_bit_depth = bit_depth
             if (bit_depth < 14):
                 self.data = np.left_shift(self.data, 14-bit_depth)
-    
+
     def create_image(self, name, shape):
         """
         function: 创建一个空图像
         input: 图像名称和shape
         """
-        self.data = np.zeros(shape,dtype="uint16")
+        self.data = np.zeros(shape, dtype="uint16")
 
         if (self.data is not None):
             self.name = name
