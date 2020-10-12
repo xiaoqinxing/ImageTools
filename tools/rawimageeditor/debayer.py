@@ -17,7 +17,7 @@ def debayer_mhc(raw, bayer_pattern="rggb", clip_range=[0, 65535], timeshow=False
     http://www.ipol.im/pub/art/2011/g_mhcd/
     """
     # convert to float32 in case it was not
-    raw = np.float32(raw)
+    # raw = np.float32(raw)
 
     # dimensions
     width, height = raw.shape[1], raw.shape[0]
@@ -30,14 +30,14 @@ def debayer_mhc(raw, bayer_pattern="rggb", clip_range=[0, 65535], timeshow=False
 
     # allocate space for the R, G, B planes
     R = np.empty((height + no_of_pixel_pad * 2, width +
-                  no_of_pixel_pad * 2), dtype=np.float32)
+                  no_of_pixel_pad * 2), dtype="uint16")
     G = np.empty((height + no_of_pixel_pad * 2, width +
-                  no_of_pixel_pad * 2), dtype=np.float32)
+                  no_of_pixel_pad * 2), dtype="uint16")
     B = np.empty((height + no_of_pixel_pad * 2, width +
-                  no_of_pixel_pad * 2), dtype=np.float32)
+                  no_of_pixel_pad * 2), dtype="uint16")
 
     # create a RGB output
-    demosaic_out = np.empty((height, width, 3), dtype=np.float32)
+    demosaic_out = np.empty((height, width, 3), dtype="uint16")
 
     # fill up the directly available values according to the Bayer pattern
     if (bayer_pattern == "rggb"):

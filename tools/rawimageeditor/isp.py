@@ -11,7 +11,7 @@ from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 import sys          # float precision
 from scipy import signal        # convolutions
 from scipy import interpolate   # for interpolation
-
+from numba import jit
 pipeline_dict = {
     "raw":          0,
     "black level":  1,
@@ -34,7 +34,18 @@ pipeline_dict = {
     "bad pixel correction":         12
 }
 
-
+def run_node(node, data, params):
+    if(node == pipeline_dict["raw"]):
+        return data
+    elif(node == pipeline_dict["BLC"]):
+        return black_level_correction(data, params)
+    elif(node == pipeline_dict["awb"]):
+        return channel_gain_white_balance(data, params)
+    elif (node == pipeline_dict["bad pixel correction"]):
+        return bad_pixel_correction(data, params)
+    elif(node == pipeline_dict["demosaic"]):
+        return demosaic(data,params)
+        
 def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     """
     function: black_level_correction
@@ -80,18 +91,21 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
     input: raw:RawImageInfo() params:RawImageParams()
     """
     # get params
-    (r_gain, g_gain, b_gain) = params.get_awb_gain()
-    channel_gain = (r_gain, g_gain, g_gain, b_gain)
-    bayer_pattern = raw.get_bayer_pattern()
-    raw_data = raw.get_raw_data()
-    ret_img = RawImageInfo()
-    # check error
-    if(raw_data is None):
+    if(params is not None):
+        (r_gain, g_gain, b_gain) = params.get_awb_gain()
+        channel_gain = (r_gain, g_gain, g_gain, b_gain)
+
+    # check raw
+    if(raw is not None):
+        bayer_pattern = raw.get_bayer_pattern()
+        raw_data = raw.get_raw_data()
+    else:
         params.set_error_str("RAW data is None")
         return None
-
+    
     # ensure input color space and process
     if(raw.get_color_space() == "raw"):
+        ret_img = RawImageInfo()
         ret_img.create_image('after awb', raw_data.shape)
         channel_gain = resort_with_bayer_pattern(channel_gain, bayer_pattern)
         # multiply with the channel gains
@@ -144,49 +158,48 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
 
             # pad pixels at the borders, 扩充边缘
             img = np.pad(img,
-                         (no_of_pixel_pad, no_of_pixel_pad),
-                         'reflect')  # reflect would not repeat the border value
-
-            for i in range(no_of_pixel_pad, height + no_of_pixel_pad):
-                for j in range(no_of_pixel_pad, width + no_of_pixel_pad):
-
-                    # save the middle pixel value
-                    mid_pixel_val = img[i, j]
-
-                    # extract the neighborhood
-                    neighborhood = img[i - no_of_pixel_pad: i + no_of_pixel_pad+1,
-                                       j - no_of_pixel_pad: j + no_of_pixel_pad+1]
-
-                    # set the center pixels value same as the left pixel
-                    # Does not matter replace with right or left pixel
-                    # is used to replace the center pixels value
-                    neighborhood[no_of_pixel_pad,
-                                 no_of_pixel_pad] = neighborhood[no_of_pixel_pad, no_of_pixel_pad-1]
-
-                    min_neighborhood = np.min(neighborhood)
-                    max_neighborhood = np.max(neighborhood)
-
-                    if (mid_pixel_val < min_neighborhood):
-                        img[i, j] = min_neighborhood
-                    elif (mid_pixel_val > max_neighborhood):
-                        img[i, j] = max_neighborhood
-                    else:
-                        img[i, j] = mid_pixel_val
-
-            # Put the corrected image to the dictionary
-            D[idx] = img[no_of_pixel_pad: height + no_of_pixel_pad,
-                         no_of_pixel_pad: width + no_of_pixel_pad]
+                            (no_of_pixel_pad, no_of_pixel_pad),
+                            'reflect')  # reflect would not repeat the border value
+            
+            D[idx] = bad_pixel_correction_subfunc(img, no_of_pixel_pad,width,height)
 
         # Regrouping the data
         ret_img.data[::2, ::2] = D[0]
         ret_img.data[::2, 1::2] = D[1]
         ret_img.data[1::2, ::2] = D[2]
         ret_img.data[1::2, 1::2] = D[3]
-
-        return ret_img
     else:
         params.set_error_str("bad pixel correction need RAW data")
         return None
+
+@jit(nopython=True)
+def bad_pixel_correction_subfunc(img, no_of_pixel_pad, width, height):
+    for i in range(no_of_pixel_pad, height + no_of_pixel_pad):
+        for j in range(no_of_pixel_pad, width + no_of_pixel_pad):
+            # save the middle pixel value
+            mid_pixel_val = img[i, j]
+            # extract the neighborhood
+            neighborhood = img[i - no_of_pixel_pad: i + no_of_pixel_pad+1,
+                                j - no_of_pixel_pad: j + no_of_pixel_pad+1]
+
+            # set the center pixels value same as the left pixel
+            # Does not matter replace with right or left pixel
+            # is used to replace the center pixels value
+            neighborhood[no_of_pixel_pad,
+                            no_of_pixel_pad] = neighborhood[no_of_pixel_pad, no_of_pixel_pad-1]
+
+            min_neighborhood = np.min(neighborhood)
+            max_neighborhood = np.max(neighborhood)
+
+            if (mid_pixel_val < min_neighborhood):
+                img[i, j] = min_neighborhood
+            elif (mid_pixel_val > max_neighborhood):
+                img[i, j] = max_neighborhood
+            else:
+                img[i, j] = mid_pixel_val
+    
+    # Put the corrected image to the dictionary
+    return img[no_of_pixel_pad: height + no_of_pixel_pad, no_of_pixel_pad: width + no_of_pixel_pad]
 
 
 def demosaic(raw: RawImageInfo, params: RawImageParams):
@@ -200,15 +213,15 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
     bayer_pattern = params.get_pattern()
     ret_img = RawImageInfo()
     ret_img.set_name('after demosaic')
-    ret_img.set_size(raw.get_height(), raw.get_width(), 3)
+    ret_img.set_size((raw.get_height(), raw.get_width(), 3))
     if (params.get_demosaic_funct_type() == 0):
         ret_img.data = debayer.debayer_mhc(
             raw.get_raw_data(), bayer_pattern, [0, 65535], False)
     else:
         ret_img.data = directionally_weighted_gradient_based_interpolation(raw)
-    if (params.get_demosaic_need_proc_color() == 1):
+    if (params.get_demosaic_need_proc_color() == 0):
         ret_img.data = post_process_local_color_ratio(raw, 0.80 * 65535)
-    if (params.get_demosaic_need_media_filter() == 1):
+    if (params.get_demosaic_need_media_filter() == 0):
         ret_img.data = post_process_median_filter(raw.get_raw_data())
     return ret_img
 
@@ -376,7 +389,7 @@ def post_process_median_filter(data, edge_detect_kernel_size=3, edge_threshold=0
         edge_detect_kernel_size, "is_edge", edge_threshold, clip_range)
 
     # allocate space for output
-    output = np.empty(np.shape(data), dtype=np.float32)
+    output = np.empty(np.shape(data), dtype="uint16")
 
     if (np.ndim(data) > 2):
 

@@ -76,7 +76,7 @@ class IspPipeline():
             length = len(pipeline)
             i = 1
             for node, data in zip(pipeline, self.img_list):
-                self.img_list.append(self.run_node(node, data))
+                self.img_list.append(isp.run_node(node, data, self.params))
                 if (process_bar is not None):
                     process_bar.setValue(i / length * 100)
                     i += 1
@@ -84,15 +84,6 @@ class IspPipeline():
             if (process_bar is not None):
                 process_bar.setValue(100)
 
-    def run_node(self, node, data):
-        if(node == isp.pipeline_dict["raw"]):
-            return data
-        elif(node == isp.pipeline_dict["BLC"]):
-            return isp.black_level_correction(data, self.params)
-        elif(node == isp.pipeline_dict["awb"]):
-            return isp.channel_gain_white_balance(data, self.params)
-        elif (node == isp.pipeline_dict["bad pixel correction"]):
-            return isp.bad_pixel_correction(data, self.params)
 
     def get_pipeline(self):
         return self.pipeline
