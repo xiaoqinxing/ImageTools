@@ -102,7 +102,7 @@ class RawImageEditor(object):
 
     def update_img_index(self, item):
         if (self.ui.pipeline.item(item.row()).checkState() == Qt.Checked):
-            index = self.img_pipeline.get_pipeline_node_index(item.data())
+            index = self.img_pipeline.get_pipeline_node_index(item.data())+1
             self.displayImage(self.img_pipeline.get_image(index))
 
     def open_image(self):

@@ -4,12 +4,12 @@ from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 
 class IspPipeline():
     def __init__(self):
-        self.old_pipeline = [0]
-        self.pipeline = [0]
-        self.calc_data = []
+        self.old_pipeline = []
+        self.pipeline = []
         # self.data = RawImageInfo()
         self.params = RawImageParams()
         # img_list存储了pipeline中途所有的图像
+        # img_list长度比pipeline长1
         self.img_list = []
         self.img_list.append(RawImageInfo())
         self.need_flush = False
@@ -35,7 +35,7 @@ class IspPipeline():
         返回该node在pipeline的index
         """
         if(node in isp.pipeline_dict and isp.pipeline_dict[node] in self.pipeline):
-            return self.pipeline.index(isp.pipeline_dict[node])+1
+            return self.pipeline.index(isp.pipeline_dict[node])
 
     def compare_pipeline(self):
         """
@@ -46,7 +46,7 @@ class IspPipeline():
         for i, node in enumerate(self.pipeline):
             if(i > len(self.old_pipeline) - 1 or node != self.old_pipeline[i]):
                 return i
-        return 0
+        return -1
 
     def check_pipeline(self):
         """
@@ -55,8 +55,8 @@ class IspPipeline():
         """
         if(self.need_flush == False):
             index = self.compare_pipeline()
-            if(index != 0):
-                self.remove_img_node_tail(index)
+            if(index != -1):
+                self.remove_img_node_tail(index+1)
                 return self.pipeline[index:]
             return None
         else:
@@ -75,8 +75,9 @@ class IspPipeline():
         if (pipeline is not None):
             length = len(pipeline)
             i = 1
+            params = self.params
             for node, data in zip(pipeline, self.img_list):
-                self.img_list.append(isp.run_node(node, data, self.params))
+                self.img_list.append(isp.run_node(node, data, params))
                 if (process_bar is not None):
                     process_bar.setValue(i / length * 100)
                     i += 1
@@ -90,13 +91,6 @@ class IspPipeline():
 
     def update_pipeline(self, pipeline):
         self.pipeline = pipeline
-
-    def add_img_nodes(self, num):
-        for i in range(num):
-            self.img_list.append(RawImageInfo())
-
-    def add_img_node(self, img):
-        self.img_list.append(img)
 
     def remove_img_node_tail(self, index):
         """

@@ -35,16 +35,23 @@ pipeline_dict = {
 }
 
 def run_node(node, data, params):
-    if(node == pipeline_dict["raw"]):
-        return data
-    elif(node == pipeline_dict["BLC"]):
-        return black_level_correction(data, params)
-    elif(node == pipeline_dict["awb"]):
-        return channel_gain_white_balance(data, params)
-    elif (node == pipeline_dict["bad pixel correction"]):
-        return bad_pixel_correction(data, params)
-    elif(node == pipeline_dict["demosaic"]):
-        return demosaic(data,params)
+    # 这里进行检查之后，后续就不需要检查了
+    if(data is not None and params is not None):
+        if(node == pipeline_dict["raw"]):
+            return data
+        elif(node == pipeline_dict["BLC"]):
+            return black_level_correction(data, params)
+        elif(node == pipeline_dict["awb"]):
+            return channel_gain_white_balance(data, params)
+        elif (node == pipeline_dict["bad pixel correction"]):
+            return bad_pixel_correction(data, params)
+        elif(node == pipeline_dict["demosaic"]):
+            return demosaic(data,params)
+    elif(params is not None):
+        params.set_error_str("RAW data is None")
+        return None
+    else:
+        return None
         
 def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     """
@@ -57,9 +64,6 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     bayer_pattern = raw.get_bayer_pattern()
     bit_depth = raw.get_raw_bit_depth()
     raw_data = raw.get_raw_data()
-    if(raw_data is None):
-        params.set_error_str("RAW data is None")
-        return None
 
     if (bit_depth < 14):
         black_level = np.left_shift(black_level, 14 - bit_depth)
@@ -91,17 +95,11 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
     input: raw:RawImageInfo() params:RawImageParams()
     """
     # get params
-    if(params is not None):
-        (r_gain, g_gain, b_gain) = params.get_awb_gain()
-        channel_gain = (r_gain, g_gain, g_gain, b_gain)
+    (r_gain, g_gain, b_gain) = params.get_awb_gain()
+    channel_gain = (r_gain, g_gain, g_gain, b_gain)
 
-    # check raw
-    if(raw is not None):
-        bayer_pattern = raw.get_bayer_pattern()
-        raw_data = raw.get_raw_data()
-    else:
-        params.set_error_str("RAW data is None")
-        return None
+    bayer_pattern = raw.get_bayer_pattern()
+    raw_data = raw.get_raw_data()
     
     # ensure input color space and process
     if(raw.get_color_space() == "raw"):
@@ -134,9 +132,7 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
         return raw
 
     raw_data = raw.get_raw_data()
-    if(raw_data is None):
-        params.set_error_str("RAW data is None")
-        return None
+    raw_channel_data = list()
 
     if (raw.get_color_space() == "raw"):
         ret_img = RawImageInfo()
@@ -161,13 +157,14 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
                             (no_of_pixel_pad, no_of_pixel_pad),
                             'reflect')  # reflect would not repeat the border value
             
-            D[idx] = bad_pixel_correction_subfunc(img, no_of_pixel_pad,width,height)
+            raw_channel_data.append(bad_pixel_correction_subfunc(img, no_of_pixel_pad,width,height))
 
         # Regrouping the data
-        ret_img.data[::2, ::2] = D[0]
-        ret_img.data[::2, 1::2] = D[1]
-        ret_img.data[1::2, ::2] = D[2]
-        ret_img.data[1::2, 1::2] = D[3]
+        ret_img.data[::2, ::2] = raw_channel_data[0]
+        ret_img.data[::2, 1::2] = raw_channel_data[1]
+        ret_img.data[1::2, ::2] = raw_channel_data[2]
+        ret_img.data[1::2, 1::2] = raw_channel_data[3]
+        return ret_img
     else:
         params.set_error_str("bad pixel correction need RAW data")
         return None
