@@ -3,13 +3,234 @@ import math
 import time
 import tools.rawimageeditor.utility
 from scipy import signal
+from tools.rawimageeditor.rawImage import RawImageInfo,RawImageParams
 
-# =============================================================
-# function: dbayer_mhc
-#   demosaicing using Malvar-He-Cutler algorithm
-#   http://www.ipol.im/pub/art/2011/g_mhcd/
-# =============================================================
+def demosaic(raw: RawImageInfo, params: RawImageParams):
+    """
+    function: demosaic
+    input: raw:RawImageInfo() params:RawImageParams()
+    demosaic有两种算法，设置demosaic的算法
+    0: Malvar-He-Cutler algorithm
+    1: directionally weighted gradient based interpolation algorithm
+    """
+    bayer_pattern = params.get_pattern()
+    ret_img = RawImageInfo()
+    ret_img.set_name('after demosaic')
+    ret_img.set_size((raw.get_height(), raw.get_width(), 3))
+    if (params.get_demosaic_funct_type() == 0):
+        ret_img.data = debayer_mhc(
+            raw.get_raw_data(), bayer_pattern, [0, 65535], False)
+    else:
+        ret_img.data = directionally_weighted_gradient_based_interpolation(raw)
+    if (params.get_demosaic_need_proc_color() == 1):
+        ret_img.data = post_process_local_color_ratio(raw, 0.80 * 65535)
+    if (params.get_demosaic_need_media_filter() == 1):
+        ret_img.data = post_process_median_filter(raw.get_raw_data())
+    ret_img.set_color_space("RGB")
+    return ret_img
 
+
+def post_process_local_color_ratio(raw: RawImageInfo, beta):
+    """
+    Objective is to reduce high chroma jump
+    Beta is controlling parameter, higher gives more effect,
+    however, too high does not make any more change
+    """
+
+    print("----------------------------------------------------")
+    print("Demosaicing post process using local color ratio...")
+
+    data = raw.get_raw_data()
+
+    # add beta with the data to prevent divide by zero
+    data_beta = data + beta
+
+    # convolution kernels
+    # zeta1 averages the up, down, left, and right four values of a 3x3 window
+    zeta1 = np.multiply([[0., 1., 0.], [1., 0., 1.], [0., 1., 0.]], .25)
+    # zeta2 averages the four corner values of a 3x3 window
+    zeta2 = np.multiply([[1., 0., 1.], [0., 0., 0.], [1., 0., 1.]], .25)
+
+    # average of color ratio
+    g_over_b = signal.convolve2d(np.divide(
+        data_beta[:, :, 1], data_beta[:, :, 2]), zeta1, mode="same", boundary="symm")
+    g_over_r = signal.convolve2d(np.divide(
+        data_beta[:, :, 1], data_beta[:, :, 0]), zeta1, mode="same", boundary="symm")
+    b_over_g_zeta2 = signal.convolve2d(np.divide(
+        data_beta[:, :, 2], data_beta[:, :, 1]), zeta2, mode="same", boundary="symm")
+    r_over_g_zeta2 = signal.convolve2d(np.divide(
+        data_beta[:, :, 0], data_beta[:, :, 1]), zeta2, mode="same", boundary="symm")
+    b_over_g_zeta1 = signal.convolve2d(np.divide(
+        data_beta[:, :, 2], data_beta[:, :, 1]), zeta1, mode="same", boundary="symm")
+    r_over_g_zeta1 = signal.convolve2d(np.divide(
+        data_beta[:, :, 0], data_beta[:, :, 1]), zeta1, mode="same", boundary="symm")
+
+    # G at B locations and G at R locations
+    if raw.get_bayer_pattern() == "rggb":
+        # G at B locations
+        data[1::2, 1::2, 1] = -beta + \
+            np.multiply(data_beta[1::2, 1::2, 2], g_over_b[1::2, 1::2])
+        # G at R locations
+        data[::2, ::2, 1] = -beta + \
+            np.multiply(data_beta[::2, ::2, 0], g_over_r[::2, ::2])
+        # B at R locations
+        data[::2, ::2, 2] = -beta + \
+            np.multiply(data_beta[::2, ::2, 1], b_over_g_zeta2[::2, ::2])
+        # R at B locations
+        data[1::2, 1::2, 0] = -beta + \
+            np.multiply(data_beta[1::2, 1::2, 1],
+                        r_over_g_zeta2[1::2, 1::2])
+        # B at G locations
+        data[::2, 1::2, 2] = -beta + \
+            np.multiply(data_beta[::2, 1::2, 1], b_over_g_zeta1[::2, 1::2])
+        data[1::2, ::2, 2] = -beta + \
+            np.multiply(data_beta[1::2, ::2, 1], b_over_g_zeta1[1::2, ::2])
+        # R at G locations
+        data[::2, 1::2, 0] = -beta + \
+            np.multiply(data_beta[::2, 1::2, 1], r_over_g_zeta1[::2, 1::2])
+        data[1::2, ::2, 0] = -beta + \
+            np.multiply(data_beta[1::2, ::2, 1], r_over_g_zeta1[1::2, ::2])
+
+    elif raw.get_bayer_pattern() == "grbg":
+        # G at B locations
+        data[1::2, ::2, 1] = -beta + \
+            np.multiply(data_beta[1::2, ::2, 2], g_over_b[1::2, 1::2])
+        # G at R locations
+        data[::2, 1::2, 1] = -beta + \
+            np.multiply(data_beta[::2, 1::2, 0], g_over_r[::2, 1::2])
+        # B at R locations
+        data[::2, 1::2, 2] = -beta + \
+            np.multiply(data_beta[::2, 1::2, 1], b_over_g_zeta2[::2, 1::2])
+        # R at B locations
+        data[1::2, ::2, 0] = -beta + \
+            np.multiply(data_beta[1::2, ::2, 1], r_over_g_zeta2[1::2, ::2])
+        # B at G locations
+        data[::2, ::2, 2] = -beta + \
+            np.multiply(data_beta[::2, ::2, 1], b_over_g_zeta1[::2, ::2])
+        data[1::2, 1::2, 2] = -beta + \
+            np.multiply(data_beta[1::2, 1::2, 1],
+                        b_over_g_zeta1[1::2, 1::2])
+        # R at G locations
+        data[::2, ::2, 0] = -beta + \
+            np.multiply(data_beta[::2, ::2, 1], r_over_g_zeta1[::2, ::2])
+        data[1::2, 1::2, 0] = -beta + \
+            np.multiply(data_beta[1::2, 1::2, 1],
+                        r_over_g_zeta1[1::2, 1::2])
+
+    elif raw.get_bayer_pattern() == "gbrg":
+        # G at B locations
+        data[::2, 1::2, 1] = -beta + \
+            np.multiply(data_beta[::2, 1::2, 2], g_over_b[::2, 1::2])
+        # G at R locations
+        data[1::2, ::2, 1] = -beta + \
+            np.multiply(data_beta[1::2, ::2, 0], g_over_r[1::2, ::2])
+        # B at R locations
+        data[1::2, ::2, 2] = -beta + \
+            np.multiply(data_beta[1::2, ::2, 1], b_over_g_zeta2[1::2, ::2])
+        # R at B locations
+        data[::2, 1::2, 0] = -beta + \
+            np.multiply(data_beta[::2, 1::2, 1], r_over_g_zeta2[::2, 1::2])
+        # B at G locations
+        data[::2, ::2, 2] = -beta + \
+            np.multiply(data_beta[::2, ::2, 1], b_over_g_zeta1[::2, ::2])
+        data[1::2, 1::2, 2] = -beta + \
+            np.multiply(data_beta[1::2, 1::2, 1],
+                        b_over_g_zeta1[1::2, 1::2])
+        # R at G locations
+        data[::2, ::2, 0] = -beta + \
+            np.multiply(data_beta[::2, ::2, 1], r_over_g_zeta1[::2, ::2])
+        data[1::2, 1::2, 0] = -beta + \
+            np.multiply(data_beta[1::2, 1::2, 1],
+                        r_over_g_zeta1[1::2, 1::2])
+
+    elif raw.get_bayer_pattern() == "bggr":
+        # G at B locations
+        data[::2, ::2, 1] = -beta + \
+            np.multiply(data_beta[::2, ::2, 2], g_over_b[::2, ::2])
+        # G at R locations
+        data[1::2, 1::2, 1] = -beta + \
+            np.multiply(data_beta[1::2, 1::2, 0], g_over_r[1::2, 1::2])
+        # B at R locations
+        data[1::2, 1::2, 2] = -beta + \
+            np.multiply(data_beta[1::2, 1::2, 1],
+                        b_over_g_zeta2[1::2, 1::2])
+        # R at B locations
+        data[::2, ::2, 0] = -beta + \
+            np.multiply(data_beta[::2, ::2, 1], r_over_g_zeta2[::2, ::2])
+        # B at G locations
+        data[::2, 1::2, 2] = -beta + \
+            np.multiply(data_beta[::2, 1::2, 1], b_over_g_zeta1[::2, 1::2])
+        data[1::2, ::2, 2] = -beta + \
+            np.multiply(data_beta[1::2, ::2, 1], b_over_g_zeta1[1::2, ::2])
+        # R at G locations
+        data[::2, 1::2, 0] = -beta + \
+            np.multiply(data_beta[::2, 1::2, 1], r_over_g_zeta1[::2, 1::2])
+        data[1::2, ::2, 0] = -beta + \
+            np.multiply(data_beta[1::2, ::2, 1], r_over_g_zeta1[1::2, ::2])
+
+    return data
+
+
+def post_process_median_filter(data, edge_detect_kernel_size=3, edge_threshold=0, median_filter_kernel_size=3, clip_range=[0, 65535]):
+    """
+    Objective is to reduce the zipper effect around the edges
+    Inputs:
+        edge_detect_kernel_size: the neighborhood size used to detect edges
+        edge_threshold: the threshold value above which (compared against)
+                        the gradient_magnitude to declare if it is an edge
+        median_filter_kernel_size: the neighborhood size used to perform
+                                    median filter operation
+        clip_range: used for scaling in edge_detection
+
+    Output:
+        output: median filtered output around the edges
+        edge_location: a debug image to see where the edges were detected
+                        based on the threshold
+    """
+
+    # detect edge locations
+    edge_location = utility.edge_detection(data).sobel(
+        edge_detect_kernel_size, "is_edge", edge_threshold, clip_range)
+
+    # allocate space for output
+    output = np.empty(np.shape(data), dtype="uint16")
+
+    if (np.ndim(data) > 2):
+
+        for i in range(0, np.shape(data)[2]):
+            output[:, :, i] = utility.helpers(data[:, :, i]).edge_wise_median(
+                median_filter_kernel_size, edge_location[:, :, i])
+
+    elif (np.ndim(data) == 2):
+        output = utility.helpers(data).edge_wise_median(
+            median_filter_kernel_size, edge_location)
+
+    return output
+
+
+def directionally_weighted_gradient_based_interpolation(raw: RawImageInfo):
+    """
+    Reference:
+    http://www.arl.army.mil/arlreports/2010/ARL-TR-5061.pdf
+    """
+
+    print("----------------------------------------------------")
+    print("Running demosaicing using directionally weighted gradient based interpolation...")
+    data = raw.get_raw_data()
+    bayer_pattern = raw.get_bayer_pattern()
+    # Fill up the green channel
+    G = fill_channel_directional_weight(
+        data, bayer_pattern)
+
+    B, R = fill_br_locations(data, G, bayer_pattern)
+
+    width, height = raw.get_width(), raw.get_height()
+    output = np.empty((height, width, 3), dtype="uint16")
+    output[:, :, 0] = R
+    output[:, :, 1] = G
+    output[:, :, 2] = B
+
+    return np.clip(output, 0, 65535)
 
 def debayer_mhc(raw, bayer_pattern="rggb", clip_range=[0, 65535], timeshow=False):
     """
@@ -540,7 +761,7 @@ def fill_channel_directional_weight(data, bayer_pattern):
 
     # == Calculate the directional weights (weight_N, weight_E, weight_S, weight_W.
     # where N, E, S, W stand for north, east, south, and west.)
-    data = np.asarray(data)
+    # data = np.asarray(data)
     v = np.asarray(signal.convolve2d(
         data, [[1], [0], [-1]], mode="same", boundary="symm"))
     h = np.asarray(signal.convolve2d(
@@ -629,7 +850,7 @@ def fill_channel_directional_weight(data, bayer_pattern):
         temp = np.delete(np.hstack((np.atleast_2d(data[:, 1]).T, data)), -1, 1)
         value_W[::2, ::2] = temp[::2, ::2] + temp_h_r[::2, ::2] / 2.
 
-        output = np.zeros(np.shape(data), dtype=np.float32)
+        output = np.zeros(np.shape(data), dtype="uint16")
         output = np.divide((np.multiply(value_N, weight_N) +
                             np.multiply(value_E, weight_E) +
                             np.multiply(value_S, weight_S) +
@@ -720,7 +941,7 @@ def fill_channel_directional_weight(data, bayer_pattern):
         temp = np.delete(np.hstack((np.atleast_2d(data[:, 1]).T, data)), -1, 1)
         value_W[1::2, ::2] = temp[1::2, ::2] + temp_h_r[1::2, ::2] / 2.
 
-        output = np.zeros(np.shape(data), dtype=np.float32)
+        output = np.zeros(np.shape(data), dtype="uint16")
         output = np.divide((np.multiply(value_N, weight_N) +
                             np.multiply(value_E, weight_E) +
                             np.multiply(value_S, weight_S) +
@@ -736,10 +957,10 @@ def fill_channel_directional_weight(data, bayer_pattern):
 def fill_br_locations(data, G, bayer_pattern):
 
     # Fill up the B/R values interpolated at R/B locations
-    B = np.zeros(np.shape(data), dtype=np.float32)
-    R = np.zeros(np.shape(data), dtype=np.float32)
+    B = np.zeros(np.shape(data), dtype="uint16")
+    R = np.zeros(np.shape(data), dtype="uint16")
 
-    data = np.asarray(data)
+    # data = np.asarray(data)
     G = np.asarray(G)
     d1 = np.asarray(signal.convolve2d(
         data, [[-1, 0, 0], [0, 0, 0], [0, 0, 1]], mode="same", boundary="symm"))

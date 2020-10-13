@@ -29,9 +29,9 @@ class RawImageParams():
         self.raw_format = "MIPI"
         self.pattern = "rggb"
         self.__neighborhood_size_for_bad_pixel_correction = 3
-        self.__demosaic_func_type = 0
-        self.__demosaic_need_proc_color = 1
-        self.__demosaic_need_media_filter = 1
+        self.__demosaic_func_type = 1
+        self.__demosaic_need_proc_color = 0
+        self.__demosaic_need_media_filter = 0
 
     def set_demosaic_func_type(self, type):
         """
