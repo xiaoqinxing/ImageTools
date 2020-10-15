@@ -7,6 +7,7 @@ from tools.video_compare.rtspconfigview import Ui_RtspConfigView
 import os
 import cv2
 
+
 class VideoCompareView(object):
     def __init__(self, parent=None):
         self.widget = QWidget()
@@ -20,36 +21,38 @@ class VideoCompareView(object):
         self.video_valid = False
         self.process_speed = 33
         self.skip_frames = 0
+        self.processing_video = False
         self.video_timer = QTimer()
+        self.video_timer.timeout.connect(self.open_frame)
         # init func
         self.setting_widget.openvideo.clicked.connect(self.open_video)
         self.setting_widget.open_rtsp.clicked.connect(self.open_rtsp)
         self.setting_widget.skipframe.valueChanged.connect(self.set_skip_frame)
         self.imageview.sigDragEvent.connect(self.open_video_path)
-    
+
     def set_skip_frame(self, value):
         # self.skip_frames = self.setting_widget.skipframe.value()
         self.skip_frames = value
         self.vertify_video()
-    
+
     def open_video(self):
         videopath = QFileDialog.getOpenFileName(
             None, '打开文件', './', 'video files(*.mp4)')
         if(videopath[0] != ''):
             self.open_video_path(videopath[0])
 
-    def open_video_path(self, str):
-        self.setting_widget.path.setText(str)
+    def open_video_path(self, string):
+        self.setting_widget.path.setText(string)
         self.vertify_video()
         # self.set_ui_enable(True)
-    
+
     def open_rtsp(self):
         self.rtsp_config_window = QDialog()
         self.rtsp_config_ui = Ui_RtspConfigView()
         self.rtsp_config_ui.setupUi(self.rtsp_config_window)
         self.rtsp_config_window.show()
         self.rtsp_config_ui.buttonBox.clicked.connect(self.rtsp_config)
-    
+
     def rtsp_config(self):
         username = self.rtsp_config_ui.username.text()
         password = self.rtsp_config_ui.password.text()
@@ -65,43 +68,56 @@ class VideoCompareView(object):
 
     def vertify_video(self):
         # 输出参数初始化
-        self.frame_count = 0
+        # self.frame_count = 0
         self.vidcap = cv2.VideoCapture(self.setting_widget.path.text())
         # 片头调过多少帧
         self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.skip_frames)
         success, frame = self.vidcap.read()
         if success:
-            height = frame.shape[0]
-            width = frame.shape[1]
             self.display(frame)
             self.video_valid = True
         else:
             self.critical_window_show('视频打不开')
             self.video_valid = False
             return
-    
+
     def display(self, img):
         self.scene.clear()
-        self.scene.addPixmap(QPixmap(QImage(img, img.shape[1], img.shape[0], QImage.Format_BGR888)))
+        self.scene.addPixmap(
+            QPixmap(QImage(img, img.shape[1], img.shape[0], QImage.Format_BGR888)))
 
     def open_frame(self):
         success, frame = self.vidcap.read()
         if success:
-            self.frame_count += 1
+            # self.frame_count += 1
             self.display(frame)
         else:
             self.video_timer.stop()
-    
-    def process_video(self):
-        if(self.video_valid == True):
-            self.vertify_video()
+            self.processing_video = False
+            self.video_valid = False
+
+    def set_speed(self, value):
+        speed = value * 33
+        if (self.processing_video == True and int(speed) != self.process_speed):
+            self.process_speed = int(speed)
+            self.stop_video()
+            self.start_video()
+
+    def start_video(self):
+        if (self.video_valid == True):
+            self.processing_video = True
             # 增加定时器，每100ms进行一帧的处理
             self.video_timer.start(self.process_speed)
-            self.video_timer.timeout.connect(self.open_frame)
 
-    def cancel_process_video(self):
+    def stop_video(self):
+        self.processing_video = False
         self.video_timer.stop()
-    
+
+    def restart_video(self):
+        self.stop_video()
+        self.vertify_video()
+        self.start_video()
+
     def critical_window_show(self, str):
         reply = QMessageBox.critical(
             self.widget, '警告', str,

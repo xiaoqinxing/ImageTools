@@ -18,121 +18,6 @@
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout"/>
     </item>
-    <item row="2" column="0">
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>104</height>
-       </size>
-      </property>
-      <property name="title">
-       <string>设置</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="2" column="1">
-          <widget class="QPushButton" name="cancel_button">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>暂停</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QSlider" name="view_speed">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="sliderPosition">
-            <number>50</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QPushButton" name="isok">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>开始</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>播放速度</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QPushButton" name="restart">
-           <property name="text">
-            <string>重新开始</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QDoubleSpinBox" name="speed_value">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="value">
-            <double>1.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>播放窗口</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>增加</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="text">
-            <string>减少</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -141,12 +26,118 @@
      <x>0</x>
      <y>0</y>
      <width>1034</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>RightToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionstart"/>
+   <addaction name="actionpause"/>
+   <addaction name="actionrestart"/>
+   <addaction name="separator"/>
+   <addaction name="actionadd"/>
+   <addaction name="actionsubtract"/>
+   <addaction name="separator"/>
+   <addaction name="actionspeedup"/>
+   <addaction name="actionspeeddown"/>
+  </widget>
+  <action name="actionstart">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/start.png</normaloff>:/tool_icon/resource/start.png</iconset>
+   </property>
+   <property name="text">
+    <string>start</string>
+   </property>
+   <property name="toolTip">
+    <string>开始</string>
+   </property>
+  </action>
+  <action name="actionpause">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/pause.png</normaloff>:/tool_icon/resource/pause.png</iconset>
+   </property>
+   <property name="text">
+    <string>pause</string>
+   </property>
+   <property name="toolTip">
+    <string>暂停</string>
+   </property>
+  </action>
+  <action name="actionrestart">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/restart .png</normaloff>:/tool_icon/resource/restart .png</iconset>
+   </property>
+   <property name="text">
+    <string>restart</string>
+   </property>
+   <property name="toolTip">
+    <string>重新开始</string>
+   </property>
+  </action>
+  <action name="actionspeedup">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/快进.png</normaloff>:/tool_icon/resource/快进.png</iconset>
+   </property>
+   <property name="text">
+    <string>speedup</string>
+   </property>
+   <property name="toolTip">
+    <string>加速</string>
+   </property>
+  </action>
+  <action name="actionspeeddown">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/快退.png</normaloff>:/tool_icon/resource/快退.png</iconset>
+   </property>
+   <property name="text">
+    <string>speeddown</string>
+   </property>
+   <property name="toolTip">
+    <string>减速</string>
+   </property>
+  </action>
+  <action name="actionadd">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/add.png</normaloff>:/tool_icon/resource/add.png</iconset>
+   </property>
+   <property name="text">
+    <string>add</string>
+   </property>
+   <property name="toolTip">
+    <string>增加视频</string>
+   </property>
+  </action>
+  <action name="actionsubtract">
+   <property name="icon">
+    <iconset resource="../../ui/resource.qrc">
+     <normaloff>:/tool_icon/resource/subtract.png</normaloff>:/tool_icon/resource/subtract.png</iconset>
+   </property>
+   <property name="text">
+    <string>subtract</string>
+   </property>
+   <property name="toolTip">
+    <string>减少视频</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../ui/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

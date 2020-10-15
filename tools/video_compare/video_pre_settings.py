@@ -49,25 +49,25 @@ class Ui_video_pre_settings(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.label = QLabel(self.groupBox_2)
         self.label.setObjectName(u"label")
-        self.label.setMaximumSize(QSize(16777215, 20))
+        self.label.setMaximumSize(QSize(16777215, 16777215))
 
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
 
         self.path = QLineEdit(self.groupBox_2)
         self.path.setObjectName(u"path")
-        self.path.setMaximumSize(QSize(16777215, 20))
+        self.path.setMaximumSize(QSize(16777215, 16777215))
 
         self.gridLayout.addWidget(self.path, 0, 1, 1, 1)
 
         self.label_2 = QLabel(self.groupBox_2)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setMaximumSize(QSize(16777215, 20))
+        self.label_2.setMaximumSize(QSize(16777215, 16777215))
 
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
 
         self.skipframe = QSpinBox(self.groupBox_2)
         self.skipframe.setObjectName(u"skipframe")
-        self.skipframe.setMaximumSize(QSize(16777215, 20))
+        self.skipframe.setMaximumSize(QSize(16777215, 16777215))
         self.skipframe.setMaximum(10000)
         self.skipframe.setSingleStep(10)
 
@@ -80,13 +80,13 @@ class Ui_video_pre_settings(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.open_rtsp = QPushButton(self.groupBox_2)
         self.open_rtsp.setObjectName(u"open_rtsp")
-        self.open_rtsp.setMaximumSize(QSize(16777215, 23))
+        self.open_rtsp.setMaximumSize(QSize(16777215, 16777215))
 
         self.horizontalLayout.addWidget(self.open_rtsp)
 
         self.openvideo = QPushButton(self.groupBox_2)
         self.openvideo.setObjectName(u"openvideo")
-        self.openvideo.setMaximumSize(QSize(16777215, 23))
+        self.openvideo.setMaximumSize(QSize(16777215, 16777215))
 
         self.horizontalLayout.addWidget(self.openvideo)
 

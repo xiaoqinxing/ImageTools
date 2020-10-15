@@ -1,12 +1,17 @@
 <RCC>
-    <qresource prefix="/tool_icon">
-        <file>resource/save_icon.png</file>
-        <file>resource/compare.png</file>
-        <file>resource/start.png</file>
-        <file>resource/pause.png</file>
-        <file>resource/stop.png</file>
-        <file>resource/main.png</file>
-        <file>resource/open.png</file>
-        <file>resource/stats.png</file>
-    </qresource>
+  <qresource prefix="/tool_icon">
+    <file>resource/add.png</file>
+    <file>resource/subtract.png</file>
+    <file>resource/快进.png</file>
+    <file>resource/快退.png</file>
+    <file>resource/restart .png</file>
+    <file>resource/save_icon.png</file>
+    <file>resource/compare.png</file>
+    <file>resource/start.png</file>
+    <file>resource/pause.png</file>
+    <file>resource/stop.png</file>
+    <file>resource/main.png</file>
+    <file>resource/open.png</file>
+    <file>resource/stats.png</file>
+  </qresource>
 </RCC>
