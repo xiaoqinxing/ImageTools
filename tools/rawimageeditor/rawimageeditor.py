@@ -24,7 +24,7 @@ class RawImageEditor(object):
         self.progress_bar.setValue(0)
 
         self.scene = QGraphicsScene()
-        self.imageview = ImageView(self.scene)
+        self.imageview = ImageView(self.scene,self.window)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.graphicsView.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)

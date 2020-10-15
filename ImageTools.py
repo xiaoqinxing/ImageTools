@@ -8,6 +8,7 @@ from tools.imageeditor.imageeditor import ImageEditor
 from tools.af_calc.af_calc import AfCalcTool
 from ui.help_doc import HelpDoc
 from tools.rawimageeditor.rawimageeditor import RawImageEditor
+from tools.video_compare.videocompare import VideoCompare
 
 
 class ImageTools(object):
@@ -25,6 +26,7 @@ class ImageTools(object):
         self.ui.af_calc_tool.triggered.connect(self.add_af_calc_window)
         self.ui.userguide.triggered.connect(self.add_userguide_window)
         self.ui.rawimageeditor.triggered.connect(self.add_raw_image_editor_window)
+        self.ui.video_compare.triggered.connect(self.add_video_compare_window)
         self.window.show()
         self.sub_windows = list()
 
@@ -55,6 +57,10 @@ class ImageTools(object):
     
     def add_raw_image_editor_window(self):
         sub_window = RawImageEditor()
+        self.add_sub_window(sub_window)
+    
+    def add_video_compare_window(self):
+        sub_window = VideoCompare()
         self.add_sub_window(sub_window)
 
 if __name__ == "__main__":

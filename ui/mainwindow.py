@@ -40,6 +40,8 @@ class Ui_MainWindow(object):
         self.userguide.setObjectName(u"userguide")
         self.rawimageeditor = QAction(MainWindow)
         self.rawimageeditor.setObjectName(u"rawimageeditor")
+        self.video_compare = QAction(MainWindow)
+        self.video_compare.setObjectName(u"video_compare")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -74,6 +76,7 @@ class Ui_MainWindow(object):
         self.menu_2.addAction(self.imageeditor)
         self.menu_2.addAction(self.af_calc_tool)
         self.menu_2.addAction(self.rawimageeditor)
+        self.menu_2.addAction(self.video_compare)
         self.help_button.addAction(self.userguide)
 
         self.retranslateUi(MainWindow)
@@ -90,6 +93,7 @@ class Ui_MainWindow(object):
         self.about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
         self.userguide.setText(QCoreApplication.translate("MainWindow", u"\u7528\u6237\u624b\u518c", None))
         self.rawimageeditor.setText(QCoreApplication.translate("MainWindow", u"raw\u56fe\u5206\u6790\u5de5\u5177", None))
+        self.video_compare.setText(QCoreApplication.translate("MainWindow", u"\u89c6\u9891\u5bf9\u6bd4\u5de5\u5177", None))
         self.menu_2.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
         self.help_button.setTitle(QCoreApplication.translate("MainWindow", u"\u5e2e\u52a9", None))
     # retranslateUi

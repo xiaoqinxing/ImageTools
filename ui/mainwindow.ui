@@ -70,6 +70,7 @@
     <addaction name="imageeditor"/>
     <addaction name="af_calc_tool"/>
     <addaction name="rawimageeditor"/>
+    <addaction name="video_compare"/>
    </widget>
    <widget class="QMenu" name="help_button">
     <property name="title">
@@ -116,6 +117,11 @@
   <action name="rawimageeditor">
    <property name="text">
     <string>raw图分析工具</string>
+   </property>
+  </action>
+  <action name="video_compare">
+   <property name="text">
+    <string>视频对比工具</string>
    </property>
   </action>
  </widget>
