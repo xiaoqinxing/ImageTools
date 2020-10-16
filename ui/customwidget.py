@@ -199,15 +199,18 @@ class ImageView(QGraphicsView):
         return super().wheelEvent(event)
 
     def dragEnterEvent(self, event):
+        event.accept()
+    
+    def dragMoveEvent(self, event):
+        event.accept()
+    
+    def dropEvent(self, event):
         if event.mimeData().hasUrls():
             try:
                 for url in event.mimeData().urls():
                     self.sigDragEvent.emit(url.path()[1:])
             except Exception as e:
                 print(e)
-            event.acceptProposedAction()
-        else:
-            event.ignore()
 
 
 class VideoView(QLabel):
@@ -218,12 +221,15 @@ class VideoView(QLabel):
         self.setAcceptDrops(True)
 
     def dragEnterEvent(self, event):
+        event.accept()
+    
+    def dragMoveEvent(self, event):
+        event.accept()
+    
+    def dropEvent(self, event):
         if event.mimeData().hasUrls():
             try:
                 for url in event.mimeData().urls():
                     self.sigDragEvent.emit(url.path()[1:])
             except Exception as e:
                 print(e)
-            event.acceptProposedAction()
-        else:
-            event.ignore()
