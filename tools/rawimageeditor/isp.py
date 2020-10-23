@@ -198,6 +198,56 @@ def bad_pixel_correction_subfunc(img, no_of_pixel_pad, width, height):
     # Put the corrected image to the dictionary
     return img[no_of_pixel_pad: height + no_of_pixel_pad, no_of_pixel_pad: width + no_of_pixel_pad]
 
+def gamma(raw: RawImageInfo, params: RawImageParams):
+    """
+    function: bad_pixel_correction
+    correct for the bad (dead, stuck, or hot) pixels
+    input: raw:RawImageInfo() params:RawImageParams()
+    卷积核neighborhood_size * neighborhood_size，当这个值大于卷积核内最大的值或者小于最小的值，会将这个值替代掉
+    这个算法应该会损失不少分辨率
+    """
+    neighborhood_size = params.get_size_for_bad_pixel_correction()
+    if ((neighborhood_size % 2) == 0):
+        print("neighborhood_size shoud be odd number, recommended value 3")
+        return raw
+
+    raw_data = raw.get_raw_data()
+    raw_channel_data = list()
+
+    if (raw.get_color_space() == "raw"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after bad pixel correction', raw_data.shape)
+        # Separate out the quarter resolution images
+        D = split_raw_data(raw_data)
+
+        # number of pixels to be padded at the borders
+        #no_of_pixel_pad = math.floor(neighborhood_size / 2.)
+        no_of_pixel_pad = neighborhood_size // 2
+
+        for idx in range(0, len(D)):  # perform same operation for each quarter
+
+            # display progress
+            print("bad pixel correction: Quarter " + str(idx+1) + " of 4")
+
+            img = D[idx]
+            width, height = img.shape[1], img.shape[0]
+
+            # pad pixels at the borders, 扩充边缘
+            img = np.pad(img,
+                            (no_of_pixel_pad, no_of_pixel_pad),
+                            'reflect')  # reflect would not repeat the border value
+            
+            raw_channel_data.append(bad_pixel_correction_subfunc(img, no_of_pixel_pad,width,height))
+
+        # Regrouping the data
+        ret_img.data[::2, ::2] = raw_channel_data[0]
+        ret_img.data[::2, 1::2] = raw_channel_data[1]
+        ret_img.data[1::2, ::2] = raw_channel_data[2]
+        ret_img.data[1::2, 1::2] = raw_channel_data[3]
+        return ret_img
+    else:
+        params.set_error_str("bad pixel correction need RAW data")
+        return None
 
 # =============================================================
 # class: lens_shading_correction

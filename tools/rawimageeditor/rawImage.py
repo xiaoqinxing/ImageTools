@@ -204,13 +204,14 @@ class RawImageInfo():
         """
         if (self.__color_space == "raw"):
             self.show_data = self.convert_bayer2color()
-            return QImage(self.show_data, self.show_data.shape[1],
-                          self.show_data.shape[0], QImage.Format_BGR888)
         elif (self.__color_space == "RGB"):
-            return QImage(self.data, self.__size[1],
-                          self.__size[0], QImage.Format_BGR888)
+            self.show_data = self.convert_to_8bit()
+        
+        if(self.show_data is not None):
+            return QImage(self.show_data, self.show_data.shape[1],
+                            self.show_data.shape[0], QImage.Format_BGR888)
         else:
-            return
+            return None
 
     def set_name(self, name):
         self.name = name
@@ -384,6 +385,13 @@ class RawImageInfo():
         else:
             print("pattern must be one of these: rggb, grbg, gbrg, bggr")
             return None
+        return data
+    
+    def convert_to_8bit(self):
+        data = np.zeros(
+            (self.get_height(), self.get_width(), 3), dtype="uint8")
+        right_shift_num = self.get_bit_depth() - 8
+        data = np.right_shift(self.data, right_shift_num)
         return data
 
     def bilinear_interpolation(self, x, y):

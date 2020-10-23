@@ -17,6 +17,7 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
     ret_img = RawImageInfo()
     ret_img.set_name('after demosaic')
     ret_img.set_size((raw.get_height(), raw.get_width(), 3))
+    ret_img.set_bit_depth(14)
     if (params.get_demosaic_funct_type() == 0):
         ret_img.data = debayer_mhc(
             raw.get_raw_data(), bayer_pattern, [0, 65535], False)
@@ -193,7 +194,7 @@ def post_process_median_filter(data, edge_detect_kernel_size=3, edge_threshold=0
         edge_detect_kernel_size, "is_edge", edge_threshold, clip_range)
 
     # allocate space for output
-    output = np.empty(np.shape(data), dtype="uint16")
+    output = np.empty(np.shape(data), dtype=np.float32)
 
     if (np.ndim(data) > 2):
 
@@ -214,9 +215,9 @@ def directionally_weighted_gradient_based_interpolation(raw: RawImageInfo):
     http://www.arl.army.mil/arlreports/2010/ARL-TR-5061.pdf
     """
 
-    print("----------------------------------------------------")
     print("Running demosaicing using directionally weighted gradient based interpolation...")
     data = raw.get_raw_data()
+    data = np.float16(data)
     bayer_pattern = raw.get_bayer_pattern()
     # Fill up the green channel
     G = fill_channel_directional_weight(
@@ -226,9 +227,9 @@ def directionally_weighted_gradient_based_interpolation(raw: RawImageInfo):
 
     width, height = raw.get_width(), raw.get_height()
     output = np.empty((height, width, 3), dtype="uint16")
-    output[:, :, 0] = R
-    output[:, :, 1] = G
-    output[:, :, 2] = B
+    output[:, :, 0] = np.uint16(B)
+    output[:, :, 1] = np.uint16(G)
+    output[:, :, 2] = np.uint16(R)
 
     return np.clip(output, 0, 65535)
 
@@ -251,14 +252,14 @@ def debayer_mhc(raw, bayer_pattern="rggb", clip_range=[0, 65535], timeshow=False
 
     # allocate space for the R, G, B planes
     R = np.empty((height + no_of_pixel_pad * 2, width +
-                  no_of_pixel_pad * 2), dtype="uint16")
+                  no_of_pixel_pad * 2), dtype=np.float32)
     G = np.empty((height + no_of_pixel_pad * 2, width +
-                  no_of_pixel_pad * 2), dtype="uint16")
+                  no_of_pixel_pad * 2), dtype=np.float32)
     B = np.empty((height + no_of_pixel_pad * 2, width +
-                  no_of_pixel_pad * 2), dtype="uint16")
+                  no_of_pixel_pad * 2), dtype=np.float32)
 
     # create a RGB output
-    demosaic_out = np.empty((height, width, 3), dtype="uint16")
+    demosaic_out = np.empty((height, width, 3), dtype=np.float32)
 
     # fill up the directly available values according to the Bayer pattern
     if (bayer_pattern == "rggb"):
@@ -759,13 +760,11 @@ def debayer_mhc(raw, bayer_pattern="rggb", clip_range=[0, 65535], timeshow=False
 
 def fill_channel_directional_weight(data, bayer_pattern):
 
-    # == Calculate the directional weights (weight_N, weight_E, weight_S, weight_W.
+    #== Calculate the directional weights (weight_N, weight_E, weight_S, weight_W.
     # where N, E, S, W stand for north, east, south, and west.)
-    # data = np.asarray(data)
-    v = np.asarray(signal.convolve2d(
-        data, [[1], [0], [-1]], mode="same", boundary="symm"))
-    h = np.asarray(signal.convolve2d(
-        data, [[1, 0, -1]], mode="same", boundary="symm"))
+    data = np.asarray(data)
+    v = np.asarray(signal.convolve2d(data, [[1],[0],[-1]], mode="same", boundary="symm"))
+    h = np.asarray(signal.convolve2d(data, [[1, 0, -1]], mode="same", boundary="symm"))
 
     weight_N = np.zeros(np.shape(data), dtype=np.float32)
     weight_E = np.zeros(np.shape(data), dtype=np.float32)
@@ -779,26 +778,25 @@ def fill_channel_directional_weight(data, bayer_pattern):
 
     if ((bayer_pattern == "rggb") or (bayer_pattern == "bggr")):
 
+
         # note that in the following the locations in the comments are given
         # assuming the bayer_pattern rggb
 
-        # == CALCULATE WEIGHTS IN B LOCATIONS
+        #== CALCULATE WEIGHTS IN B LOCATIONS
         weight_N[1::2, 1::2] = np.abs(v[1::2, 1::2]) + np.abs(v[::2, 1::2])
 
         # repeating the column before the last to the right so that sampling
         # does not cause any dimension mismatch
         temp_h_b = np.hstack((h, np.atleast_2d(h[:, -2]).T))
-        weight_E[1::2, 1::2] = np.abs(
-            h[1::2, 1::2]) + np.abs(temp_h_b[1::2, 2::2])
+        weight_E[1::2, 1::2] = np.abs(h[1::2, 1::2]) + np.abs(temp_h_b[1::2, 2::2])
 
         # repeating the row before the last row to the bottom so that sampling
         # does not cause any dimension mismatch
         temp_v_b = np.vstack((v, v[-1]))
-        weight_S[1::2, 1::2] = np.abs(
-            v[1::2, 1::2]) + np.abs(temp_v_b[2::2, 1::2])
+        weight_S[1::2, 1::2] = np.abs(v[1::2, 1::2]) + np.abs(temp_v_b[2::2, 1::2])
         weight_W[1::2, 1::2] = np.abs(h[1::2, 1::2]) + np.abs(h[1::2, ::2])
 
-        # == CALCULATE WEIGHTS IN R LOCATIONS
+        #== CALCULATE WEIGHTS IN R LOCATIONS
         # repeating the second row at the top of matrix so that sampling does
         # not cause any dimension mismatch, also remove the bottom row
         temp_v_r = np.delete(np.vstack((v[1], v)), -1, 0)
@@ -819,7 +817,7 @@ def fill_channel_directional_weight(data, bayer_pattern):
         weight_S = np.divide(1., 1. + weight_S)
         weight_W = np.divide(1., 1. + weight_W)
 
-        # == CALCULATE DIRECTIONAL ESTIMATES IN B LOCATIONS
+        #== CALCULATE DIRECTIONAL ESTIMATES IN B LOCATIONS
         value_N[1::2, 1::2] = data[::2, 1::2] + v[::2, 1::2] / 2.
 
         # repeating the column before the last to the right so that sampling
@@ -834,7 +832,7 @@ def fill_channel_directional_weight(data, bayer_pattern):
 
         value_W[1::2, 1::2] = data[1::2, ::2] + h[1::2, ::2] / 2.
 
-        # == CALCULATE DIRECTIONAL ESTIMATES IN R LOCATIONS
+        #== CALCULATE DIRECTIONAL ESTIMATES IN R LOCATIONS
         # repeating the second row at the top of matrix so that sampling does
         # not cause any dimension mismatch, also remove the bottom row
         temp = np.delete(np.vstack((data[1], data)), -1, 0)
@@ -850,12 +848,12 @@ def fill_channel_directional_weight(data, bayer_pattern):
         temp = np.delete(np.hstack((np.atleast_2d(data[:, 1]).T, data)), -1, 1)
         value_W[::2, ::2] = temp[::2, ::2] + temp_h_r[::2, ::2] / 2.
 
-        output = np.zeros(np.shape(data), dtype="uint16")
-        output = np.divide((np.multiply(value_N, weight_N) +
-                            np.multiply(value_E, weight_E) +
-                            np.multiply(value_S, weight_S) +
-                            np.multiply(value_W, weight_W)),
-                           (weight_N + weight_E + weight_S + weight_W))
+        output = np.zeros(np.shape(data), dtype=np.float32)
+        output = np.divide((np.multiply(value_N, weight_N) + \
+                            np.multiply(value_E, weight_E) + \
+                            np.multiply(value_S, weight_S) + \
+                            np.multiply(value_W, weight_W)),\
+                            (weight_N + weight_E + weight_S + weight_W))
 
         output[::2, 1::2] = data[::2, 1::2]
         output[1::2, ::2] = data[1::2, ::2]
@@ -867,47 +865,43 @@ def fill_channel_directional_weight(data, bayer_pattern):
         # note that in the following the locations in the comments are given
         # assuming the bayer_pattern gbrg
 
-        # == CALCULATE WEIGHTS IN B LOCATIONS
+        #== CALCULATE WEIGHTS IN B LOCATIONS
         # repeating the second row at the top of matrix so that sampling does
         # not cause any dimension mismatch, also remove the bottom row
         temp_v_b = np.delete(np.vstack((v[1], v)), -1, 0)
-        weight_N[::2, 1::2] = np.abs(
-            v[::2, 1::2]) + np.abs(temp_v_b[::2, 1::2])
+        weight_N[::2, 1::2] = np.abs(v[::2, 1::2]) + np.abs(temp_v_b[::2, 1::2])
 
         # repeating the column before the last to the right so that sampling
         # does not cause any dimension mismatch
         temp_h_b = np.hstack((h, np.atleast_2d(h[:, -2]).T))
-        weight_E[::2, 1::2] = np.abs(
-            h[::2, 1::2]) + np.abs(temp_h_b[::2, 2::2])
+        weight_E[::2, 1::2] = np.abs(h[::2, 1::2]) + np.abs(temp_h_b[::2, 2::2])
 
         # repeating the row before the last row to the bottom so that sampling
         # does not cause any dimension mismatch
         weight_S[::2, 1::2] = np.abs(v[::2, 1::2]) + np.abs(v[1::2, 1::2])
         weight_W[::2, 1::2] = np.abs(h[::2, 1::2]) + np.abs(h[::2, ::2])
 
-        # == CALCULATE WEIGHTS IN R LOCATIONS
+        #== CALCULATE WEIGHTS IN R LOCATIONS
         weight_N[1::2, ::2] = np.abs(v[1::2, ::2]) + np.abs(v[::2, ::2])
         weight_E[1::2, ::2] = np.abs(h[1::2, ::2]) + np.abs(h[1::2, 1::2])
 
         # repeating the row before the last row to the bottom so that sampling
         # does not cause any dimension mismatch
         temp_v_r = np.vstack((v, v[-1]))
-        weight_S[1::2, ::2] = np.abs(
-            v[1::2, ::2]) + np.abs(temp_v_r[2::2, ::2])
+        weight_S[1::2, ::2] = np.abs(v[1::2, ::2]) + np.abs(temp_v_r[2::2, ::2])
 
         # repeating the second column at the left of matrix so that sampling
         # does not cause any dimension mismatch, also remove the rightmost
         # column
         temp_h_r = np.delete(np.hstack((np.atleast_2d(h[:, 1]).T, h)), -1, 1)
-        weight_W[1::2, ::2] = np.abs(
-            h[1::2, ::2]) + np.abs(temp_h_r[1::2, ::2])
+        weight_W[1::2, ::2] = np.abs(h[1::2, ::2]) + np.abs(temp_h_r[1::2, ::2])
 
         weight_N = np.divide(1., 1. + weight_N)
         weight_E = np.divide(1., 1. + weight_E)
         weight_S = np.divide(1., 1. + weight_S)
         weight_W = np.divide(1., 1. + weight_W)
 
-        # == CALCULATE DIRECTIONAL ESTIMATES IN B LOCATIONS
+        #== CALCULATE DIRECTIONAL ESTIMATES IN B LOCATIONS
         # repeating the second row at the top of matrix so that sampling does
         # not cause any dimension mismatch, also remove the bottom row
         temp = np.delete(np.vstack((data[1], data)), -1, 0)
@@ -924,7 +918,7 @@ def fill_channel_directional_weight(data, bayer_pattern):
 
         value_W[::2, 1::2] = data[::2, ::2] + h[::2, ::2] / 2.
 
-        # == CALCULATE DIRECTIONAL ESTIMATES IN R LOCATIONS
+        #== CALCULATE DIRECTIONAL ESTIMATES IN R LOCATIONS
         # repeating the second row at the top of matrix so that sampling does
         # not cause any dimension mismatch, also remove the bottom row
         value_N[1::2, ::2] = data[::2, ::2] + v[::2, ::2] / 2.
@@ -941,12 +935,12 @@ def fill_channel_directional_weight(data, bayer_pattern):
         temp = np.delete(np.hstack((np.atleast_2d(data[:, 1]).T, data)), -1, 1)
         value_W[1::2, ::2] = temp[1::2, ::2] + temp_h_r[1::2, ::2] / 2.
 
-        output = np.zeros(np.shape(data), dtype="uint16")
-        output = np.divide((np.multiply(value_N, weight_N) +
-                            np.multiply(value_E, weight_E) +
-                            np.multiply(value_S, weight_S) +
-                            np.multiply(value_W, weight_W)),
-                           (weight_N + weight_E + weight_S + weight_W))
+        output = np.zeros(np.shape(data), dtype=np.float32)
+        output = np.divide((np.multiply(value_N, weight_N) + \
+                            np.multiply(value_E, weight_E) + \
+                            np.multiply(value_S, weight_S) + \
+                            np.multiply(value_W, weight_W)),\
+                            (weight_N + weight_E + weight_S + weight_W))
 
         output[::2, ::2] = data[::2, ::2]
         output[1::2, 1::2] = data[1::2, 1::2]
@@ -957,24 +951,18 @@ def fill_channel_directional_weight(data, bayer_pattern):
 def fill_br_locations(data, G, bayer_pattern):
 
     # Fill up the B/R values interpolated at R/B locations
-    B = np.zeros(np.shape(data), dtype="uint16")
-    R = np.zeros(np.shape(data), dtype="uint16")
+    B = np.zeros(np.shape(data), dtype=np.float32)
+    R = np.zeros(np.shape(data), dtype=np.float32)
 
-    # data = np.asarray(data)
+    data = np.asarray(data)
     G = np.asarray(G)
-    d1 = np.asarray(signal.convolve2d(
-        data, [[-1, 0, 0], [0, 0, 0], [0, 0, 1]], mode="same", boundary="symm"))
-    d2 = np.asarray(signal.convolve2d(
-        data, [[0, 0, 1], [0, 0, 0], [-1, 0, 0]], mode="same", boundary="symm"))
+    d1 = np.asarray(signal.convolve2d(data, [[-1, 0, 0],[0, 0, 0], [0, 0, 1]], mode="same", boundary="symm"))
+    d2 = np.asarray(signal.convolve2d(data, [[0, 0, 1], [0, 0, 0], [-1, 0, 0]], mode="same", boundary="symm"))
 
-    df_NE = np.asarray(signal.convolve2d(
-        G, [[0, 0, 0], [0, 1, 0], [-1, 0, 0]], mode="same", boundary="symm"))
-    df_SE = np.asarray(signal.convolve2d(
-        G, [[-1, 0, 0], [0, 1, 0], [0, 0, 0]], mode="same", boundary="symm"))
-    df_SW = np.asarray(signal.convolve2d(
-        G, [[0, 0, -1], [0, 1, 0], [0, 0, 0]], mode="same", boundary="symm"))
-    df_NW = np.asarray(signal.convolve2d(
-        G, [[0, 0, 0], [0, 1, 0], [0, 0, -1]], mode="same", boundary="symm"))
+    df_NE = np.asarray(signal.convolve2d(G, [[0, 0, 0], [0, 1, 0], [-1, 0, 0]], mode="same", boundary="symm"))
+    df_SE = np.asarray(signal.convolve2d(G, [[-1, 0, 0], [0, 1, 0], [0, 0, 0]], mode="same", boundary="symm"))
+    df_SW = np.asarray(signal.convolve2d(G, [[0, 0, -1], [0, 1, 0], [0, 0, 0]], mode="same", boundary="symm"))
+    df_NW = np.asarray(signal.convolve2d(G, [[0, 0, 0], [0, 1, 0], [0, 0, -1]], mode="same", boundary="symm"))
 
     weight_NE = np.zeros(np.shape(data), dtype=np.float32)
     weight_SE = np.zeros(np.shape(data), dtype=np.float32)
@@ -988,28 +976,24 @@ def fill_br_locations(data, G, bayer_pattern):
 
     if ((bayer_pattern == "rggb") or (bayer_pattern == "bggr")):
 
-        # == weights for B in R locations
+        #== weights for B in R locations
         weight_NE[::2, ::2] = np.abs(d2[::2, ::2]) + np.abs(df_NE[::2, ::2])
         weight_SE[::2, ::2] = np.abs(d1[::2, ::2]) + np.abs(df_SE[::2, ::2])
         weight_SW[::2, ::2] = np.abs(d2[::2, ::2]) + np.abs(df_SW[::2, ::2])
         weight_NW[::2, ::2] = np.abs(d1[::2, ::2]) + np.abs(df_NW[::2, ::2])
 
-        # == weights for R in B locations
-        weight_NE[1::2, 1::2] = np.abs(
-            d2[1::2, 1::2]) + np.abs(df_NE[1::2, 1::2])
-        weight_SE[1::2, 1::2] = np.abs(
-            d1[1::2, 1::2]) + np.abs(df_SE[1::2, 1::2])
-        weight_SW[1::2, 1::2] = np.abs(
-            d2[1::2, 1::2]) + np.abs(df_SW[1::2, 1::2])
-        weight_NW[1::2, 1::2] = np.abs(
-            d1[1::2, 1::2]) + np.abs(df_NW[1::2, 1::2])
+        #== weights for R in B locations
+        weight_NE[1::2, 1::2] = np.abs(d2[1::2, 1::2]) + np.abs(df_NE[1::2, 1::2])
+        weight_SE[1::2, 1::2] = np.abs(d1[1::2, 1::2]) + np.abs(df_SE[1::2, 1::2])
+        weight_SW[1::2, 1::2] = np.abs(d2[1::2, 1::2]) + np.abs(df_SW[1::2, 1::2])
+        weight_NW[1::2, 1::2] = np.abs(d1[1::2, 1::2]) + np.abs(df_NW[1::2, 1::2])
 
         weight_NE = np.divide(1., 1. + weight_NE)
         weight_SE = np.divide(1., 1. + weight_SE)
         weight_SW = np.divide(1., 1. + weight_SW)
         weight_NW = np.divide(1., 1. + weight_NW)
 
-        # == directional estimates of B in R locations
+        #== directional estimates of B in R locations
         # repeating the second row at the top of matrix so that sampling does
         # not cause any dimension mismatch, also remove the bottom row
         temp = np.delete(np.vstack((data[1], data)), -1, 0)
@@ -1030,7 +1014,7 @@ def fill_br_locations(data, G, bayer_pattern):
         temp = np.delete(np.hstack((np.atleast_2d(temp[:, 1]).T, temp)), -1, 1)
         value_NW[::2, ::2] = temp[::2, ::2] + df_NW[::2, ::2]
 
-        # == directional estimates of R in B locations
+        #== directional estimates of R in B locations
         # repeating the column before the last to the right so that sampling
         # does not cause any dimension mismatch
         temp = np.hstack((data, np.atleast_2d(data[:, -2]).T))
@@ -1048,10 +1032,10 @@ def fill_br_locations(data, G, bayer_pattern):
         value_SW[1::2, 1::2] = temp[2::2, ::2] + df_SW[1::2, 1::2] / 2.
         value_NW[1::2, 1::2] = data[::2, ::2] + df_NW[1::2, 1::2] / 2.
 
-        RB = np.divide(np.multiply(weight_NE, value_NE) +
-                       np.multiply(weight_SE, value_SE) +
-                       np.multiply(weight_SW, value_SW) +
-                       np.multiply(weight_NW, value_NW),
+        RB = np.divide(np.multiply(weight_NE, value_NE) + \
+                       np.multiply(weight_SE, value_SE) + \
+                       np.multiply(weight_SW, value_SW) + \
+                       np.multiply(weight_NW, value_NW),\
                        (weight_NE + weight_SE + weight_SW + weight_NW))
 
         if (bayer_pattern == "rggb"):
@@ -1067,6 +1051,7 @@ def fill_br_locations(data, G, bayer_pattern):
             B[1::2, 1::2] = RB[1::2, 1::2]
             B[::2, ::2] = data[::2, ::2]
 
+
         R[1::2, ::2] = G[1::2, ::2]
         R[::2, 1::2] = G[::2, 1::2]
         R = fill_channel_directional_weight(R, "gbrg")
@@ -1075,14 +1060,15 @@ def fill_br_locations(data, G, bayer_pattern):
         B[::2, 1::2] = G[::2, 1::2]
         B = fill_channel_directional_weight(B, "gbrg")
 
+
     elif ((bayer_pattern == "grbg") or (bayer_pattern == "gbrg")):
-        # == weights for B in R locations
+        #== weights for B in R locations
         weight_NE[::2, 1::2] = np.abs(d2[::2, 1::2]) + np.abs(df_NE[::2, 1::2])
         weight_SE[::2, 1::2] = np.abs(d1[::2, 1::2]) + np.abs(df_SE[::2, 1::2])
         weight_SW[::2, 1::2] = np.abs(d2[::2, 1::2]) + np.abs(df_SW[::2, 1::2])
         weight_NW[::2, 1::2] = np.abs(d1[::2, 1::2]) + np.abs(df_NW[::2, 1::2])
 
-        # == weights for R in B locations
+        #== weights for R in B locations
         weight_NE[1::2, ::2] = np.abs(d2[1::2, ::2]) + np.abs(df_NE[1::2, ::2])
         weight_SE[1::2, ::2] = np.abs(d1[1::2, ::2]) + np.abs(df_SE[1::2, ::2])
         weight_SW[1::2, ::2] = np.abs(d2[1::2, ::2]) + np.abs(df_SW[1::2, ::2])
@@ -1093,7 +1079,7 @@ def fill_br_locations(data, G, bayer_pattern):
         weight_SW = np.divide(1., 1. + weight_SW)
         weight_NW = np.divide(1., 1. + weight_NW)
 
-        # == directional estimates of B in R locations
+        #== directional estimates of B in R locations
         # repeating the second row at the top of matrix so that sampling does
         # not cause any dimension mismatch, also remove the bottom row
         temp = np.delete(np.vstack((data[1], data)), -1, 0)
@@ -1112,7 +1098,7 @@ def fill_br_locations(data, G, bayer_pattern):
         temp = np.delete(np.vstack((data[1], data)), -1, 0)
         value_NW[::2, 1::2] = temp[::2, ::2] + df_NW[::2, 1::2]
 
-        # == directional estimates of R in B locations
+        #== directional estimates of R in B locations
         value_NE[1::2, ::2] = data[::2, 1::2] + df_NE[1::2, ::2] / 2.
         # repeating the column before the last to the right so that sampling
         # does not cause any dimension mismatch
@@ -1135,10 +1121,10 @@ def fill_br_locations(data, G, bayer_pattern):
         temp = np.delete(np.hstack((np.atleast_2d(data[:, 1]).T, data)), -1, 1)
         value_NW[1::2, ::2] = temp[::2, ::2] + df_NW[1::2, ::2] / 2.
 
-        RB = np.divide(np.multiply(weight_NE, value_NE) +
-                       np.multiply(weight_SE, value_SE) +
-                       np.multiply(weight_SW, value_SW) +
-                       np.multiply(weight_NW, value_NW),
+        RB = np.divide(np.multiply(weight_NE, value_NE) + \
+                       np.multiply(weight_SE, value_SE) + \
+                       np.multiply(weight_SW, value_SW) + \
+                       np.multiply(weight_NW, value_NW),\
                        (weight_NE + weight_SE + weight_SW + weight_NW))
 
         if (bayer_pattern == "grbg"):
@@ -1154,6 +1140,7 @@ def fill_br_locations(data, G, bayer_pattern):
             B[1::2, ::2] = RB[1::2, ::2]
             B[::2, 1::2] = data[::2, 1::2]
 
+
         R[::2, ::2] = G[::2, ::2]
         R[1::2, 1::2] = G[1::2, 1::2]
         R = fill_channel_directional_weight(R, "rggb")
@@ -1161,6 +1148,7 @@ def fill_br_locations(data, G, bayer_pattern):
         B[1::2, 1::2] = G[1::2, 1::2]
         B[::2, ::2] = G[::2, ::2]
         B = fill_channel_directional_weight(B, "rggb")
+
 
     return B, R
 
