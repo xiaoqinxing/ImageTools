@@ -19,7 +19,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputBaseFilename=ImageTools
-SetupIconFile=C:\work\code\field_depth\ui\resource\main.ico
+SetupIconFile=.\ui\resource\main.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -31,8 +31,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\work\code\field_depth\dist\ImageTools\ImageTools.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\work\code\field_depth\dist\ImageTools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ".\dist\ImageTools\ImageTools.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\dist\ImageTools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
