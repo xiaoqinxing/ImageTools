@@ -1,4 +1,5 @@
 from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt
 from ui.mainwindow import Ui_MainWindow
 import sys
 from ui.customwidget import MainWindow
@@ -25,7 +26,8 @@ class ImageTools(object):
         self.ui.imageeditor.triggered.connect(self.add_image_editor_window)
         self.ui.af_calc_tool.triggered.connect(self.add_af_calc_window)
         self.ui.userguide.triggered.connect(self.add_userguide_window)
-        self.ui.rawimageeditor.triggered.connect(self.add_raw_image_editor_window)
+        self.ui.rawimageeditor.triggered.connect(
+            self.add_raw_image_editor_window)
         self.ui.video_compare.triggered.connect(self.add_video_compare_window)
         self.window.show()
         self.sub_windows = list()
@@ -46,24 +48,26 @@ class ImageTools(object):
     def add_image_editor_window(self):
         sub_window = ImageEditor()
         self.add_sub_window(sub_window)
-    
+
     def add_af_calc_window(self):
         sub_window = AfCalcTool()
         self.add_sub_window(sub_window)
-    
+
     def add_userguide_window(self):
         sub_window = HelpDoc()
         self.add_sub_window(sub_window)
-    
+
     def add_raw_image_editor_window(self):
         sub_window = RawImageEditor()
         self.add_sub_window(sub_window)
-    
+
     def add_video_compare_window(self):
         sub_window = VideoCompare()
         self.add_sub_window(sub_window)
 
+
 if __name__ == "__main__":
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     apps = QApplication([])
     apps.setStyle('Fusion')
     appswindow = ImageTools()
