@@ -34,6 +34,7 @@ pipeline_dict = {
     "bad pixel correction":         12
 }
 
+
 def run_node(node, data, params):
     # 这里进行检查之后，后续就不需要检查了
     if(data is not None and params is not None):
@@ -46,13 +47,16 @@ def run_node(node, data, params):
         elif (node == pipeline_dict["bad pixel correction"]):
             return bad_pixel_correction(data, params)
         elif(node == pipeline_dict["demosaic"]):
-            return debayer.demosaic(data,params)
+            return debayer.demosaic(data, params)
+        elif(node == pipeline_dict["gamma"]):
+            return gamma_correction(data, params)
     elif(params is not None):
         params.set_error_str("RAW data is None")
         return None
     else:
         return None
-        
+
+
 def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     """
     function: black_level_correction
@@ -100,7 +104,7 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
 
     bayer_pattern = raw.get_bayer_pattern()
     raw_data = raw.get_raw_data()
-    
+
     # ensure input color space and process
     if(raw.get_color_space() == "raw"):
         ret_img = RawImageInfo()
@@ -154,10 +158,11 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
 
             # pad pixels at the borders, 扩充边缘
             img = np.pad(img,
-                            (no_of_pixel_pad, no_of_pixel_pad),
-                            'reflect')  # reflect would not repeat the border value
-            
-            raw_channel_data.append(bad_pixel_correction_subfunc(img, no_of_pixel_pad,width,height))
+                         (no_of_pixel_pad, no_of_pixel_pad),
+                         'reflect')  # reflect would not repeat the border value
+
+            raw_channel_data.append(bad_pixel_correction_subfunc(
+                img, no_of_pixel_pad, width, height))
 
         # Regrouping the data
         ret_img.data[::2, ::2] = raw_channel_data[0]
@@ -169,6 +174,7 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
         params.set_error_str("bad pixel correction need RAW data")
         return None
 
+
 @jit(nopython=True)
 def bad_pixel_correction_subfunc(img, no_of_pixel_pad, width, height):
     for i in range(no_of_pixel_pad, height + no_of_pixel_pad):
@@ -177,13 +183,13 @@ def bad_pixel_correction_subfunc(img, no_of_pixel_pad, width, height):
             mid_pixel_val = img[i, j]
             # extract the neighborhood
             neighborhood = img[i - no_of_pixel_pad: i + no_of_pixel_pad+1,
-                                j - no_of_pixel_pad: j + no_of_pixel_pad+1]
+                               j - no_of_pixel_pad: j + no_of_pixel_pad+1]
 
             # set the center pixels value same as the left pixel
             # Does not matter replace with right or left pixel
             # is used to replace the center pixels value
             neighborhood[no_of_pixel_pad,
-                            no_of_pixel_pad] = neighborhood[no_of_pixel_pad, no_of_pixel_pad-1]
+                         no_of_pixel_pad] = neighborhood[no_of_pixel_pad, no_of_pixel_pad-1]
 
             min_neighborhood = np.min(neighborhood)
             max_neighborhood = np.max(neighborhood)
@@ -194,56 +200,33 @@ def bad_pixel_correction_subfunc(img, no_of_pixel_pad, width, height):
                 img[i, j] = max_neighborhood
             else:
                 img[i, j] = mid_pixel_val
-    
+
     # Put the corrected image to the dictionary
     return img[no_of_pixel_pad: height + no_of_pixel_pad, no_of_pixel_pad: width + no_of_pixel_pad]
 
-def gamma(raw: RawImageInfo, params: RawImageParams):
+
+def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     """
-    function: bad_pixel_correction
-    correct for the bad (dead, stuck, or hot) pixels
+    function: gamma correction
     input: raw:RawImageInfo() params:RawImageParams()
-    卷积核neighborhood_size * neighborhood_size，当这个值大于卷积核内最大的值或者小于最小的值，会将这个值替代掉
-    这个算法应该会损失不少分辨率
+    输入支持bayer以及RGB域
     """
-    neighborhood_size = params.get_size_for_bad_pixel_correction()
-    if ((neighborhood_size % 2) == 0):
-        print("neighborhood_size shoud be odd number, recommended value 3")
-        return raw
+    gamma_ratio = params.get_gamma_ratio()
+    max_input = 1 << params.get_bit_depth()
+    linear_table = np.linspace(
+        0, max_input, params.gamma_table_size)
+    gamma_table = np.power(linear_table/max_input, 1/gamma_ratio)
+    gamma_table = gamma_table * linear_table
+    # gamma_table = np.uint16(gamma_table * linear_table)
+    # linear_table = np.uint16(linear_table)
 
     raw_data = raw.get_raw_data()
-    raw_channel_data = list()
 
-    if (raw.get_color_space() == "raw"):
+    if (raw.get_color_space() == "raw" or raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
-        ret_img.create_image('after bad pixel correction', raw_data.shape)
-        # Separate out the quarter resolution images
-        D = split_raw_data(raw_data)
-
-        # number of pixels to be padded at the borders
-        #no_of_pixel_pad = math.floor(neighborhood_size / 2.)
-        no_of_pixel_pad = neighborhood_size // 2
-
-        for idx in range(0, len(D)):  # perform same operation for each quarter
-
-            # display progress
-            print("bad pixel correction: Quarter " + str(idx+1) + " of 4")
-
-            img = D[idx]
-            width, height = img.shape[1], img.shape[0]
-
-            # pad pixels at the borders, 扩充边缘
-            img = np.pad(img,
-                            (no_of_pixel_pad, no_of_pixel_pad),
-                            'reflect')  # reflect would not repeat the border value
-            
-            raw_channel_data.append(bad_pixel_correction_subfunc(img, no_of_pixel_pad,width,height))
-
-        # Regrouping the data
-        ret_img.data[::2, ::2] = raw_channel_data[0]
-        ret_img.data[::2, 1::2] = raw_channel_data[1]
-        ret_img.data[1::2, ::2] = raw_channel_data[2]
-        ret_img.data[1::2, 1::2] = raw_channel_data[3]
+        ret_img.create_image('after gamma correction', raw_data.shape)
+        tmp = np.interp(raw_data, linear_table, gamma_table)
+        ret_img.data = tmp.astype(np.uint16)
         return ret_img
     else:
         params.set_error_str("bad pixel correction need RAW data")
@@ -253,6 +236,8 @@ def gamma(raw: RawImageInfo, params: RawImageParams):
 # class: lens_shading_correction
 #   Correct the lens shading / vignetting
 # =============================================================
+
+
 class lens_shading_correction:
     def __init__(self, data, name="lens_shading_correction"):
         # convert to float32 in case it was not

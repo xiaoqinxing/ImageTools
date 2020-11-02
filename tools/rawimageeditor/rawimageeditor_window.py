@@ -225,7 +225,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 288))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -4, 349, 502))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)
@@ -354,6 +354,19 @@ class Ui_ImageEditor(object):
 
         self.groupBox_11 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_11.setObjectName(u"groupBox_11")
+        self.gridLayout_9 = QGridLayout(self.groupBox_11)
+        self.gridLayout_9.setObjectName(u"gridLayout_9")
+        self.label_13 = QLabel(self.groupBox_11)
+        self.label_13.setObjectName(u"label_13")
+
+        self.gridLayout_9.addWidget(self.label_13, 0, 0, 1, 1)
+
+        self.gamma_ratio = QDoubleSpinBox(self.groupBox_11)
+        self.gamma_ratio.setObjectName(u"gamma_ratio")
+        self.gamma_ratio.setValue(2.200000000000000)
+
+        self.gridLayout_9.addWidget(self.gamma_ratio, 0, 1, 1, 1)
+
 
         self.gridLayout_7.addWidget(self.groupBox_11, 6, 0, 1, 1)
 
@@ -377,9 +390,9 @@ class Ui_ImageEditor(object):
 
         self.gridLayout.addLayout(self.verticalLayout, 1, 1, 1, 1)
 
-        self.groupBox_6 = QGroupBox(self.centralwidget)
-        self.groupBox_6.setObjectName(u"groupBox_6")
-        self.gridLayout_5 = QGridLayout(self.groupBox_6)
+        self.photo_title = QGroupBox(self.centralwidget)
+        self.photo_title.setObjectName(u"photo_title")
+        self.gridLayout_5 = QGridLayout(self.photo_title)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
         self.graphicsView = QGridLayout()
         self.graphicsView.setObjectName(u"graphicsView")
@@ -387,7 +400,7 @@ class Ui_ImageEditor(object):
         self.gridLayout_5.addLayout(self.graphicsView, 0, 0, 1, 1)
 
 
-        self.gridLayout.addWidget(self.groupBox_6, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.photo_title, 1, 0, 1, 1)
 
         ImageEditor.setCentralWidget(self.centralwidget)
         self.statusBar = QStatusBar(ImageEditor)
@@ -475,8 +488,9 @@ class Ui_ImageEditor(object):
         self.label_4.setText(QCoreApplication.translate("ImageEditor", u"B", None))
         self.groupBox_8.setTitle(QCoreApplication.translate("ImageEditor", u"demosaic", None))
         self.groupBox_11.setTitle(QCoreApplication.translate("ImageEditor", u"gamma", None))
+        self.label_13.setText(QCoreApplication.translate("ImageEditor", u"ratio", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("ImageEditor", u"ABF", None))
         self.groupBox_15.setTitle(QCoreApplication.translate("ImageEditor", u"adaptive spatial filter", None))
-        self.groupBox_6.setTitle(QCoreApplication.translate("ImageEditor", u"\u56fe\u7247\u9884\u89c8", None))
+        self.photo_title.setTitle(QCoreApplication.translate("ImageEditor", u"\u56fe\u7247\u9884\u89c8", None))
     # retranslateUi
 

@@ -24,7 +24,7 @@ class RawImageEditor(object):
         self.progress_bar.setValue(0)
 
         self.scene = QGraphicsScene()
-        self.imageview = ImageView(self.scene,self.window)
+        self.imageview = ImageView(self.scene, self.window)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.graphicsView.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
@@ -45,6 +45,7 @@ class RawImageEditor(object):
         self.ui.awb_r.editingFinished.connect(self.update_awb)
         self.ui.awb_g.editingFinished.connect(self.update_awb)
         self.ui.awb_b.editingFinished.connect(self.update_awb)
+        self.ui.gamma_ratio.editingFinished.connect(self.update_gamma)
         self.scale_ratio = 100
 
         self.img_pipeline = IspPipeline()
@@ -78,6 +79,7 @@ class RawImageEditor(object):
         self.scene.clear()
         self.img = img
         self.scene.addPixmap(QPixmap(img.get_qimage()))
+        self.ui.photo_title.setTitle(img.get_name())
 
     def update_black_level(self):
         self.img_params.set_black_level([self.ui.blc_r.value(
@@ -87,6 +89,10 @@ class RawImageEditor(object):
     def update_awb(self):
         self.img_params.set_awb_gain(
             (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
+        self.img_pipeline.flush_pipeline()
+
+    def update_gamma(self):
+        self.img_params.set_gamma(self.ui.gamma_ratio.value())
         self.img_pipeline.flush_pipeline()
 
     def update_pipeline(self):

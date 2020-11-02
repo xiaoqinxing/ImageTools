@@ -32,6 +32,9 @@ class RawImageParams():
         self.__demosaic_func_type = 1
         self.__demosaic_need_proc_color = 0
         self.__demosaic_need_media_filter = 0
+        self.__gamma_ratio = 2.2
+        # gamma 查找表的长度
+        self.gamma_table_size = 512
 
     def set_demosaic_func_type(self, type):
         """
@@ -104,6 +107,15 @@ class RawImageParams():
 
     def get_awb_gain(self):
         return self.awb_gain
+
+    def set_gamma(self, gamma_ratio):
+        """
+        设置gamma的值
+        """
+        self.__gamma_ratio = gamma_ratio
+
+    def get_gamma_ratio(self):
+        return self.__gamma_ratio
 
     def set_error_str(self, string):
         self.error_str = string
@@ -206,15 +218,18 @@ class RawImageInfo():
             self.show_data = self.convert_bayer2color()
         elif (self.__color_space == "RGB"):
             self.show_data = self.convert_to_8bit()
-        
+
         if(self.show_data is not None):
             return QImage(self.show_data, self.show_data.shape[1],
-                            self.show_data.shape[0], QImage.Format_BGR888)
+                          self.show_data.shape[0], QImage.Format_BGR888)
         else:
             return None
 
     def set_name(self, name):
         self.name = name
+
+    def get_name(self):
+        return self.name
 
     def set_size(self, size):
         self.__size = size
@@ -386,7 +401,7 @@ class RawImageInfo():
             print("pattern must be one of these: rggb, grbg, gbrg, bggr")
             return None
         return data
-    
+
     def convert_to_8bit(self):
         data = np.zeros(
             (self.get_height(), self.get_width(), 3), dtype="uint8")
