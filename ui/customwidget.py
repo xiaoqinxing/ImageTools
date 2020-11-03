@@ -4,6 +4,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationTool
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from PySide2.QtWidgets import QMessageBox, QMainWindow
+import pickle
+import os
 
 
 class MainWindow(QMainWindow):
@@ -24,6 +26,35 @@ class MainWindow(QMainWindow):
             event.accept()
         else:
             event.ignore()
+
+
+class SubWindow(QMainWindow):
+    """对QMainWindow类重写，实现一些功能"""
+
+    def __init__(self, name):
+        super().__init__()
+        self.filename = "./config/" + name + ".txt"
+        self.__saved_params = None
+
+    def set_load_params(self, params):
+        self.__saved_params = params
+
+    def load_params(self):
+        if os.path.exists(self.filename):
+            with open(self.filename, "rb") as fp:
+                return pickle.load(fp)
+
+    def closeEvent(self, event):
+        """
+        重写closeEvent方法，实现dialog窗体关闭时执行一些代码
+        :param event: close()触发的事件
+        :return: None
+        """
+        if not os.path.exists("./config"):
+            os.mkdir("./config")
+        with open(self.filename, "wb") as fp:
+            pickle.dump(self.__saved_params, fp)
+        event.accept()
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -200,10 +231,10 @@ class ImageView(QGraphicsView):
 
     def dragEnterEvent(self, event):
         event.accept()
-    
+
     def dragMoveEvent(self, event):
         event.accept()
-    
+
     def dropEvent(self, event):
         if event.mimeData().hasUrls():
             try:
@@ -222,10 +253,10 @@ class VideoView(QLabel):
 
     def dragEnterEvent(self, event):
         event.accept()
-    
+
     def dragMoveEvent(self, event):
         event.accept()
-    
+
     def dropEvent(self, event):
         if event.mimeData().hasUrls():
             try:

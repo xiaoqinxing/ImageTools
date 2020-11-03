@@ -1,32 +1,35 @@
 import matplotlib.pyplot as plt
-from PySide2.QtWidgets import QMainWindow
 from tools.depth_of_focus.field_depth_window import Ui_FieldDepthWindow
 from tools.depth_of_focus.LenParameters import LenParameters, SettingParamters, cmos_size_dist
-from ui.customwidget import MatplotlibLayout, ParamsTable
+from ui.customwidget import MatplotlibLayout, ParamsTable, SubWindow
 
 
 class FieldDepthWindow(object):
     def __init__(self):
-        self.window = QMainWindow()
+        self.window = SubWindow("FieldDepthWindow")
         self.ui = Ui_FieldDepthWindow()
         self.ui.setupUi(self.window)
+        save_params = self.window.load_params()
+        if (save_params is not None):
+            self.params, self.setting = save_params
+        else:
+            self.setting = SettingParamters()
+            self.params = LenParameters()
+            self.get_ui_params()
+            self.params.show()
+            self.init_params_range()
+        self.window.set_load_params((self.params, self.setting))
+        self.set_ui_params()
 
     def show(self):
         self.window.show()
-        self.field_depth_figure = None
-        self.image_distance_figure = None
-        self.setting = SettingParamters()
-        self.params = LenParameters()
-        self.get_ui_params()
-        self.params.show()
-        self.pri_params = LenParameters()
         self.ui.pushButton.clicked.connect(self.finished_plot_cb)
         self.ui.sensor_size.editingFinished.connect(self.coms_size_changed_cb)
         self.ui.confusion_circle_diam_slide.sliderMoved.connect(
             self.confusion_circle_diam_changed_cb)
         self.ui.sensor_size_list.currentTextChanged.connect(
             self.coms_size_list_changed_cb)
-        self.init_params_range()
+
         self.plot_fig = MatplotlibLayout(self.ui.plotview)
         self.plot_figure()
         self.tableWidget = ParamsTable(self.ui.plotview)
@@ -104,14 +107,45 @@ class FieldDepthWindow(object):
         self.setting.output_image_distance = self.ui.output_image_distance.isChecked()
         self.setting.output_params = self.ui.output_params.isChecked()
         # advanced setting
-        self.params.aperture_range[0] = float(self.ui.apeture_min_range.text())
-        self.params.aperture_range[1] = float(self.ui.apeture_max_range.text())
+        self.params.aperture_range[0] = float(
+            self.ui.apeture_min_range.value())
+        self.params.aperture_range[1] = float(
+            self.ui.apeture_max_range.value())
         self.params.focus_distance_range[0] = float(
-            self.ui.distance_min_range.text())*1000
+            self.ui.distance_min_range.value())*1000
         self.params.focus_distance_range[1] = float(
-            self.ui.distance_max_range.text())*1000
-        self.params.focus_range[0] = float(self.ui.focus_min_range.text())
-        self.params.focus_range[1] = float(self.ui.focus_max_range.text())
+            self.ui.distance_max_range.value())*1000
+        self.params.focus_range[0] = float(self.ui.focus_min_range.value())
+        self.params.focus_range[1] = float(self.ui.focus_max_range.value())
+
+    def set_ui_params(self):
+        # basic setting
+        self.ui.focus_length.setValue(self.params.focus_length)
+        self.ui.confusion_circle_diam.setValue(
+            self.params.confusion_circle_diam)
+        self.ui.aperture.setValue(self.params.aperture)
+        self.ui.focus_distance.setValue(self.params.focus_distance / 1000)
+        self.ui.sensor_size.setValue(self.params.cmos_size)
+
+        # input setting
+        self.ui.input_focus_length.setChecked(self.setting.input_focus_length)
+        self.ui.input_apeture.setChecked(self.setting.input_apeture)
+        self.ui.input_distance.setChecked(self.setting.input_distance)
+        # output setting
+        self.ui.output_field_depth.setChecked(self.setting.output_field_depth)
+        self.ui.output_image_distance.setChecked(
+            self.setting.output_image_distance)
+        self.ui.output_params.setChecked(self.setting.output_params)
+
+        # advanced setting
+        self.ui.apeture_min_range.setValue(self.params.aperture_range[0])
+        self.ui.apeture_max_range.setValue(self.params.aperture_range[1])
+        self.ui.distance_min_range.setValue(
+            self.params.focus_distance_range[0]/1000)
+        self.ui.distance_max_range.setValue(
+            self.params.focus_distance_range[1]/1000)
+        self.ui.focus_min_range.setValue(self.params.focus_range[0])
+        self.ui.focus_max_range.setValue(self.params.focus_range[1])
 
     # CALLBACKS
     def finished_plot_cb(self):
