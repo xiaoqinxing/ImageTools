@@ -1,9 +1,9 @@
 import cv2
-from PySide2.QtWidgets import QMainWindow, QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog, QDialog
+from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog, QDialog
 from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Slot
 from tools.imageeditor.imageeditor_window import Ui_ImageEditor
-from ui.customwidget import ImageView, MatplotlibWidget
+from ui.customwidget import ImageView, MatplotlibWidget, SubWindow
 from tools.imageeditor.imageeffect import ImageEffect, BlurType
 from tools.imageeditor.histgramview import Ui_HistgramView
 import numpy as np
@@ -11,11 +11,11 @@ import numpy as np
 
 class ImageEditor(object):
     def __init__(self):
-        self.window = QMainWindow()
+        self.window = SubWindow("ImageEditor")
         self.ui = Ui_ImageEditor()
         self.ui.setupUi(self.window)
         self.scene = QGraphicsScene()
-        self.imageview = ImageView(self.scene,self.window)
+        self.imageview = ImageView(self.scene, self.window)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.gridLayout.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)

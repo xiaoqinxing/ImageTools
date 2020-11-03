@@ -1,10 +1,11 @@
 from ui.help_window import Ui_HelpWindow
-from PySide2.QtWidgets import QMainWindow
+from ui.customwidget import SubWindow
+
 
 class HelpDoc(object):
 
     def __init__(self):
-        self.window = QMainWindow()
+        self.window = SubWindow("HelpDoc")
         self.ui = Ui_HelpWindow()
         self.ui.setupUi(self.window)
         with open("Readme.md", "r", encoding="utf-8") as input_file:

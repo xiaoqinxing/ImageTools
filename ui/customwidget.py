@@ -11,6 +11,15 @@ import os
 class MainWindow(QMainWindow):
     """对QMainWindow类重写，实现一些功能"""
 
+    def __init__(self):
+        super().__init__()
+        self.sub_windows = list()
+        self.filename = './config/ImageToolsSubWindows.txt'
+        self.sub_windows_list = list()
+        if os.path.exists(self.filename):
+            with open(self.filename, "rb") as fp:
+                self.sub_windows_list = pickle.load(fp)
+
     def closeEvent(self, event):
         """
         重写closeEvent方法，实现dialog窗体关闭时执行一些代码
@@ -23,6 +32,15 @@ class MainWindow(QMainWindow):
                                      QMessageBox.Yes | QMessageBox.No,
                                      QMessageBox.No)
         if reply == QMessageBox.Yes:
+            if not os.path.exists("./config"):
+                os.mkdir("./config")
+            sub_windows_list = list()
+            for win in self.sub_windows:
+                print(win)
+                if (win is not None):
+                    sub_windows_list.append(win.window.name)
+            with open(self.filename, "wb") as fp:
+                pickle.dump(sub_windows_list, fp)
             event.accept()
         else:
             event.ignore()
@@ -33,6 +51,7 @@ class SubWindow(QMainWindow):
 
     def __init__(self, name):
         super().__init__()
+        self.name = name
         self.filename = "./config/" + name + ".txt"
         self.__saved_params = None
 

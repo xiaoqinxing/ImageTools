@@ -1,10 +1,10 @@
 import cv2
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QDialog, QWidget
+from PySide2.QtWidgets import QFileDialog, QMessageBox, QDialog, QWidget
 from PySide2.QtGui import QImage, QPixmap
 from PySide2.QtCore import QTimer
 from tools.video_compare.shake_test_window import Ui_ShakeTestWindow
 from tools.video_compare.rtspconfigview import Ui_RtspConfigView
-from ui.customwidget import VideoView
+from ui.customwidget import VideoView, SubWindow
 from tools.video_compare.videoview import VideoCompareView
 import numpy as np
 import math
@@ -13,7 +13,7 @@ import os
 
 class VideoCompare(object):
     def __init__(self):
-        self.window = QMainWindow()
+        self.window = SubWindow("VideoCompare")
         self.ui = Ui_ShakeTestWindow()
         self.ui.setupUi(self.window)
         self.videoview = [VideoCompareView(self.ui.horizontalLayout)]

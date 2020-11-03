@@ -1,10 +1,10 @@
 import cv2
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QDialog
+from PySide2.QtWidgets import QFileDialog, QMessageBox, QDialog
 from PySide2.QtGui import QImage, QPixmap
 from PySide2.QtCore import QTimer
 from tools.shake_test.shake_test_window import Ui_ShakeTestWindow
 from tools.shake_test.rtspconfigview import Ui_RtspConfigView
-from ui.customwidget import VideoView
+from ui.customwidget import VideoView, SubWindow
 import numpy as np
 import math
 import os
@@ -32,7 +32,7 @@ class ShakeTestTool(object):
     inter_frames = 50
 
     def __init__(self):
-        self.window = QMainWindow()
+        self.window = SubWindow("ShakeTestTool")
         self.ui = Ui_ShakeTestWindow()
         self.ui.setupUi(self.window)
         self.videoview = VideoView()
@@ -49,7 +49,8 @@ class ShakeTestTool(object):
         self.ui.set_roi_up.editingFinished.connect(self.set_roi_up)
         self.ui.set_roi_down.editingFinished.connect(self.set_roi_down)
         self.ui.calc_inter_frams.editingFinished.connect(self.set_inter_frames)
-        self.ui.direction_select.currentIndexChanged.connect(self.direction_change)
+        self.ui.direction_select.currentIndexChanged.connect(
+            self.direction_change)
         self.ui.openrtsp.clicked.connect(self.open_rtsp)
         self.rtsp_config_window = None
         self.rtsp_config_ui = None
@@ -140,14 +141,14 @@ class ShakeTestTool(object):
         self.vertify_video()
         self.set_ui_enable(True)
         self.process_speed = 100
-    
+
     def open_rtsp(self):
         self.rtsp_config_window = QDialog()
         self.rtsp_config_ui = Ui_RtspConfigView()
         self.rtsp_config_ui.setupUi(self.rtsp_config_window)
         self.rtsp_config_window.show()
         self.rtsp_config_ui.buttonBox.clicked.connect(self.rtsp_config)
-    
+
     def rtsp_config(self):
         username = self.rtsp_config_ui.username.text()
         password = self.rtsp_config_ui.password.text()
@@ -162,14 +163,14 @@ class ShakeTestTool(object):
         self.open_video_path(rtsp_path)
         self.process_speed = 33
 
-
     #######################################################################################
     # 主要运行逻辑
     #######################################################################################
+
     def vertify_video(self):
         # 输出参数初始化
         self.diff_center_sum = 0
-        self.max_any_diff =0
+        self.max_any_diff = 0
         self.warp_ratio_sum = 0
         self.show_count = 0
         self.frame_count = 0
@@ -349,7 +350,7 @@ class ShakeTestTool(object):
         # 求扭曲程度
         variance = variance_sum / \
             ((pl_size - 1) * diff_center * diff_center)
-        
+
         # set UI
         self.ui.center_max_distance.setValue(diff_center)
         self.ui.any_max_distance.setValue(max_diff)
@@ -362,9 +363,11 @@ class ShakeTestTool(object):
         if(max_diff > self.max_any_diff):
             self.max_any_diff = max_diff
         self.warp_ratio_sum += variance
-        self.ui.final_center_distance.setValue(self.diff_center_sum/self.show_count)
+        self.ui.final_center_distance.setValue(
+            self.diff_center_sum/self.show_count)
         self.ui.final_any_max_distance.setValue(self.max_any_diff)
-        self.ui.final_photo_warp_ratio.setValue(self.warp_ratio_sum/self.show_count)
+        self.ui.final_photo_warp_ratio.setValue(
+            self.warp_ratio_sum/self.show_count)
 
     def calc_direction_result(self, direction, max_pl, min_pl):
         diff_sum = 0
@@ -550,6 +553,7 @@ class ShakeTestTool(object):
 
         # display
         self.display(img)
+
 
 class RtspConfigView(QDialog):
     def __init__(self, parent):

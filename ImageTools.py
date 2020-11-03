@@ -13,6 +13,16 @@ from tools.video_compare.videocompare import VideoCompare
 
 
 class ImageTools(object):
+    subwindow_function = {
+        "FieldDepthWindow": FieldDepthWindow,
+        "ShakeTestTool": ShakeTestTool,
+        "ImageEditor": ImageEditor,
+        "AfCalcTool": AfCalcTool,
+        "RawImageEditor": RawImageEditor,
+        "VideoCompare": VideoCompare,
+        "HelpDoc": HelpDoc,
+    }
+
     def __init__(self):
         super().__init__()
         self.window = MainWindow()
@@ -30,40 +40,42 @@ class ImageTools(object):
             self.add_raw_image_editor_window)
         self.ui.video_compare.triggered.connect(self.add_video_compare_window)
         self.window.show()
-        self.sub_windows = list()
+        for name in self.window.sub_windows_list:
+            self.add_sub_window(name)
 
-    def add_sub_window(self, sub_window):
+    def add_sub_window(self, sub_window_name):
+        sub_window = self.subwindow_function[sub_window_name]()
         self.subwindows_ui.addSubWindow(sub_window.window)
         sub_window.show()
-        self.sub_windows.append(sub_window)
+        self.window.sub_windows.append(sub_window)
 
     def add_field_depth_tool_window(self):
-        sub_window = FieldDepthWindow()
-        self.add_sub_window(sub_window)
+        sub_window_name = 'FieldDepthWindow'
+        self.add_sub_window(sub_window_name)
 
     def add_shake_tool_window(self):
-        sub_window = ShakeTestTool()
-        self.add_sub_window(sub_window)
+        sub_window_name = "ShakeTestTool"
+        self.add_sub_window(sub_window_name)
 
     def add_image_editor_window(self):
-        sub_window = ImageEditor()
-        self.add_sub_window(sub_window)
+        sub_window_name = "ImageEditor"
+        self.add_sub_window(sub_window_name)
 
     def add_af_calc_window(self):
-        sub_window = AfCalcTool()
-        self.add_sub_window(sub_window)
+        sub_window_name = "AfCalcTool"
+        self.add_sub_window(sub_window_name)
 
     def add_userguide_window(self):
-        sub_window = HelpDoc()
-        self.add_sub_window(sub_window)
+        sub_window_name = "HelpDoc"
+        self.add_sub_window(sub_window_name)
 
     def add_raw_image_editor_window(self):
-        sub_window = RawImageEditor()
-        self.add_sub_window(sub_window)
+        sub_window_name = "RawImageEditor"
+        self.add_sub_window(sub_window_name)
 
     def add_video_compare_window(self):
-        sub_window = VideoCompare()
-        self.add_sub_window(sub_window)
+        sub_window_name = "VideoCompare"
+        self.add_sub_window(sub_window_name)
 
 
 if __name__ == "__main__":

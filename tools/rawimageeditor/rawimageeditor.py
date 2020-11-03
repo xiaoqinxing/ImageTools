@@ -1,9 +1,9 @@
 import cv2
-from PySide2.QtWidgets import QMainWindow, QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog, QDialog, QProgressBar, QLabel
+from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog, QDialog, QProgressBar, QLabel
 from PySide2.QtGui import QPixmap, Qt
 from PySide2.QtCore import Slot
 from tools.rawimageeditor.rawimageeditor_window import Ui_ImageEditor
-from ui.customwidget import ImageView, MatplotlibWidget
+from ui.customwidget import ImageView, MatplotlibWidget, SubWindow
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from tools.rawimageeditor.isppipeline import IspPipeline
 from tools.rawimageeditor.rawhistgramview import Ui_HistgramView
@@ -12,7 +12,7 @@ import numpy as np
 
 class RawImageEditor(object):
     def __init__(self):
-        self.window = QMainWindow()
+        self.window = SubWindow("RawImageEditor")
         self.ui = Ui_ImageEditor()
         self.ui.setupUi(self.window)
         # add 进度条和详细信息显示
