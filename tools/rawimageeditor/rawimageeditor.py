@@ -13,7 +13,7 @@ import numpy as np
 class RawImageEditor(SubWindow):
     def __init__(self, name, parent=None):
         super().__init__(name, parent, Ui_ImageEditor())
-        save_params = self.load_params()
+
         # add 进度条和详细信息显示
         self.progress_bar = QProgressBar()
         self.info_bar = QLabel()
@@ -48,10 +48,18 @@ class RawImageEditor(SubWindow):
         self.scale_ratio = 100
 
         self.img_pipeline = IspPipeline()
-        self.img_params = self.img_pipeline.params
         self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0
+
+        self.img_params = self.load_params(self.img_pipeline.params)
+        self.set_img_params()
+
+    def set_img_params(self):
+        self.ui.width.setValue(self.img_params.get_width())
+        self.ui.height.setValue(self.img_params.get_height())
+        self.ui.bit.setValue(self.img_params.get_bit_depth())
+        # self.ui.pattern.setValue(self.img_params.get_pattern())
 
     def update_width(self):
         self.img_params.set_width(self.ui.width.value())

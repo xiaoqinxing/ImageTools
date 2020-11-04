@@ -33,7 +33,6 @@ class ShakeTestTool(SubWindow):
 
     def __init__(self, name, parent=None):
         super().__init__(name, parent, Ui_ShakeTestWindow())
-        save_params = self.load_params()
         self.videoview = VideoView(parent)
         self.ui.gridLayout_2.addWidget(self.videoview, 0, 0, 1, 1)
         self.videoview.sigDragEvent.connect(self.open_video_path)

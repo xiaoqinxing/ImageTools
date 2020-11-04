@@ -7,16 +7,10 @@ from ui.customwidget import MatplotlibLayout, ParamsTable, SubWindow
 class FieldDepthWindow(SubWindow):
     def __init__(self, name, parent=None):
         super().__init__(name, parent, Ui_FieldDepthWindow())
-        save_params = self.load_params()
-
-        if (save_params is not None):
-            self.params, self.setting = save_params
-        else:
-            self.setting = SettingParamters()
-            self.params = LenParameters()
-            self.get_ui_params()
-            self.init_params_range()
-        self.set_load_params([self.params, self.setting])
+        self.params, self.setting = self.load_params(
+            (LenParameters(), SettingParamters()))
+        self.get_ui_params()
+        self.init_params_range()
 
     def show(self):
         super().show()

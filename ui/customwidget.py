@@ -58,13 +58,16 @@ class SubWindow(QMainWindow):
         self.ui = ui_view
         self.ui.setupUi(self)
 
-    def set_load_params(self, params):
-        self.__saved_params = params
-
-    def load_params(self):
+    def load_params(self, init_value):
+        """
+        加载存储的类，返回的参数可以直接进行修改，会保存到本地，下一次打开会自动加载
+        """
         if os.path.exists(self.filename):
             with open(self.filename, "rb") as fp:
-                return pickle.load(fp)
+                self.__saved_params = pickle.load(fp)
+        if (self.__saved_params is None):
+            self.__saved_params = init_value
+        return self.__saved_params
 
     def closeEvent(self, event):
         """

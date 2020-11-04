@@ -43,8 +43,8 @@ class ImageTools(MainWindow):
         sub_window = self.subwindow_function[sub_window_name](
             sub_window_name, self)
         self.subwindows_ui.addSubWindow(sub_window)
-        sub_window.show()
         self.sub_windows.append(sub_window)
+        sub_window.show()
 
     def add_field_depth_tool_window(self):
         self.add_sub_window("FieldDepthWindow")

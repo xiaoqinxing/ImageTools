@@ -14,7 +14,6 @@ import os
 class VideoCompare(SubWindow):
     def __init__(self, name, parent=None):
         super().__init__(name, parent, Ui_ShakeTestWindow())
-        save_params = self.load_params()
         self.videoview = [VideoCompareView(self.ui.horizontalLayout)]
         self.videoview.append(VideoCompareView(self.ui.horizontalLayout))
         #self.videoview[0].setupCbFunc(self.open_video, self.open_rtsp, self.open_video_path)

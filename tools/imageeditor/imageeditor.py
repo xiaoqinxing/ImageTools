@@ -12,7 +12,6 @@ import numpy as np
 class ImageEditor(SubWindow):
     def __init__(self, name, parent=None):
         super().__init__(name, parent, Ui_ImageEditor())
-        save_params = self.load_params()
         self.scene = QGraphicsScene()
         self.imageview = ImageView(self.scene, parent)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
