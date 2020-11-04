@@ -36,8 +36,7 @@ class MainWindow(QMainWindow):
                 os.mkdir("./config")
             sub_windows_list = list()
             for win in self.sub_windows:
-                print(win)
-                if (win is not None):
+                if (win.window.name is not None):
                     sub_windows_list.append(win.window.name)
             with open(self.filename, "wb") as fp:
                 pickle.dump(sub_windows_list, fp)
@@ -71,6 +70,7 @@ class SubWindow(QMainWindow):
         """
         if not os.path.exists("./config"):
             os.mkdir("./config")
+        self.name = None
         with open(self.filename, "wb") as fp:
             pickle.dump(self.__saved_params, fp)
         event.accept()

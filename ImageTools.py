@@ -50,32 +50,25 @@ class ImageTools(object):
         self.window.sub_windows.append(sub_window)
 
     def add_field_depth_tool_window(self):
-        sub_window_name = 'FieldDepthWindow'
-        self.add_sub_window(sub_window_name)
+        self.add_sub_window("FieldDepthWindow")
 
     def add_shake_tool_window(self):
-        sub_window_name = "ShakeTestTool"
-        self.add_sub_window(sub_window_name)
+        self.add_sub_window("ShakeTestTool")
 
     def add_image_editor_window(self):
-        sub_window_name = "ImageEditor"
-        self.add_sub_window(sub_window_name)
+        self.add_sub_window("ImageEditor")
 
     def add_af_calc_window(self):
-        sub_window_name = "AfCalcTool"
-        self.add_sub_window(sub_window_name)
+        self.add_sub_window("AfCalcTool")
 
     def add_userguide_window(self):
-        sub_window_name = "HelpDoc"
-        self.add_sub_window(sub_window_name)
+        self.add_sub_window("HelpDoc")
 
     def add_raw_image_editor_window(self):
-        sub_window_name = "RawImageEditor"
-        self.add_sub_window(sub_window_name)
+        self.add_sub_window("RawImageEditor")
 
     def add_video_compare_window(self):
-        sub_window_name = "VideoCompare"
-        self.add_sub_window(sub_window_name)
+        self.add_sub_window("VideoCompare")
 
 
 if __name__ == "__main__":
