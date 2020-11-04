@@ -11,11 +11,10 @@ import math
 import os
 
 
-class VideoCompare(object):
-    def __init__(self):
-        self.window = SubWindow("VideoCompare")
-        self.ui = Ui_ShakeTestWindow()
-        self.ui.setupUi(self.window)
+class VideoCompare(SubWindow):
+    def __init__(self, name, parent=None):
+        super().__init__(name, parent, Ui_ShakeTestWindow())
+        save_params = self.load_params()
         self.videoview = [VideoCompareView(self.ui.horizontalLayout)]
         self.videoview.append(VideoCompareView(self.ui.horizontalLayout))
         #self.videoview[0].setupCbFunc(self.open_video, self.open_rtsp, self.open_video_path)
@@ -75,9 +74,6 @@ class VideoCompare(object):
         self.ui.skipframes.setEnabled(value)
         self.ui.remove_move_point_enable.setEnabled(value)
         self.ui.calc_inter_frams.setEnabled(value)
-
-    def show(self):
-        self.window.show()
 
 
 class RtspConfigView(QDialog):

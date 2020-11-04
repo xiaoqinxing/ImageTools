@@ -11,11 +11,13 @@ import os
 class MainWindow(QMainWindow):
     """对QMainWindow类重写，实现一些功能"""
 
-    def __init__(self):
+    def __init__(self, ui_view):
         super().__init__()
         self.sub_windows = list()
         self.filename = './config/ImageToolsSubWindows.txt'
         self.sub_windows_list = list()
+        self.ui = ui_view
+        self.ui.setupUi(self)
         if os.path.exists(self.filename):
             with open(self.filename, "rb") as fp:
                 self.sub_windows_list = pickle.load(fp)
@@ -36,8 +38,8 @@ class MainWindow(QMainWindow):
                 os.mkdir("./config")
             sub_windows_list = list()
             for win in self.sub_windows:
-                if (win.window.name is not None):
-                    sub_windows_list.append(win.window.name)
+                if (win.name is not None):
+                    sub_windows_list.append(win.name)
             with open(self.filename, "wb") as fp:
                 pickle.dump(sub_windows_list, fp)
             event.accept()
@@ -48,11 +50,13 @@ class MainWindow(QMainWindow):
 class SubWindow(QMainWindow):
     """对QMainWindow类重写，实现一些功能"""
 
-    def __init__(self, name):
-        super().__init__()
+    def __init__(self, name, parent, ui_view):
+        super().__init__(parent)
         self.name = name
         self.filename = "./config/" + name + ".txt"
         self.__saved_params = None
+        self.ui = ui_view
+        self.ui.setupUi(self)
 
     def set_load_params(self, params):
         self.__saved_params = params

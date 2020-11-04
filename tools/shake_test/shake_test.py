@@ -22,7 +22,7 @@ class Direction():
     vertical = 16
 
 
-class ShakeTestTool(object):
+class ShakeTestTool(SubWindow):
     video_valid = False
     only_select_move_point = False
     roi_up_crop = 0
@@ -31,11 +31,10 @@ class ShakeTestTool(object):
     vertical_direction = Direction.up
     inter_frames = 50
 
-    def __init__(self):
-        self.window = SubWindow("ShakeTestTool")
-        self.ui = Ui_ShakeTestWindow()
-        self.ui.setupUi(self.window)
-        self.videoview = VideoView()
+    def __init__(self, name, parent=None):
+        super().__init__(name, parent, Ui_ShakeTestWindow())
+        save_params = self.load_params()
+        self.videoview = VideoView(parent)
         self.ui.gridLayout_2.addWidget(self.videoview, 0, 0, 1, 1)
         self.videoview.sigDragEvent.connect(self.open_video_path)
         self.ui.openvideo.clicked.connect(self.open_video)
@@ -84,9 +83,6 @@ class ShakeTestTool(object):
 
     def direction_change(self, value):
         self.calc_direction = value
-
-    def show(self):
-        self.window.show()
 
     def set_roi_up(self):
         self.roi_up_crop = self.ui.set_roi_up.value()
@@ -521,7 +517,7 @@ class ShakeTestTool(object):
 
     def critical_window_show(self, str):
         reply = QMessageBox.critical(
-            self.window, '警告', str,
+            self, '警告', str,
             QMessageBox.Yes, QMessageBox.Yes)
         return
 

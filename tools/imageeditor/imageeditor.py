@@ -9,13 +9,12 @@ from tools.imageeditor.histgramview import Ui_HistgramView
 import numpy as np
 
 
-class ImageEditor(object):
-    def __init__(self):
-        self.window = SubWindow("ImageEditor")
-        self.ui = Ui_ImageEditor()
-        self.ui.setupUi(self.window)
+class ImageEditor(SubWindow):
+    def __init__(self, name, parent=None):
+        super().__init__(name, parent, Ui_ImageEditor())
+        save_params = self.load_params()
         self.scene = QGraphicsScene()
-        self.imageview = ImageView(self.scene, self.window)
+        self.imageview = ImageView(self.scene, parent)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.gridLayout.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
@@ -34,9 +33,6 @@ class ImageEditor(object):
         self.scale_ratio = 100
         self.img = ImageEffect()
 
-    def show(self):
-        self.window.show()
-
     def displayImage(self, img):
         self.scene.clear()
         self.scene.addPixmap(QPixmap(img))
@@ -54,7 +50,7 @@ class ImageEditor(object):
                 self.displayImage(self.img.get_src_image())
             else:
                 rely = QMessageBox.critical(
-                    self.window, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
+                    self, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
                 return
 
     def boxblur_image(self):

@@ -7,18 +7,14 @@ from tools.af_calc.af_calc_ui import Ui_AFCalcToolView
 from ui.customwidget import MatplotlibWidget, SubWindow
 
 
-class AfCalcTool(object):
-    def __init__(self):
-        self.window = SubWindow("AfCalcTool")
-        self.ui = Ui_AFCalcToolView()
-        self.ui.setupUi(self.window)
+class AfCalcTool(SubWindow):
+    def __init__(self, name, parent=None):
+        super().__init__(name, parent, Ui_AFCalcToolView())
+        save_params = self.load_params()
         self.ui.okbutton.clicked.connect(self.calc_ret)
         self.ui.open_in_path.clicked.connect(self.open_in_path)
         self.ui.open_out_path.clicked.connect(self.open_out_path)
         self.matplot = MatplotlibWidget(self.ui.plotview)
-
-    def show(self):
-        self.window.show()
 
     def open_in_path(self):
         filepath = QFileDialog.getOpenFileName(

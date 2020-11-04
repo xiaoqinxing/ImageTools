@@ -10,11 +10,10 @@ from tools.rawimageeditor.rawhistgramview import Ui_HistgramView
 import numpy as np
 
 
-class RawImageEditor(object):
-    def __init__(self):
-        self.window = SubWindow("RawImageEditor")
-        self.ui = Ui_ImageEditor()
-        self.ui.setupUi(self.window)
+class RawImageEditor(SubWindow):
+    def __init__(self, name, parent=None):
+        super().__init__(name, parent, Ui_ImageEditor())
+        save_params = self.load_params()
         # add 进度条和详细信息显示
         self.progress_bar = QProgressBar()
         self.info_bar = QLabel()
@@ -24,7 +23,7 @@ class RawImageEditor(object):
         self.progress_bar.setValue(0)
 
         self.scene = QGraphicsScene()
-        self.imageview = ImageView(self.scene, self.window)
+        self.imageview = ImageView(self.scene, parent)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.graphicsView.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
@@ -53,9 +52,6 @@ class RawImageEditor(object):
         self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0
-
-    def show(self):
-        self.window.show()
 
     def update_width(self):
         self.img_params.set_width(self.ui.width.value())
@@ -127,11 +123,11 @@ class RawImageEditor(object):
                 self.displayImage(self.img)
             else:
                 rely = QMessageBox.critical(
-                    self.window, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
+                    self, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
                 return
         else:
             rely = QMessageBox.critical(
-                self.window, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
+                self, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
             return
 
     def save_now_image(self):

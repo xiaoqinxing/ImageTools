@@ -4,31 +4,30 @@ from tools.depth_of_focus.LenParameters import LenParameters, SettingParamters, 
 from ui.customwidget import MatplotlibLayout, ParamsTable, SubWindow
 
 
-class FieldDepthWindow(object):
-    def __init__(self):
-        self.window = SubWindow("FieldDepthWindow")
-        self.ui = Ui_FieldDepthWindow()
-        self.ui.setupUi(self.window)
-        save_params = self.window.load_params()
+class FieldDepthWindow(SubWindow):
+    def __init__(self, name, parent=None):
+        super().__init__(name, parent, Ui_FieldDepthWindow())
+        save_params = self.load_params()
+
         if (save_params is not None):
             self.params, self.setting = save_params
         else:
             self.setting = SettingParamters()
             self.params = LenParameters()
             self.get_ui_params()
-            self.params.show()
             self.init_params_range()
-        self.window.set_load_params((self.params, self.setting))
-        self.set_ui_params()
+        self.set_load_params([self.params, self.setting])
 
     def show(self):
-        self.window.show()
+        super().show()
         self.ui.pushButton.clicked.connect(self.finished_plot_cb)
         self.ui.sensor_size.editingFinished.connect(self.coms_size_changed_cb)
         self.ui.confusion_circle_diam_slide.sliderMoved.connect(
             self.confusion_circle_diam_changed_cb)
         self.ui.sensor_size_list.currentTextChanged.connect(
             self.coms_size_list_changed_cb)
+
+        self.set_ui_params()
 
         self.plot_fig = MatplotlibLayout(self.ui.plotview)
         self.plot_figure()
@@ -92,12 +91,12 @@ class FieldDepthWindow(object):
     # get params
     def get_ui_params(self):
         # basic setting
-        self.params.focus_length = float(self.ui.focus_length.text())
+        self.params.focus_length = float(self.ui.focus_length.value())
         self.params.confusion_circle_diam = float(
-            self.ui.confusion_circle_diam.text())
-        self.params.aperture = float(self.ui.aperture.text())
-        self.params.focus_distance = float(self.ui.focus_distance.text())*1000
-        self.params.cmos_size = float(self.ui.sensor_size.text())
+            self.ui.confusion_circle_diam.value())
+        self.params.aperture = float(self.ui.aperture.value())
+        self.params.focus_distance = float(self.ui.focus_distance.value())*1000
+        self.params.cmos_size = float(self.ui.sensor_size.value())
         # input setting
         self.setting.input_focus_length = self.ui.input_focus_length.isChecked()
         self.setting.input_apeture = self.ui.input_apeture.isChecked()

@@ -12,7 +12,7 @@ from tools.rawimageeditor.rawimageeditor import RawImageEditor
 from tools.video_compare.videocompare import VideoCompare
 
 
-class ImageTools(object):
+class ImageTools(MainWindow):
     subwindow_function = {
         "FieldDepthWindow": FieldDepthWindow,
         "ShakeTestTool": ShakeTestTool,
@@ -24,10 +24,7 @@ class ImageTools(object):
     }
 
     def __init__(self):
-        super().__init__()
-        self.window = MainWindow()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.window)
+        super().__init__(Ui_MainWindow())
         self.subwindows_ui = self.ui.mdiArea
         self.subwindows_ui.setStyleSheet("QTabBar::tab { height: 30px;}")
         self.ui.field_depth_tool.triggered.connect(
@@ -39,15 +36,15 @@ class ImageTools(object):
         self.ui.rawimageeditor.triggered.connect(
             self.add_raw_image_editor_window)
         self.ui.video_compare.triggered.connect(self.add_video_compare_window)
-        self.window.show()
-        for name in self.window.sub_windows_list:
+        for name in self.sub_windows_list:
             self.add_sub_window(name)
 
     def add_sub_window(self, sub_window_name):
-        sub_window = self.subwindow_function[sub_window_name]()
-        self.subwindows_ui.addSubWindow(sub_window.window)
+        sub_window = self.subwindow_function[sub_window_name](
+            sub_window_name, self)
+        self.subwindows_ui.addSubWindow(sub_window)
         sub_window.show()
-        self.window.sub_windows.append(sub_window)
+        self.sub_windows.append(sub_window)
 
     def add_field_depth_tool_window(self):
         self.add_sub_window("FieldDepthWindow")
@@ -76,4 +73,5 @@ if __name__ == "__main__":
     apps = QApplication([])
     apps.setStyle('Fusion')
     appswindow = ImageTools()
+    appswindow.show()
     sys.exit(apps.exec_())
