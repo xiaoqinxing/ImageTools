@@ -45,6 +45,8 @@ class RawImageEditor(SubWindow):
         self.ui.awb_g.editingFinished.connect(self.update_awb)
         self.ui.awb_b.editingFinished.connect(self.update_awb)
         self.ui.gamma_ratio.editingFinished.connect(self.update_gamma)
+        self.ui.select_from_raw.clicked.connect(self.select_awb_from_raw)
+        self.imageview.rubberBandChanged.connect(self.update_awb_from_raw)
         self.scale_ratio = 100
 
         self.img_pipeline = IspPipeline()
@@ -95,6 +97,18 @@ class RawImageEditor(SubWindow):
             (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
         self.img_pipeline.flush_pipeline()
 
+    def select_awb_from_raw(self):
+        self.imageview.setDragMode(QGraphicsView.RubberBandDrag)
+
+    def update_awb_from_raw(self, viewportRect, fromScenePoint, toScenePoint):
+        if(toScenePoint.x() == 0 and toScenePoint.y() == 0
+                and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
+            self.imageview.setDragMode(QGraphicsView.ScrollHandDrag)
+            print(self.rect)
+        else:
+            self.rect = [int(fromScenePoint.x()), int(fromScenePoint.y()), int(
+                toScenePoint.x()), int(toScenePoint.y())]
+
     def update_gamma(self):
         self.img_params.set_gamma(self.ui.gamma_ratio.value())
         self.img_pipeline.flush_pipeline()
@@ -127,6 +141,7 @@ class RawImageEditor(SubWindow):
         if (filename != "" and width != 0 and height != 0 and bit_depth != 0):
             self.img.load_image(filename, height, width, bit_depth)
             self.img.set_bayer_pattern(self.img_params.get_pattern())
+            self.rect = [0, 0, self.img_params.width, self.img_params.height]
             if (self.img.get_raw_data() is not None):
                 self.displayImage(self.img)
             else:
