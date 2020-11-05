@@ -212,25 +212,47 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     输入支持bayer以及RGB域
     """
     gamma_ratio = params.get_gamma_ratio()
-    max_input = 1 << params.get_bit_depth()
-    linear_table = np.linspace(
-        0, max_input, params.gamma_table_size)
-    gamma_table = np.power(linear_table/max_input, 1/gamma_ratio)
-    gamma_table = gamma_table * linear_table
-    # gamma_table = np.uint16(gamma_table * linear_table)
-    # linear_table = np.uint16(linear_table)
+    max_input = 1 << raw.get_bit_depth()
+    gamma_table = np.linspace(0, max_input, max_input)  # 建立映射表
+    gamma_table = (np.power(gamma_table/max_input, 1/gamma_ratio)
+                   * max_input).astype(np.uint16)
 
     raw_data = raw.get_raw_data()
 
-    if (raw.get_color_space() == "raw" or raw.get_color_space() == "RGB"):
+    if (raw.get_color_space() == "raw"):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw_data.shape)
-        tmp = np.interp(raw_data, linear_table, gamma_table)
-        ret_img.data = tmp.astype(np.uint16)
+        gamma_proc_raw(raw_data, ret_img.data, gamma_table)
+        return ret_img
+    elif (raw.get_color_space() == "RGB"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after gamma correction', raw_data.shape)
+        gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
         return ret_img
     else:
         params.set_error_str("bad pixel correction need RAW data")
         return None
+
+
+@jit(nopython=True)
+def gamma_proc_raw(src, dst, gamma_table):
+    """
+    根据gamma table 处理raw图
+    """
+    for i in range(0, src.shape[0]):
+        for j in range(0, src.shape[1]):
+            dst[i, j] = gamma_table[src[i, j]]
+
+
+@jit(nopython=True)
+def gamma_proc_rgb(src, dst, gamma_table):
+    """
+    根据gamma table处理rgb图
+    """
+    for i in range(0, src.shape[0]):
+        for j in range(0, src.shape[1]):
+            for k in range(3):
+                dst[i, j, k] = gamma_table[src[i, j, k]]
 
 # =============================================================
 # class: lens_shading_correction

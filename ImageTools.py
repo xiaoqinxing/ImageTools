@@ -36,6 +36,8 @@ class ImageTools(MainWindow):
         self.ui.rawimageeditor.triggered.connect(
             self.add_raw_image_editor_window)
         self.ui.video_compare.triggered.connect(self.add_video_compare_window)
+
+    def load_saved_windows(self):
         for name in self.sub_windows_list:
             self.add_sub_window(name)
 
@@ -74,4 +76,5 @@ if __name__ == "__main__":
     apps.setStyle('Fusion')
     appswindow = ImageTools()
     appswindow.show()
+    appswindow.load_saved_windows()
     sys.exit(apps.exec_())

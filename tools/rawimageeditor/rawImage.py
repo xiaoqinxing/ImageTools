@@ -153,12 +153,6 @@ class RawImageParams():
     def get_pattern(self):
         return self.pattern
 
-    def __str__(self):
-        return "Image " + " params:" + \
-            "\n\tchannel gains:\t" + str(self.channel_gain) + \
-            "\n\tbit depth:\t" + str(self.set_bit_depth) + \
-            "\n\tblack level:\t" + str(self.black_level)
-
 # =============================================================
 # class RawImageInfo:
 
