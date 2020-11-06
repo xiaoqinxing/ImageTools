@@ -400,7 +400,9 @@ class RawImageInfo():
         data = np.zeros(
             (self.get_height(), self.get_width(), 3), dtype="uint8")
         right_shift_num = self.get_bit_depth() - 8
-        data = np.right_shift(self.data, right_shift_num)
+        data[:, :, 0] = np.right_shift(self.data[:, :, 0], right_shift_num)
+        data[:, :, 1] = np.right_shift(self.data[:, :, 1], right_shift_num)
+        data[:, :, 2] = np.right_shift(self.data[:, :, 2], right_shift_num)
         return data
 
     def bilinear_interpolation(self, x, y):
