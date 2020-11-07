@@ -232,6 +232,17 @@
              </property>
              <item>
               <property name="text">
+               <string>original raw</string>
+              </property>
+              <property name="checkState">
+               <enum>Checked</enum>
+              </property>
+              <property name="flags">
+               <set>ItemIsSelectable|ItemIsEnabled</set>
+              </property>
+             </item>
+             <item>
+              <property name="text">
                <string>black level</string>
               </property>
               <property name="background">
@@ -330,6 +341,9 @@
               </property>
               <property name="checkState">
                <enum>Unchecked</enum>
+              </property>
+              <property name="flags">
+               <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
               </property>
              </item>
              <item>

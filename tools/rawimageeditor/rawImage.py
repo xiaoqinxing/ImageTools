@@ -29,7 +29,7 @@ class RawImageParams():
         self.raw_format = "MIPI"
         self.pattern = "rggb"
         self.__neighborhood_size_for_bad_pixel_correction = 3
-        self.__demosaic_func_type = 1
+        self.__demosaic_func_type = 0
         self.__demosaic_need_proc_color = 0
         self.__demosaic_need_media_filter = 0
         self.__gamma_ratio = 2.2
@@ -195,6 +195,10 @@ class RawImageInfo():
         input: 图像名称和shape
         """
         self.data = np.zeros(shape, dtype="uint16")
+        if (len(shape) == 2):
+            self.__color_space = "raw"
+        elif (len(shape) == 3):
+            self.__color_space = "RGB"
 
         if (self.data is not None):
             self.name = name

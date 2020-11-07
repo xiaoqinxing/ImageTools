@@ -290,3 +290,10 @@ class VideoView(QLabel):
                     self.sigDragEvent.emit(url.path()[1:])
             except Exception as e:
                 print(e)
+
+
+def critical(string: str):
+    if(string is not None):
+        QMessageBox.critical(
+            None, '警告', string, QMessageBox.Yes, QMessageBox.Yes)
+    return

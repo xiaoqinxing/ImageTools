@@ -19,16 +19,20 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
     ret_img = RawImageInfo()
     ret_img.create_image(
         'after demosaic', (raw.get_height(), raw.get_width(), 3))
-    # ret_img.set_name('after demosaic')
-    # ret_img.set_size((raw.get_height(), raw.get_width(), 3))
-    # ret_img.set_bit_depth(14)
-    demosaicing_CFA_Bayer_bilinear(
-        raw.get_raw_data(), ret_img.data, bayer_pattern)
-    # if (params.get_demosaic_funct_type() == 0):
-    #     ret_img.data = debayer_mhc(
-    #         raw.get_raw_data(), bayer_pattern, [0, 65535], False)
-    # else:
-    #     ret_img.data = directionally_weighted_gradient_based_interpolation(raw)
+    if (params.get_demosaic_funct_type() == 0):
+        demosaicing_CFA_Bayer_bilinear(
+            raw.get_raw_data(), ret_img.data, bayer_pattern)
+    elif (params.get_demosaic_funct_type() == 1):
+        pass
+    elif (params.get_demosaic_funct_type() == 2):
+        pass
+    else:
+        return None
+        # if (params.get_demosaic_funct_type() == 0):
+        #     ret_img.data = debayer_mhc(
+        #         raw.get_raw_data(), bayer_pattern, [0, 65535], False)
+        # else:
+        #     ret_img.data = directionally_weighted_gradient_based_interpolation(raw)
     if (params.get_demosaic_need_proc_color() == 1):
         ret_img.data = post_process_local_color_ratio(raw, 0.80 * 65535)
     if (params.get_demosaic_need_media_filter() == 1):

@@ -142,11 +142,11 @@ class Ui_ImageEditor(object):
         self.gridLayout_2 = QGridLayout(self.groupBox_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.pipeline = QListWidget(self.groupBox_2)
+        __qlistwidgetitem = QListWidgetItem(self.pipeline)
+        __qlistwidgetitem.setCheckState(Qt.Checked);
+        __qlistwidgetitem.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled);
         brush = QBrush(QColor(85, 255, 127, 255))
         brush.setStyle(Qt.SolidPattern)
-        __qlistwidgetitem = QListWidgetItem(self.pipeline)
-        __qlistwidgetitem.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem.setBackground(brush);
         __qlistwidgetitem1 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem1.setCheckState(Qt.Unchecked);
         __qlistwidgetitem1.setBackground(brush);
@@ -156,19 +156,20 @@ class Ui_ImageEditor(object):
         __qlistwidgetitem3 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem3.setCheckState(Qt.Unchecked);
         __qlistwidgetitem3.setBackground(brush);
-        brush1 = QBrush(QColor(255, 255, 255, 255))
-        brush1.setStyle(Qt.SolidPattern)
         __qlistwidgetitem4 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem4.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem4.setBackground(brush1);
-        brush2 = QBrush(QColor(255, 255, 127, 255))
-        brush2.setStyle(Qt.SolidPattern)
+        __qlistwidgetitem4.setBackground(brush);
+        brush1 = QBrush(QColor(255, 255, 255, 255))
+        brush1.setStyle(Qt.SolidPattern)
         __qlistwidgetitem5 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem5.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem5.setBackground(brush2);
+        __qlistwidgetitem5.setBackground(brush1);
+        brush2 = QBrush(QColor(255, 255, 127, 255))
+        brush2.setStyle(Qt.SolidPattern)
         __qlistwidgetitem6 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem6.setCheckState(Qt.Unchecked);
         __qlistwidgetitem6.setBackground(brush2);
+        __qlistwidgetitem6.setFlags(Qt.ItemIsSelectable|Qt.ItemIsDragEnabled|Qt.ItemIsEnabled);
         __qlistwidgetitem7 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem7.setCheckState(Qt.Unchecked);
         __qlistwidgetitem7.setBackground(brush2);
@@ -177,15 +178,18 @@ class Ui_ImageEditor(object):
         __qlistwidgetitem8.setBackground(brush2);
         __qlistwidgetitem9 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem9.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem9.setBackground(brush1);
-        brush3 = QBrush(QColor(170, 255, 255, 255))
-        brush3.setStyle(Qt.SolidPattern)
+        __qlistwidgetitem9.setBackground(brush2);
         __qlistwidgetitem10 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem10.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem10.setBackground(brush3);
+        __qlistwidgetitem10.setBackground(brush1);
+        brush3 = QBrush(QColor(170, 255, 255, 255))
+        brush3.setStyle(Qt.SolidPattern)
         __qlistwidgetitem11 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem11.setCheckState(Qt.Unchecked);
         __qlistwidgetitem11.setBackground(brush3);
+        __qlistwidgetitem12 = QListWidgetItem(self.pipeline)
+        __qlistwidgetitem12.setCheckState(Qt.Unchecked);
+        __qlistwidgetitem12.setBackground(brush3);
         self.pipeline.setObjectName(u"pipeline")
         font = QFont()
         font.setPointSize(12)
@@ -450,29 +454,31 @@ class Ui_ImageEditor(object):
         __sortingEnabled = self.pipeline.isSortingEnabled()
         self.pipeline.setSortingEnabled(False)
         ___qlistwidgetitem = self.pipeline.item(0)
-        ___qlistwidgetitem.setText(QCoreApplication.translate("ImageEditor", u"black level", None));
+        ___qlistwidgetitem.setText(QCoreApplication.translate("ImageEditor", u"original raw", None));
         ___qlistwidgetitem1 = self.pipeline.item(1)
-        ___qlistwidgetitem1.setText(QCoreApplication.translate("ImageEditor", u"bad pixel correction", None));
+        ___qlistwidgetitem1.setText(QCoreApplication.translate("ImageEditor", u"black level", None));
         ___qlistwidgetitem2 = self.pipeline.item(2)
-        ___qlistwidgetitem2.setText(QCoreApplication.translate("ImageEditor", u"rolloff", None));
+        ___qlistwidgetitem2.setText(QCoreApplication.translate("ImageEditor", u"bad pixel correction", None));
         ___qlistwidgetitem3 = self.pipeline.item(3)
-        ___qlistwidgetitem3.setText(QCoreApplication.translate("ImageEditor", u"ABF", None));
+        ___qlistwidgetitem3.setText(QCoreApplication.translate("ImageEditor", u"rolloff", None));
         ___qlistwidgetitem4 = self.pipeline.item(4)
-        ___qlistwidgetitem4.setText(QCoreApplication.translate("ImageEditor", u"demosaic", None));
+        ___qlistwidgetitem4.setText(QCoreApplication.translate("ImageEditor", u"ABF", None));
         ___qlistwidgetitem5 = self.pipeline.item(5)
-        ___qlistwidgetitem5.setText(QCoreApplication.translate("ImageEditor", u"awb", None));
+        ___qlistwidgetitem5.setText(QCoreApplication.translate("ImageEditor", u"demosaic", None));
         ___qlistwidgetitem6 = self.pipeline.item(6)
-        ___qlistwidgetitem6.setText(QCoreApplication.translate("ImageEditor", u"ccm", None));
+        ___qlistwidgetitem6.setText(QCoreApplication.translate("ImageEditor", u"awb", None));
         ___qlistwidgetitem7 = self.pipeline.item(7)
-        ___qlistwidgetitem7.setText(QCoreApplication.translate("ImageEditor", u"gamma", None));
+        ___qlistwidgetitem7.setText(QCoreApplication.translate("ImageEditor", u"ccm", None));
         ___qlistwidgetitem8 = self.pipeline.item(8)
-        ___qlistwidgetitem8.setText(QCoreApplication.translate("ImageEditor", u"LTM", None));
+        ___qlistwidgetitem8.setText(QCoreApplication.translate("ImageEditor", u"gamma", None));
         ___qlistwidgetitem9 = self.pipeline.item(9)
-        ___qlistwidgetitem9.setText(QCoreApplication.translate("ImageEditor", u"advanced chroma enhancement", None));
+        ___qlistwidgetitem9.setText(QCoreApplication.translate("ImageEditor", u"LTM", None));
         ___qlistwidgetitem10 = self.pipeline.item(10)
-        ___qlistwidgetitem10.setText(QCoreApplication.translate("ImageEditor", u"wavelet denoise", None));
+        ___qlistwidgetitem10.setText(QCoreApplication.translate("ImageEditor", u"advanced chroma enhancement", None));
         ___qlistwidgetitem11 = self.pipeline.item(11)
-        ___qlistwidgetitem11.setText(QCoreApplication.translate("ImageEditor", u"adaptive spatial filter", None));
+        ___qlistwidgetitem11.setText(QCoreApplication.translate("ImageEditor", u"wavelet denoise", None));
+        ___qlistwidgetitem12 = self.pipeline.item(12)
+        ___qlistwidgetitem12.setText(QCoreApplication.translate("ImageEditor", u"adaptive spatial filter", None));
         self.pipeline.setSortingEnabled(__sortingEnabled)
 
         self.pipeline_ok.setText(QCoreApplication.translate("ImageEditor", u"\u786e\u5b9a", None))

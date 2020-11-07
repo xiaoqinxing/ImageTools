@@ -84,8 +84,10 @@ class RawImageEditor(SubWindow):
         """
         self.scene.clear()
         self.img = img
-        self.scene.addPixmap(QPixmap(img.get_qimage()))
-        self.ui.photo_title.setTitle(img.get_name())
+        qimage = img.get_qimage()
+        if(qimage is not None):
+            self.scene.addPixmap(QPixmap(qimage))
+            self.ui.photo_title.setTitle(img.get_name())
 
     def update_black_level(self):
         self.img_params.set_black_level([self.ui.blc_r.value(
@@ -120,7 +122,7 @@ class RawImageEditor(SubWindow):
                 self.img_pipeline.add_pipeline_node(
                     self.ui.pipeline.item(i).data(0))
         self.img_pipeline.run_pipeline(self.progress_bar)
-        self.displayImage(self.img_pipeline.get_image(0))
+        self.displayImage(self.img_pipeline.get_image(-1))
         print(self.img_pipeline.get_pipeline())
         print(self.img_pipeline.compare_pipeline())
 

@@ -1,5 +1,6 @@
 import tools.rawimageeditor.isp as isp
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
+from ui.customwidget import critical
 
 
 class IspPipeline():
@@ -20,7 +21,7 @@ class IspPipeline():
 
     def pipeline_clear(self):
         self.old_pipeline = self.pipeline
-        self.pipeline = [0]
+        self.pipeline = []
 
     def add_pipeline_node(self, node):
         """
@@ -56,7 +57,7 @@ class IspPipeline():
         if(self.need_flush == False):
             index = self.compare_pipeline()
             if(index != -1):
-                self.remove_img_node_tail(index+1)
+                self.remove_img_node_tail(index + 1)
                 return self.pipeline[index:]
             return None
         else:
@@ -76,15 +77,20 @@ class IspPipeline():
             length = len(pipeline)
             i = 1
             params = self.params
-            for node, data in zip(pipeline, self.img_list):
-                self.img_list.append(isp.run_node(node, data, params))
+            for node in pipeline:
+                data = self.img_list[-1]
+                ret_img = isp.run_node(node, data, params)
+                if(ret_img is not None):
+                    self.img_list.append(ret_img)
+                else:
+                    critical(params.get_error_str())
+                    break
                 if (process_bar is not None):
                     process_bar.setValue(i / length * 100)
                     i += 1
         else:
             if (process_bar is not None):
                 process_bar.setValue(100)
-
 
     def get_pipeline(self):
         return self.pipeline
@@ -102,9 +108,12 @@ class IspPipeline():
     def get_image(self, index):
         """
         获取pipeline中的一幅图像
+        如果输入-1，则返回最后一幅图像
         """
-        if (index < len(self.img_list)):
+        if (index < len(self.img_list) and index >= 0):
             return self.img_list[index]
+        elif (index < 0):
+            return self.img_list[len(self.pipeline)+1 + index]
         else:
             return None
 

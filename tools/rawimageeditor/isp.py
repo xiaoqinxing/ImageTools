@@ -13,7 +13,8 @@ from scipy import signal        # convolutions
 from scipy import interpolate   # for interpolation
 from numba import jit
 pipeline_dict = {
-    "raw":          0,
+    "raw": 0,
+    "original raw": 0,
     "black level":  1,
     "BLC":          1,
     "rolloff":      2,
@@ -37,7 +38,7 @@ pipeline_dict = {
 
 def run_node(node, data, params):
     # 这里进行检查之后，后续就不需要检查了
-    if(data is not None and params is not None):
+    if(data is not None and params is not None and data.data is not None):
         if(node == pipeline_dict["raw"]):
             return data
         elif(node == pipeline_dict["BLC"]):
@@ -50,10 +51,11 @@ def run_node(node, data, params):
             return debayer.demosaic(data, params)
         elif(node == pipeline_dict["gamma"]):
             return gamma_correction(data, params)
-    elif(params is not None):
-        params.set_error_str("RAW data is None")
+    elif(params is None):
+        params.set_error_str("输入的参数为空")
         return None
-    else:
+    elif (data.data is None):
+        params.set_error_str("输入的图片是空")
         return None
 
 
