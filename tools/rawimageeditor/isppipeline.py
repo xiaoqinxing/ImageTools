@@ -11,8 +11,7 @@ class IspPipeline():
         self.params = RawImageParams()
         # img_list存储了pipeline中途所有的图像
         # img_list长度比pipeline长1
-        self.img_list = []
-        self.img_list.append(RawImageInfo())
+        self.img_list = [RawImageInfo()]
         self.need_flush = False
 
     def set_pipeline(self, pipeline):
@@ -22,6 +21,17 @@ class IspPipeline():
     def pipeline_clear(self):
         self.old_pipeline = self.pipeline
         self.pipeline = []
+
+    def pipeline_reset(self):
+        """
+        重新开始一个pipeline，把以前的图像清除
+        """
+        if(len(self.img_list) > 1):
+            self.img_list = [RawImageInfo()]
+            self.old_pipeline = []
+            self.pipeline = []
+            return True
+        return False
 
     def add_pipeline_node(self, node):
         """

@@ -141,6 +141,10 @@ class RawImageEditor(SubWindow):
         height = self.img_params.get_height()
         bit_depth = self.img_params.get_bit_depth()
         if (filename != "" and width != 0 and height != 0 and bit_depth != 0):
+            if(self.img_pipeline.pipeline_reset() == True):
+                self.img = self.img_pipeline.get_image(0)
+                for i in range(1, self.ui.pipeline.count()):
+                    self.ui.pipeline.item(i).setCheckState(Qt.Unchecked)
             self.img.load_image(filename, height, width, bit_depth)
             self.img.set_bayer_pattern(self.img_params.get_pattern())
             self.rect = [0, 0, self.img_params.width, self.img_params.height]
