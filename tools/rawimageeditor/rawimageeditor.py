@@ -48,14 +48,16 @@ class RawImageEditor(SubWindow):
         self.ui.select_from_raw.clicked.connect(self.select_awb_from_raw)
         self.imageview.rubberBandChanged.connect(self.update_awb_from_raw)
         self.ui.save_image.clicked.connect(self.save_now_image)
+        self.ui.demosaic_button_group.buttonClicked.connect(
+            self.select_demosaic_type)
         self.scale_ratio = 100
 
         self.img_pipeline = IspPipeline()
         self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0
-
-        self.img_params = self.load_params(self.img_pipeline.params)
+        self.img_pipeline.params = self.load_params(self.img_pipeline.params)
+        self.img_params = self.img_pipeline.params
         self.set_img_params()
 
     def set_img_params(self):
@@ -63,6 +65,15 @@ class RawImageEditor(SubWindow):
         self.ui.height.setValue(self.img_params.get_height())
         self.ui.bit.setValue(self.img_params.get_bit_depth())
         # self.ui.pattern.setValue(self.img_params.get_pattern())
+
+    def select_demosaic_type(self, demosaic_type):
+        name = demosaic_type.objectName()
+        if (name == "bilinear"):
+            self.img_params.set_demosaic_func_type(0)
+        elif (name == "Malvar2004"):
+            self.img_params.set_demosaic_func_type(1)
+        elif (name == "Menon2007"):
+            self.img_params.set_demosaic_func_type(2)
 
     def update_width(self):
         self.img_params.set_width(self.ui.width.value())
@@ -93,12 +104,10 @@ class RawImageEditor(SubWindow):
     def update_black_level(self):
         self.img_params.set_black_level([self.ui.blc_r.value(
         ), self.ui.blc_gr.value(), self.ui.blc_gb.value(), self.ui.blc_b.value()])
-        self.img_pipeline.flush_pipeline()
 
     def update_awb(self):
         self.img_params.set_awb_gain(
             (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
-        self.img_pipeline.flush_pipeline()
 
     def select_awb_from_raw(self):
         self.imageview.setDragMode(QGraphicsView.RubberBandDrag)

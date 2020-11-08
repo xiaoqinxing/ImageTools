@@ -35,14 +35,19 @@ class RawImageParams():
         self.__gamma_ratio = 2.2
         # gamma 查找表的长度
         self.gamma_table_size = 512
+        # 自动刷新pipeline的参数，防止设置参数没有生效
+        self.need_flush = False
 
-    def set_demosaic_func_type(self, type):
+    def set_demosaic_func_type(self, demosaic_type):
         """
         demosaic有两种算法，设置demosaic的算法
-        0: Malvar-He-Cutler algorithm
-        1: directionally weighted gradient based interpolation algorithm
+        0: 双线性插值
+        1: Malvar-He-Cutler algorithm
+        2: directionally weighted gradient based interpolation algorithm
         """
-        self.__demosaic_func_type = type
+        if(demosaic_type != self.__demosaic_func_type):
+            self.__demosaic_func_type = demosaic_type
+            self.need_flush = True
 
     def get_demosaic_funct_type(self):
         return self.__demosaic_func_type
@@ -94,7 +99,9 @@ class RawImageParams():
         return self.color_matrix
 
     def set_black_level(self, black_level):
-        self.black_level = np.array(black_level)
+        if(black_level == self.black_level):
+            self.black_level = np.array(black_level)
+            self.need_flush = True
 
     def get_black_level(self):
         return self.black_level
@@ -103,7 +110,9 @@ class RawImageParams():
         """
         设置AWB的增益 1x3
         """
-        self.awb_gain = awb_gain
+        if(awb_gain == self.awb_gain):
+            self.awb_gain = awb_gain
+            self.need_flush = True
 
     def get_awb_gain(self):
         return self.awb_gain

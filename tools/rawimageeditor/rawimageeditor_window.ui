@@ -696,27 +696,30 @@
                </property>
                <layout class="QGridLayout" name="gridLayout_10">
                 <item row="2" column="0">
-                 <widget class="QRadioButton" name="radioButton_3">
+                 <widget class="QRadioButton" name="Malvar2004">
                   <property name="text">
-                   <string>RadioButton</string>
+                   <string>Malvar2004</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
                   </property>
                   <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
+                   <string notr="true">demosaic_button_group</string>
                   </attribute>
                  </widget>
                 </item>
-                <item row="4" column="0">
-                 <widget class="QRadioButton" name="radioButton">
+                <item row="5" column="0">
+                 <widget class="QRadioButton" name="Menon2007">
                   <property name="text">
-                   <string>RadioButton</string>
+                   <string>Menon2007</string>
                   </property>
                   <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
+                   <string notr="true">demosaic_button_group</string>
                   </attribute>
                  </widget>
                 </item>
-                <item row="0" column="0">
-                 <widget class="QRadioButton" name="radioButton_2">
+                <item row="1" column="0">
+                 <widget class="QRadioButton" name="bilinear">
                   <property name="text">
                    <string>双线性插值</string>
                   </property>
@@ -724,7 +727,7 @@
                    <bool>true</bool>
                   </property>
                   <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
+                   <string notr="true">demosaic_button_group</string>
                   </attribute>
                  </widget>
                 </item>
@@ -838,6 +841,6 @@
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
+  <buttongroup name="demosaic_button_group"/>
  </buttongroups>
 </ui>

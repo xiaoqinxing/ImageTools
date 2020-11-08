@@ -23,7 +23,8 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
         demosaicing_CFA_Bayer_bilinear(
             raw.get_raw_data(), ret_img.data, bayer_pattern)
     elif (params.get_demosaic_funct_type() == 1):
-        pass
+        demosaicing_CFA_Bayer_Malvar2004(
+            raw.get_raw_data(), ret_img.data, bayer_pattern)
     elif (params.get_demosaic_funct_type() == 2):
         pass
     else:
@@ -1675,36 +1676,6 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
     References
     ----------
     :cite:`Losson2010c`
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> CFA = np.array(
-    ...     [[0.30980393, 0.36078432, 0.30588236, 0.3764706],
-    ...      [0.35686275, 0.39607844, 0.36078432, 0.40000001]])
-    >>> demosaicing_CFA_Bayer_bilinear(CFA)
-    array([[[ 0.69705884,  0.17941177,  0.09901961],
-            [ 0.46176472,  0.4509804 ,  0.19803922],
-            [ 0.45882354,  0.27450981,  0.19901961],
-            [ 0.22941177,  0.5647059 ,  0.30000001]],
-    <BLANKLINE>
-           [[ 0.23235295,  0.53529412,  0.29705883],
-            [ 0.15392157,  0.26960785,  0.59411766],
-            [ 0.15294118,  0.4509804 ,  0.59705884],
-            [ 0.07647059,  0.18431373,  0.90000002]]])
-    >>> CFA = np.array(
-    ...     [[0.3764706, 0.360784320, 0.40784314, 0.3764706],
-    ...      [0.35686275, 0.30980393, 0.36078432, 0.29803923]])
-    >>> demosaicing_CFA_Bayer_bilinear(CFA, 'BGGR')
-    array([[[ 0.07745098,  0.17941177,  0.84705885],
-            [ 0.15490197,  0.4509804 ,  0.5882353 ],
-            [ 0.15196079,  0.27450981,  0.61176471],
-            [ 0.22352942,  0.5647059 ,  0.30588235]],
-    <BLANKLINE>
-           [[ 0.23235295,  0.53529412,  0.28235295],
-            [ 0.4647059 ,  0.26960785,  0.19607843],
-            [ 0.45588237,  0.4509804 ,  0.20392157],
-            [ 0.67058827,  0.18431373,  0.10196078]]])
     """
 
     # CFA = as_float_array(CFA)
@@ -1720,11 +1691,116 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
          [2, 4, 2],
          [1, 2, 1]])  # yapf: disable
 
-    output[:, :, 2] = convolve(CFA * R_m, H_RB)/4
-    output[:, :, 1] = convolve(CFA * G_m, H_G)/4
-    output[:, :, 0] = convolve(CFA * B_m, H_RB)/4
+    output[:, :, 2] = np.right_shift(convolve(CFA * R_m, H_RB), 2)
+    output[:, :, 1] = np.right_shift(convolve(CFA * G_m, H_G), 2)
+    output[:, :, 0] = np.right_shift(convolve(CFA * B_m, H_RB), 2)
 
     del R_m, G_m, B_m, H_RB, H_G
+    return
+
+
+def demosaicing_CFA_Bayer_Malvar2004(CFA, output, pattern='RGGB'):
+    """
+    Returns the demosaiced *RGB* colourspace array from given *Bayer* CFA using
+    *Malvar (2004)* demosaicing algorithm.
+
+    Parameters
+    ----------
+    CFA : array_like
+        *Bayer* CFA.
+    pattern : unicode, optional
+        **{'RGGB', 'BGGR', 'GRBG', 'GBRG'}**,
+        Arrangement of the colour filters on the pixel array.
+
+    Returns
+    -------
+    ndarray
+        *RGB* colourspace array.
+
+    Notes
+    -----
+    -   The definition output is not clipped in range [0, 1] : this allows for
+        direct HDRI / radiance image generation on *Bayer* CFA data and post
+        demosaicing of the high dynamic range data as showcased in this
+        `Jupyter Notebook <https://github.com/colour-science/colour-hdri/\
+blob/develop/colour_hdri/examples/\
+examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
+
+    References
+    ----------
+    :cite:`Malvar2004a`
+    """
+
+    R_m, G_m, B_m = masks_CFA_Bayer(CFA.shape, pattern)
+
+    GR_GB = np.uint16(
+        [[0, 0, -1, 0, 0],
+         [0, 0, 2, 0, 0],
+         [-1, 2, 4, 2, -1],
+         [0, 0, 2, 0, 0],
+         [0, 0, -1, 0, 0]])  # yapf: disable
+
+    Rg_RB_Bg_BR = np.uint16(
+        [[0, 0, 1, 0, 0],
+         [0, -2, 0, -2, 0],
+         [-2, 8, 10, 8, - 2],
+         [0, -2, 0, -2, 0],
+         [0, 0, 1, 0, 0]])  # yapf: disable
+
+    Rg_BR_Bg_RB = np.transpose(Rg_RB_Bg_BR)
+
+    Rb_BB_Br_RR = np.uint16(
+        [[0, 0, -3, 0, 0],
+         [0, 6, 0, 6, 0],
+         [-3, 0, 6, 0, -3],
+         [0, 4, 0, 4, 0],
+         [0, 0, -3, 0, 0]])  # yapf: disable
+
+    R = CFA * R_m
+    G = CFA * G_m
+    B = CFA * B_m
+
+    del G_m
+
+    G = np.where(np.logical_or(R_m == 1, B_m == 1),
+                 np.right_shift(convolve(CFA, GR_GB), 3), G)
+
+    RBg_RBBR = np.right_shift(convolve(CFA, Rg_RB_Bg_BR), 4)
+    RBg_BRRB = np.right_shift(convolve(CFA, Rg_BR_Bg_RB), 4)
+    RBgr_BBRR = np.right_shift(convolve(CFA, Rb_BB_Br_RR), 4)
+
+    del GR_GB, Rg_RB_Bg_BR, Rg_BR_Bg_RB, Rb_BB_Br_RR
+
+    # Red rows.
+    R_r = np.transpose(np.any(R_m == 1, axis=1)[
+                       np.newaxis]) * np.ones(R.shape, dtype=np.uint16)
+    # Red columns.
+    R_c = np.any(R_m == 1, axis=0)[np.newaxis] * \
+        np.ones(R.shape, dtype=np.uint16)
+    # Blue rows.
+    B_r = np.transpose(np.any(B_m == 1, axis=1)[
+                       np.newaxis]) * np.ones(B.shape, dtype=np.uint16)
+    # Blue columns
+    B_c = np.any(B_m == 1, axis=0)[np.newaxis] * \
+        np.ones(B.shape, dtype=np.uint16)
+
+    del R_m, B_m
+
+    R = np.where(np.logical_and(R_r == 1, B_c == 1), RBg_RBBR, R)
+    R = np.where(np.logical_and(B_r == 1, R_c == 1), RBg_BRRB, R)
+
+    B = np.where(np.logical_and(B_r == 1, R_c == 1), RBg_RBBR, B)
+    B = np.where(np.logical_and(R_r == 1, B_c == 1), RBg_BRRB, B)
+
+    R = np.where(np.logical_and(B_r == 1, B_c == 1), RBgr_BBRR, R)
+    B = np.where(np.logical_and(R_r == 1, R_c == 1), RBgr_BBRR, B)
+
+    del RBg_RBBR, RBg_BRRB, RBgr_BBRR, R_r, R_c, B_r, B_c
+
+    output[:, :, 2] = R
+    output[:, :, 1] = G
+    output[:, :, 0] = B
+
     return
 
 
