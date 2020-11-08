@@ -204,6 +204,11 @@ class RawImageInfo():
             self.name = name
             self.__size = np.shape(self.data)
 
+    def save_image(self, filename):
+        # cv2.imwrite(filename, self.nowImage)
+        # 解决中文路径的问题
+        cv2.imencode('.jpg', self.show_data)[1].tofile(filename)
+
     def get_raw_data(self):
         return self.data
 
@@ -286,6 +291,9 @@ class RawImageInfo():
             return np.right_shift(self.data[y, x], right_shift_num)
         else:
             return None
+
+    def get_img_point_pattern(self, x, y):
+        return self.__bayer_pattern[(x % 2) * 2 + y % 2]
 
     def bayer_channel_separation(self):
         """

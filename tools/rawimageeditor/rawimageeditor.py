@@ -47,6 +47,7 @@ class RawImageEditor(SubWindow):
         self.ui.gamma_ratio.editingFinished.connect(self.update_gamma)
         self.ui.select_from_raw.clicked.connect(self.select_awb_from_raw)
         self.imageview.rubberBandChanged.connect(self.update_awb_from_raw)
+        self.ui.save_image.clicked.connect(self.save_now_image)
         self.scale_ratio = 100
 
         self.img_pipeline = IspPipeline()
@@ -164,7 +165,7 @@ class RawImageEditor(SubWindow):
             imagepath = QFileDialog.getSaveFileName(
                 None, '保存图片', './', "Images (*.jpg)")
             if(imagepath[0] != ""):
-                self.img.save_image(self.now_image, imagepath[0])
+                self.img.save_image(imagepath[0])
 
     def update_stats_range(self, viewportRect, fromScenePoint, toScenePoint):
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0
@@ -278,7 +279,7 @@ class RawImageEditor(SubWindow):
     def set_img_info_show(self):
         if(self.point_data.size == 1):
             self.info_bar.setText(
-                "x:{},y:{} : 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.point_data, self.scale_ratio))
+                "x:{},y:{} : {}: 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.img.get_img_point_pattern(self.x, self.y).upper(), self.point_data, self.scale_ratio))
         elif(self.point_data.size == 3):
             self.info_bar.setText(
                 "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))

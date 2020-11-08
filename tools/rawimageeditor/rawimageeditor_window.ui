@@ -49,8 +49,78 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <layout class="QGridLayout" name="gridLayout_4">
+               <item row="3" column="1">
+                <widget class="QSpinBox" name="height">
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>10000</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>pattern</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QSpinBox" name="width">
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>10000</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>高</string>
+                 </property>
+                </widget>
+               </item>
                <item row="4" column="1">
+                <widget class="QSpinBox" name="bit">
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>RAW格式</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
                 <widget class="QComboBox" name="pattern">
                  <item>
                   <property name="text">
@@ -74,7 +144,7 @@
                  </item>
                 </widget>
                </item>
-               <item row="3" column="1">
+               <item row="5" column="1">
                 <widget class="QComboBox" name="raw_format">
                  <item>
                   <property name="text">
@@ -93,83 +163,46 @@
                  </item>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QSpinBox" name="height">
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="maximum">
-                  <number>10000</number>
-                 </property>
-                 <property name="value">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>像素点位数</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>pattern</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
                 <widget class="QLabel" name="label_7">
                  <property name="text">
                   <string>宽</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_6">
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_8">
                  <property name="text">
-                  <string>高</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QSpinBox" name="width">
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="maximum">
-                  <number>10000</number>
-                 </property>
-                 <property name="value">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QSpinBox" name="bit">
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="value">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>RAW格式</string>
+                  <string>像素点位数</string>
                  </property>
                 </widget>
                </item>
               </layout>
              </item>
              <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <widget class="QPushButton" name="open_image">
                <property name="text">
                 <string>打开图片</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="save_image">
+               <property name="text">
+                <string>保存图片</string>
                </property>
               </widget>
              </item>
@@ -190,6 +223,13 @@
            <string>ISP处理流程</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
+           <item row="2" column="1">
+            <widget class="QPushButton" name="pipeline_ok">
+             <property name="text">
+              <string>确定</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="1">
             <widget class="QListWidget" name="pipeline">
              <property name="font">
@@ -450,13 +490,6 @@
              </item>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QPushButton" name="pipeline_ok">
-             <property name="text">
-              <string>确定</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -483,9 +516,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
-              <width>364</width>
-              <height>356</height>
+              <y>-99</y>
+              <width>349</width>
+              <height>606</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
@@ -661,6 +694,41 @@
                <property name="title">
                 <string>demosaic</string>
                </property>
+               <layout class="QGridLayout" name="gridLayout_10">
+                <item row="2" column="0">
+                 <widget class="QRadioButton" name="radioButton_3">
+                  <property name="text">
+                   <string>RadioButton</string>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">buttonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QRadioButton" name="radioButton">
+                  <property name="text">
+                   <string>RadioButton</string>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">buttonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QRadioButton" name="radioButton_2">
+                  <property name="text">
+                   <string>双线性插值</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">buttonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item row="6" column="0">
@@ -769,4 +837,7 @@
   <include location="../../ui/resource.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
