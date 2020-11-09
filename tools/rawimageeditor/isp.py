@@ -117,7 +117,14 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
         ret_img.data[::2, 1::2] = raw_data[::2, 1::2] * channel_gain[1]
         ret_img.data[1::2, ::2] = raw_data[1::2, ::2] * channel_gain[2]
         ret_img.data[1::2, 1::2] = raw_data[1::2, 1::2] * channel_gain[3]
-
+        return ret_img
+    elif (raw.get_color_space() == "RGB"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after awb', raw_data.shape)
+        # multiply with the channel gains
+        ret_img.data[:, :, 2] = raw_data[:, :, 2] * r_gain
+        ret_img.data[:, :, 1] = raw_data[:, :, 1] * g_gain
+        ret_img.data[:, :, 0] = raw_data[:, :, 0] * b_gain
         return ret_img
     else:
         params.set_error_str("white balance correction need RAW data")

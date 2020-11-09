@@ -187,7 +187,6 @@ class Ui_ImageEditor(object):
         __qlistwidgetitem6 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem6.setCheckState(Qt.Unchecked);
         __qlistwidgetitem6.setBackground(brush2);
-        __qlistwidgetitem6.setFlags(Qt.ItemIsSelectable|Qt.ItemIsDragEnabled|Qt.ItemIsEnabled);
         __qlistwidgetitem7 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem7.setCheckState(Qt.Unchecked);
         __qlistwidgetitem7.setBackground(brush2);
@@ -242,7 +241,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -99, 349, 606))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 436))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)

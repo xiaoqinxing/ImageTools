@@ -14,7 +14,7 @@ import cv2
 class RawImageParams():
     def __init__(self):
         self.channel_gain = (1.0, 1.0, 1.0, 1.0)
-        self.awb_gain = (1., 1., 1.)
+        self.awb_gain = [1., 1., 1.]
         self.black_level = (0, 0, 0, 0)
         self.white_level = (1, 1, 1, 1)
         self.color_matrix = [[1., .0, .0],
@@ -100,11 +100,11 @@ class RawImageParams():
 
     def set_black_level(self, black_level):
         if(black_level == self.black_level):
-            self.black_level = np.array(black_level)
+            self.black_level = black_level
             self.need_flush = True
 
     def get_black_level(self):
-        return self.black_level
+        return np.array(self.black_level)
 
     def set_awb_gain(self, awb_gain):
         """
@@ -116,6 +116,18 @@ class RawImageParams():
 
     def get_awb_gain(self):
         return self.awb_gain
+
+    def set_awb_ratio(self, awb_ratio):
+        """
+        设置r/g和b/g的值
+        """
+        awb_gain = [1, 1, 1]
+        awb_gain[0] = awb_ratio[0]
+        awb_gain[1] = 1
+        awb_gain[2] = awb_ratio[1]
+        if (awb_gain != self.awb_gain):
+            self.awb_gain = awb_gain
+            self.need_flush = True
 
     def set_gamma(self, gamma_ratio):
         """
@@ -301,8 +313,8 @@ class RawImageInfo():
         else:
             return None
 
-    def get_img_point_pattern(self, x, y):
-        return self.__bayer_pattern[(x % 2) * 2 + y % 2]
+    def get_img_point_pattern(self, y, x):
+        return self.__bayer_pattern[(y % 2) * 2 + x % 2]
 
     def bayer_channel_separation(self):
         """
@@ -458,3 +470,22 @@ class RawImageInfo():
         wd = (x - x0) * (y - y0)
 
         return wa * Ia + wb * Ib + wc * Ic + wd * Id
+
+    def get_raw_img_rect(self, rect):
+        awb_value = dict()
+        if (self.__color_space == "raw"):
+            awb_value[self.get_img_point_pattern(rect[1], rect[0])] = np.mean(
+                self.data[rect[1]:rect[3]:2, rect[0]:rect[2]:2])
+            awb_value[self.get_img_point_pattern(
+                rect[1], rect[0]+1)] = np.mean(self.data[rect[1]:rect[3]:2, (rect[0]+1):rect[2]:2])
+            awb_value[self.get_img_point_pattern(
+                rect[1]+1, rect[0])] = np.mean(self.data[(rect[1]+1):rect[3]:2, rect[0]:rect[2]:2])
+            awb_value[self.get_img_point_pattern(rect[1]+1, rect[0]+1)] = np.mean(
+                self.data[(rect[1] + 1): rect[3]:2, (rect[0] + 1): rect[2]:2])
+        # elif (self.__color_space == "RGB"):
+        #     awb_value['r'] = np.mean(self.data[:, :, 2])
+        #     awb_value['g'] = np.mean(self.data[:, :, 1])
+        #     awb_value['b'] = np.mean(self.data[:, :, 0])
+            return (awb_value['g'] / awb_value['r'], awb_value['g'] / awb_value['b'])
+        else:
+            return None

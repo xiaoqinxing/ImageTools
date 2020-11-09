@@ -3,7 +3,7 @@ from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileD
 from PySide2.QtGui import QPixmap, Qt
 from PySide2.QtCore import Slot
 from tools.rawimageeditor.rawimageeditor_window import Ui_ImageEditor
-from ui.customwidget import ImageView, MatplotlibWidget, SubWindow
+from ui.customwidget import ImageView, MatplotlibWidget, SubWindow, critical
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from tools.rawimageeditor.isppipeline import IspPipeline
 from tools.rawimageeditor.rawhistgramview import Ui_HistgramView
@@ -109,6 +109,11 @@ class RawImageEditor(SubWindow):
         self.img_params.set_awb_gain(
             (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
 
+    def set_awb_ui(self, awb_gain):
+        self.ui.awb_r.setValue(awb_gain[0])
+        self.ui.awb_g.setValue(awb_gain[1])
+        self.ui.awb_b.setValue(awb_gain[2])
+
     def select_awb_from_raw(self):
         self.imageview.setDragMode(QGraphicsView.RubberBandDrag)
 
@@ -116,7 +121,12 @@ class RawImageEditor(SubWindow):
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0
                 and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
             self.imageview.setDragMode(QGraphicsView.ScrollHandDrag)
-            print(self.rect)
+            awb_ratio = self.img.get_raw_img_rect(self.rect)
+            if(awb_ratio is not None):
+                self.img_params.set_awb_ratio(awb_ratio)
+                self.set_awb_ui(self.img_params.awb_gain)
+            else:
+                critical("请在raw图上进行选择")
         else:
             self.rect = [int(fromScenePoint.x()), int(fromScenePoint.y()), int(
                 toScenePoint.x()), int(toScenePoint.y())]
@@ -288,7 +298,7 @@ class RawImageEditor(SubWindow):
     def set_img_info_show(self):
         if(self.point_data.size == 1):
             self.info_bar.setText(
-                "x:{},y:{} : {}: 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.img.get_img_point_pattern(self.x, self.y).upper(), self.point_data, self.scale_ratio))
+                "x:{},y:{} : {}: 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.img.get_img_point_pattern(self.y, self.x).upper(), self.point_data, self.scale_ratio))
         elif(self.point_data.size == 3):
             self.info_bar.setText(
                 "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
