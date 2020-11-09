@@ -133,7 +133,6 @@ class RawImageEditor(SubWindow):
 
     def update_gamma(self):
         self.img_params.set_gamma(self.ui.gamma_ratio.value())
-        self.img_pipeline.flush_pipeline()
 
     def update_pipeline(self):
         self.img_pipeline.pipeline_clear()

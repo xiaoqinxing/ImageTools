@@ -133,7 +133,9 @@ class RawImageParams():
         """
         设置gamma的值
         """
-        self.__gamma_ratio = gamma_ratio
+        if(gamma_ratio != self.__gamma_ratio):
+            self.__gamma_ratio = gamma_ratio
+            self.need_flush = True
 
     def get_gamma_ratio(self):
         return self.__gamma_ratio
