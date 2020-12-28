@@ -87,6 +87,7 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
         ret_img.data[::2, 1::2] = raw_data[::2, 1::2] - black_level[1]
         ret_img.data[1::2, ::2] = raw_data[1::2, ::2] - black_level[2]
         ret_img.data[1::2, 1::2] = raw_data[1::2, 1::2] - black_level[3]
+        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
 
     else:
@@ -117,6 +118,7 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
         ret_img.data[::2, 1::2] = raw_data[::2, 1::2] * channel_gain[1]
         ret_img.data[1::2, ::2] = raw_data[1::2, ::2] * channel_gain[2]
         ret_img.data[1::2, 1::2] = raw_data[1::2, 1::2] * channel_gain[3]
+        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
     elif (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
@@ -125,6 +127,7 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
         ret_img.data[:, :, 2] = raw_data[:, :, 2] * r_gain
         ret_img.data[:, :, 1] = raw_data[:, :, 1] * g_gain
         ret_img.data[:, :, 0] = raw_data[:, :, 0] * b_gain
+        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
     else:
         params.set_error_str("white balance correction need RAW data")
@@ -178,6 +181,7 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
         ret_img.data[::2, 1::2] = raw_channel_data[1]
         ret_img.data[1::2, ::2] = raw_channel_data[2]
         ret_img.data[1::2, 1::2] = raw_channel_data[3]
+        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
     else:
         params.set_error_str("bad pixel correction need RAW data")
@@ -221,7 +225,7 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     输入支持bayer以及RGB域
     """
     gamma_ratio = params.get_gamma_ratio()
-    max_input = 1 << raw.get_bit_depth()
+    max_input = raw.max_data
     gamma_table = np.linspace(0, max_input, max_input)  # 建立映射表
     gamma_table = (np.power(gamma_table/max_input, 1/gamma_ratio)
                    * max_input).astype(np.uint16)
@@ -232,11 +236,13 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw_data.shape)
         gamma_proc_raw(raw_data, ret_img.data, gamma_table)
+        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
     elif (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw_data.shape)
         gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
+        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
     else:
         params.set_error_str("bad pixel correction need RAW data")

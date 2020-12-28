@@ -38,6 +38,7 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
         ret_img.data = post_process_local_color_ratio(raw, 0.80 * 65535)
     if (params.get_demosaic_need_media_filter() == 1):
         ret_img.data = post_process_median_filter(raw.get_raw_data())
+    ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
     ret_img.set_color_space("RGB")
     return ret_img
 
@@ -1731,16 +1732,16 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
     :cite:`Malvar2004a`
     """
 
-    R_m, G_m, B_m = masks_CFA_Bayer(CFA.shape, pattern)
+    R_m, G_m, B_m = masks_CFA_Bayer(CFA.shape, pattern, np.uint32)
 
-    GR_GB = np.uint16(
+    GR_GB = np.uint32(
         [[0, 0, -1, 0, 0],
          [0, 0, 2, 0, 0],
          [-1, 2, 4, 2, -1],
          [0, 0, 2, 0, 0],
          [0, 0, -1, 0, 0]])  # yapf: disable
 
-    Rg_RB_Bg_BR = np.uint16(
+    Rg_RB_Bg_BR = np.uint32(
         [[0, 0, 1, 0, 0],
          [0, -2, 0, -2, 0],
          [-2, 8, 10, 8, - 2],
@@ -1749,7 +1750,7 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
 
     Rg_BR_Bg_RB = np.transpose(Rg_RB_Bg_BR)
 
-    Rb_BB_Br_RR = np.uint16(
+    Rb_BB_Br_RR = np.uint32(
         [[0, 0, -3, 0, 0],
          [0, 6, 0, 6, 0],
          [-3, 0, 6, 0, -3],
@@ -1773,16 +1774,16 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
 
     # Red rows.
     R_r = np.transpose(np.any(R_m == 1, axis=1)[
-                       np.newaxis]) * np.ones(R.shape, dtype=np.uint16)
+                       np.newaxis]) * np.ones(R.shape, dtype=np.uint32)
     # Red columns.
     R_c = np.any(R_m == 1, axis=0)[np.newaxis] * \
-        np.ones(R.shape, dtype=np.uint16)
+        np.ones(R.shape, dtype=np.uint32)
     # Blue rows.
     B_r = np.transpose(np.any(B_m == 1, axis=1)[
-                       np.newaxis]) * np.ones(B.shape, dtype=np.uint16)
+                       np.newaxis]) * np.ones(B.shape, dtype=np.uint32)
     # Blue columns
     B_c = np.any(B_m == 1, axis=0)[np.newaxis] * \
-        np.ones(B.shape, dtype=np.uint16)
+        np.ones(B.shape, dtype=np.uint32)
 
     del R_m, B_m
 
@@ -1797,14 +1798,14 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
 
     del RBg_RBBR, RBg_BRRB, RBgr_BBRR, R_r, R_c, B_r, B_c
 
-    output[:, :, 2] = R
-    output[:, :, 1] = G
-    output[:, :, 0] = B
+    output[:, :, 2] = R.astype(np.uint16)
+    output[:, :, 1] = G.astype(np.uint16)
+    output[:, :, 0] = B.astype(np.uint16)
 
     return
 
 
-def masks_CFA_Bayer(shape, pattern='rggb'):
+def masks_CFA_Bayer(shape, pattern='rggb', cfa_dtype=np.uint16):
     """
     Returns the *Bayer* CFA red, green and blue masks for given pattern.
     Parameters
@@ -1846,7 +1847,7 @@ def masks_CFA_Bayer(shape, pattern='rggb'):
 
     pattern = pattern.lower()
 
-    channels = dict((channel, np.zeros(shape, dtype=np.uint16))
+    channels = dict((channel, np.zeros(shape, dtype=cfa_dtype))
                     for channel in 'rgb')
     for channel, (y, x) in zip(pattern, [(0, 0), (0, 1), (1, 0), (1, 1)]):
         channels[channel][y::2, x::2] = 1

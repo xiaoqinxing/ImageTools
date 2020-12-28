@@ -192,6 +192,7 @@ class RawImageInfo():
         self.__raw_bit_depth = 12
         # 默认以14位进行处理
         self.__bit_depth = 14
+        self.max_data = 16383
         self.__size = [0, 0]
 
     def load_image(self, filename, height, width, bit_depth):
@@ -210,7 +211,8 @@ class RawImageInfo():
             self.__size = np.shape(self.data)
             self.__raw_bit_depth = bit_depth
             if (bit_depth < 14):
-                self.data = np.left_shift(self.data, 14-bit_depth)
+                self.data = np.left_shift(self.data, 14 - bit_depth)
+            self.max_data = 1 << self.__bit_depth - 1
 
     def create_image(self, name, shape):
         """
@@ -289,6 +291,7 @@ class RawImageInfo():
 
     def set_bit_depth(self, bit_depth):
         self.__bit_depth = bit_depth
+        self.max_data = 1 << self.__bit_depth - 1
 
     def get_bit_depth(self):
         """

@@ -3,16 +3,13 @@
 ################################################################################
 ## Form generated from reading UI file 'mainwindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.0
+## Created by: Qt User Interface Compiler version 5.15.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
-    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
-    QPixmap, QRadialGradient)
+from PySide2.QtCore import *
+from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
@@ -25,15 +22,10 @@ class Ui_MainWindow(object):
         icon = QIcon()
         icon.addFile(u":/tool_icon/resource/main.png", QSize(), QIcon.Normal, QIcon.Off)
         MainWindow.setWindowIcon(icon)
-        self.field_depth_tool = QAction(MainWindow)
-        self.field_depth_tool.setObjectName(u"field_depth_tool")
-        self.field_depth_tool.setCheckable(False)
         self.shake_tool = QAction(MainWindow)
         self.shake_tool.setObjectName(u"shake_tool")
         self.imageeditor = QAction(MainWindow)
         self.imageeditor.setObjectName(u"imageeditor")
-        self.af_calc_tool = QAction(MainWindow)
-        self.af_calc_tool.setObjectName(u"af_calc_tool")
         self.about = QAction(MainWindow)
         self.about.setObjectName(u"about")
         self.userguide = QAction(MainWindow)
@@ -42,6 +34,12 @@ class Ui_MainWindow(object):
         self.rawimageeditor.setObjectName(u"rawimageeditor")
         self.video_compare = QAction(MainWindow)
         self.video_compare.setObjectName(u"video_compare")
+        self.pqtools2code = QAction(MainWindow)
+        self.pqtools2code.setObjectName(u"pqtools2code")
+        self.field_depth_tool = QAction(MainWindow)
+        self.field_depth_tool.setObjectName(u"field_depth_tool")
+        self.af_calc_tool = QAction(MainWindow)
+        self.af_calc_tool.setObjectName(u"af_calc_tool")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -62,22 +60,26 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1140, 23))
+        self.menubar.setGeometry(QRect(0, 0, 1140, 22))
         self.menu_2 = QMenu(self.menubar)
         self.menu_2.setObjectName(u"menu_2")
         self.help_button = QMenu(self.menubar)
         self.help_button.setObjectName(u"help_button")
+        self.menuISP = QMenu(self.menubar)
+        self.menuISP.setObjectName(u"menuISP")
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.menu_2.menuAction())
         self.menubar.addAction(self.help_button.menuAction())
-        self.menu_2.addAction(self.field_depth_tool)
+        self.menubar.addAction(self.menuISP.menuAction())
         self.menu_2.addAction(self.shake_tool)
         self.menu_2.addAction(self.imageeditor)
-        self.menu_2.addAction(self.af_calc_tool)
         self.menu_2.addAction(self.rawimageeditor)
         self.menu_2.addAction(self.video_compare)
         self.help_button.addAction(self.userguide)
+        self.menuISP.addAction(self.pqtools2code)
+        self.menuISP.addAction(self.field_depth_tool)
+        self.menuISP.addAction(self.af_calc_tool)
 
         self.retranslateUi(MainWindow)
 
@@ -86,15 +88,17 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"ImageTools", None))
-        self.field_depth_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u8ba1\u7b97\u5668", None))
         self.shake_tool.setText(QCoreApplication.translate("MainWindow", u"\u6296\u52a8\u6d4b\u8bd5\u5de5\u5177", None))
         self.imageeditor.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u7247\u5206\u6790\u5de5\u5177", None))
-        self.af_calc_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u66f2\u7ebf\u8ba1\u7b97\u5de5\u5177", None))
         self.about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
         self.userguide.setText(QCoreApplication.translate("MainWindow", u"\u7528\u6237\u624b\u518c", None))
         self.rawimageeditor.setText(QCoreApplication.translate("MainWindow", u"raw\u56fe\u5206\u6790\u5de5\u5177", None))
         self.video_compare.setText(QCoreApplication.translate("MainWindow", u"\u89c6\u9891\u5bf9\u6bd4\u5de5\u5177", None))
+        self.pqtools2code.setText(QCoreApplication.translate("MainWindow", u"PQtools\u8f6c\u4ee3\u7801", None))
+        self.field_depth_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u8ba1\u7b97\u5668", None))
+        self.af_calc_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u66f2\u7ebf\u8ba1\u7b97\u5de5\u5177", None))
         self.menu_2.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
         self.help_button.setTitle(QCoreApplication.translate("MainWindow", u"\u5e2e\u52a9", None))
+        self.menuISP.setTitle(QCoreApplication.translate("MainWindow", u"ISP", None))
     # retranslateUi
 

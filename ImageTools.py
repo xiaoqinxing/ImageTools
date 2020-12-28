@@ -10,6 +10,7 @@ from tools.af_calc.af_calc import AfCalcTool
 from ui.help_doc import HelpDoc
 from tools.rawimageeditor.rawimageeditor import RawImageEditor
 from tools.video_compare.videocompare import VideoCompare
+from tools.pqtools_to_code.pqtools_to_code import PQtoolsToCode
 
 
 class ImageTools(MainWindow):
@@ -21,6 +22,7 @@ class ImageTools(MainWindow):
         "RawImageEditor": RawImageEditor,
         "VideoCompare": VideoCompare,
         "HelpDoc": HelpDoc,
+        "PQtoolsToCode": PQtoolsToCode
     }
 
     def __init__(self):
@@ -36,6 +38,7 @@ class ImageTools(MainWindow):
         self.ui.rawimageeditor.triggered.connect(
             self.add_raw_image_editor_window)
         self.ui.video_compare.triggered.connect(self.add_video_compare_window)
+        self.ui.pqtools2code.triggered.connect(self.add_pqtools2code_window)
 
     def load_saved_windows(self):
         for name in self.sub_windows_list:
@@ -68,6 +71,9 @@ class ImageTools(MainWindow):
 
     def add_video_compare_window(self):
         self.add_sub_window("VideoCompare")
+
+    def add_pqtools2code_window(self):
+        self.add_sub_window("PQtoolsToCode")
 
 
 if __name__ == "__main__":
