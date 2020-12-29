@@ -85,7 +85,7 @@ hiISP_LDCI_ATTR_S
 
 class PQtoolsToCode(SubWindow):
     def __init__(self, name, parent=None):
-        super().__init__(name, parent, Ui_PQtoolsToCode())
+        super().__init__(name, parent, Ui_PQtoolsToCode(), need_processBar=True)
         self.params = self.load_params(PQtoolsParams())
         self.params.set_params(self.ui)
         self.ui.generate.clicked.connect(self.generate_code)
@@ -158,6 +158,7 @@ extern "C" {
         xmldata = xmldom.parse(self.params.xmlfile)
         data = xmldata.getElementsByTagName('SAVE_DATA')
         dataStruct = DataStruct(xmldata)
+        total_process = len(data)
 
         if(len(self.params.filter_struct) == 0):
             self.params.filter_struct = dataStruct.mlist
@@ -165,6 +166,7 @@ extern "C" {
 
         output_text = []
         output_text.append(head)
+        now_process = 0
 
         for node in data:
             name = node.getAttribute('PATH').split('.')
@@ -182,12 +184,15 @@ extern "C" {
             else:
                 strGen = StructGen(
                     name, dataStruct, self.params, custom_define_dict)
+            self.progress_bar.setValue(now_process / total_process * 100)
+            now_process += 1
 
         output_text.append(self.end)
         text = '\n\n'.join(output_text)
         self.ui.dst_file.setText(text)
         with open(filename, 'w') as f:
             f.write(text)
+        self.progress_bar.setValue(100)
 
 
 class StructGen:

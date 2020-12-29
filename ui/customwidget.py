@@ -1,5 +1,5 @@
 from PySide2.QtCore import Signal, QPointF, Qt, QSize
-from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea, QLabel
+from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea, QLabel, QProgressBar
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -51,13 +51,21 @@ class MainWindow(QMainWindow):
 class SubWindow(QMainWindow):
     """对QMainWindow类重写，实现一些功能"""
 
-    def __init__(self, name, parent, ui_view):
+    def __init__(self, name, parent, ui_view, need_processBar=False):
         super().__init__(parent)
         self.name = name
         self.filename = "./config/" + name + ".txt"
         self.__saved_params = None
         self.ui = ui_view
         self.ui.setupUi(self)
+        # add 进度条和详细信息显示
+        if(need_processBar == True):
+            self.progress_bar = QProgressBar()
+            self.info_bar = QLabel()
+            self.ui.statusbar.addPermanentWidget(self.info_bar, stretch=4)
+            self.ui.statusbar.addPermanentWidget(self.progress_bar, stretch=1)
+            self.progress_bar.setRange(0, 100)  # 设置进度条的范围
+            self.progress_bar.setValue(0)
 
     def load_params(self, init_value):
         """
