@@ -1,4 +1,4 @@
-from ui.customwidget import SubWindow
+from ui.customwidget import SubWindow, critical
 from tools.pqtools_to_code.pqtools2code_window import Ui_PQtoolsToCode
 import xml.dom.minidom as xmldom
 import os
@@ -37,8 +37,8 @@ hiISP_LDCI_ATTR_S
     HI_U32 u32ParamNum;
     HI_U32 ATTRIBUTE au32ISO[16];
     VI_PIPE_NRX_PARAM_V1_S ATTRIBUTE pastNRXParamV1[16];
-} CUSTOM_NRX_PARAM_AUTO_V1_S;
-"""
+} CUSTOM_NRX_PARAM_AUTO_V1_S;"""
+
     head_copyright = """/*
 * Copyright (c) 2020
 * All rights reserved.
@@ -91,6 +91,14 @@ class PQtoolsToCode(SubWindow):
         self.ui.generate.clicked.connect(self.generate_code)
         self.ui.openxmlfile.clicked.connect(self.set_xmlpath)
         self.ui.open_output_path.clicked.connect(self.set_output_path)
+        self.end = """#ifdef __cplusplus
+#if __cplusplus
+}
+#endif
+#endif
+
+#endif
+"""
 
     def set_xmlpath(self):
         if (self.params.xmlfile != ''):
@@ -118,7 +126,14 @@ class PQtoolsToCode(SubWindow):
 
     def generate_code(self):
         self.params.get_params(self.ui)
+        if os.path.exists(self.params.xmlfile) == False:
+            return critical('需要转换的xml文件不存在')
+
+        # 输出文件名的判断与处理
         filename = self.params.output_path
+        if(filename == ''):
+            return critical('请填写转换后的头文件名称')
+
         filename_nosuffix = filename.split('/')[-1]
         if os.path.exists(filename):
             os.remove(filename)
@@ -131,21 +146,15 @@ class PQtoolsToCode(SubWindow):
 extern "C" {
 #endif
 #endif
-""" + '\n' + self.params.add_custom_defines + '\n'
+""" + '\n' + self.params.add_custom_defines
+
+        # 自定义结构体的替换
         custom_define_dict_list = self.params.custom_define_dict.split("\n")
         custom_define_dict = {}
         for custom_define_dict_item in custom_define_dict_list:
             item = custom_define_dict_item.split(':')
             custom_define_dict[item[0]] = item[1]
 
-        end = """#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
-
-#endif
-"""
         xmldata = xmldom.parse(self.params.xmlfile)
         data = xmldata.getElementsByTagName('SAVE_DATA')
         dataStruct = DataStruct(xmldata)
@@ -154,15 +163,17 @@ extern "C" {
             self.params.filter_struct = dataStruct.mlist
         strGen = None
 
-        with open(filename, 'a') as f:
-            f.write(head)
+        output_text = []
+        output_text.append(head)
 
         for node in data:
             name = node.getAttribute('PATH').split('.')
             value = node.getAttribute('VALUE')
             if(strGen is not None):
                 if(name[0] != strGen.pri_name_0):
-                    strGen.finish(self.params.filter_struct)
+                    tmp_text = strGen.finish(self.params.filter_struct)
+                    if (tmp_text != None):
+                        output_text.append(tmp_text)
                     strGen = StructGen(
                         name, dataStruct, self.params, custom_define_dict)
                     strGen.add(name, value)
@@ -172,11 +183,11 @@ extern "C" {
                 strGen = StructGen(
                     name, dataStruct, self.params, custom_define_dict)
 
-        with open(filename, "a") as f:
-            f.write(end)
-        with open(filename, "r") as f:
-            text = f.read()
-            self.ui.dst_file.setText(text)
+        output_text.append(self.end)
+        text = '\n\n'.join(output_text)
+        self.ui.dst_file.setText(text)
+        with open(filename, 'w') as f:
+            f.write(text)
 
 
 class StructGen:
@@ -332,10 +343,7 @@ class StructGen:
         self.change_key(0)
         self.data[-1] = '};'
         if self.name in filter_struct:
-            with open(self.filename, "a") as f:
-                for data in self.data:
-                    f.write(data + '\n')
-                f.write("\n")
+            return '\n'.join(self.data)
 
 
 class DataStruct:
