@@ -237,7 +237,7 @@ class Ui_PQtoolsToCode(object):
 "#include \"hi_comm_vi.h\"\n"
 "#include \"hi_comm_vpss.h\"\n"
 "#include \"hi_isp_defines.h\"", None))
-        self.label.setText(QCoreApplication.translate("PQtoolsToCode", u"TAB\u7684\u7a7a\u683c\u6570", None))
+        self.label.setText(QCoreApplication.translate("PQtoolsToCode", u"\u7f29\u8fdb\u7684\u7a7a\u683c\u6570", None))
         self.is_const.setText(QCoreApplication.translate("PQtoolsToCode", u"\u662f\u5426\u9700\u8981\u52a0const", None))
         self.generate.setText(QCoreApplication.translate("PQtoolsToCode", u"\u751f\u6210", None))
     # retranslateUi
