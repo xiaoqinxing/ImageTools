@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
             for win in self.sub_windows:
                 if (win.name is not None):
                     sub_windows_list.append(win.name)
+                    win.close()
             with open(self.filename, "wb") as fp:
                 pickle.dump(sub_windows_list, fp)
             event.accept()
