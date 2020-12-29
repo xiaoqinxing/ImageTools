@@ -53,7 +53,7 @@
           </widget>
          </item>
          <item row="12" column="1">
-          <widget class="QPlainTextEdit" name="copyright">
+          <widget class="QPlainTextEdit" name="head_copyright">
            <property name="plainText">
             <string>/*
 * Copyright (c) 2020

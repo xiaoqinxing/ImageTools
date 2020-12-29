@@ -23,12 +23,7 @@ hiISP_DEMOSAIC_ATTR_S
 hiISP_CR_ATTR_S
 hiISP_LDCI_ATTR_S
 """
-    custom_define_dict = """typedef struct customNRX_PARAM_AUTO_V1_S {
-    HI_U32 u32ParamNum;
-    HI_U32 ATTRIBUTE au32ISO[16];
-    VI_PIPE_NRX_PARAM_V1_S ATTRIBUTE pastNRXParamV1[16];
-} CUSTOM_NRX_PARAM_AUTO_V1_S;
-"""
+    custom_define_dict = "hiNRX_PARAM_AUTO_V1_S:customNRX_PARAM_AUTO_V1_S"
     need_remove_item = 'rb'
     is_const = True
     include_headers = """# include "mpi_isp.h"
@@ -38,8 +33,13 @@ hiISP_LDCI_ATTR_S
 # include "hi_comm_vpss.h"
 # include "hi_isp_defines.h"
 """
-    add_custom_defines = """hiNRX_PARAM_AUTO_V1_S:customNRX_PARAM_AUTO_V1_S"""
-    copyright = """/*
+    add_custom_defines = """typedef struct customNRX_PARAM_AUTO_V1_S {
+    HI_U32 u32ParamNum;
+    HI_U32 ATTRIBUTE au32ISO[16];
+    VI_PIPE_NRX_PARAM_V1_S ATTRIBUTE pastNRXParamV1[16];
+} CUSTOM_NRX_PARAM_AUTO_V1_S;
+"""
+    head_copyright = """/*
 * Copyright (c) 2020
 * All rights reserved.
 *
@@ -65,7 +65,7 @@ hiISP_LDCI_ATTR_S
         self.custom_define_dict = ui.custom_define_dict.toPlainText()
         self.is_const = ui.is_const.isChecked()
         self.add_custom_defines = ui.add_custom_defines.toPlainText()
-        self.copyright = ui.copyright.toPlainText()
+        self.head_copyright = ui.head_copyright.toPlainText()
 
     def set_params(self, ui):
         ui.xmlfile.setText(self.xmlfile)
@@ -79,7 +79,7 @@ hiISP_LDCI_ATTR_S
         ui.include_headers.setPlainText(self.include_headers)
         ui.is_const.setChecked(self.is_const)
         ui.add_custom_defines.setPlainText(self.add_custom_defines)
-        ui.copyright.setPlainText(self.copyright)
+        ui.head_copyright.setPlainText(self.head_copyright)
         ui.custom_define_dict.setPlainText(self.custom_define_dict)
 
 
@@ -93,16 +93,24 @@ class PQtoolsToCode(SubWindow):
         self.ui.open_output_path.clicked.connect(self.set_output_path)
 
     def set_xmlpath(self):
+        if (self.params.xmlfile != ''):
+            now_path = os.path.dirname(self.params.xmlfile)
+        else:
+            now_path = './'
         xmlpath = QFileDialog.getOpenFileName(
-            None, '打开pqtools生成的xml', './', "XML (*.xml)")
+            None, '打开pqtools生成的xml', now_path, "XML (*.xml)")
         xmlfile = xmlpath[0]
         if (xmlfile != ''):
             self.ui.xmlfile.setText(xmlfile)
             self.params.xmlfile = xmlfile
-    
+
     def set_output_path(self):
+        if (self.params.output_path != ''):
+            now_path = os.path.dirname(self.params.output_path)
+        else:
+            now_path = './'
         output_path = QFileDialog.getSaveFileName(
-                None, '保存为头文件', './', "头文件 (*.h)")
+            None, '保存为头文件', now_path, "头文件 (*.h)")
         output_path = output_path[0]
         if (output_path != ''):
             self.ui.output_path.setText(output_path)
@@ -114,9 +122,9 @@ class PQtoolsToCode(SubWindow):
         filename_nosuffix = filename.split('/')[-1]
         if os.path.exists(filename):
             os.remove(filename)
-        head = "#ifndef _" + self.params.product_id.upper() + "_" + filename_nosuffix.upper().replace(".", "_") + \
-        "_\n" + "#define _" + self.params.product_id.upper() + "_" + filename_nosuffix.upper().replace(".", "_") + \
-        "_\n\n" + self.params.include_headers + '\n'\
+        head = self.params.head_copyright + "\n#ifndef _" + self.params.product_id.upper() + "_" + filename_nosuffix.upper().replace(".", "_") + \
+            "_\n" + "#define _" + self.params.product_id.upper() + "_" + filename_nosuffix.upper().replace(".", "_") + \
+            "_\n\n" + self.params.include_headers + '\n'\
             + """
 #ifdef __cplusplus
 #if __cplusplus
@@ -172,7 +180,7 @@ extern "C" {
 
 class StructGen:
     def __init__(self, name, dataStruct, params, custom_define_dict):
-        self.filename = params.output_filename
+        self.filename = params.output_path
         self.is_const = params.is_const
         self.TAB_SPACE = " " * params.tab_space
         self.NEED_REMOVE_ITEM = params.need_remove_item
