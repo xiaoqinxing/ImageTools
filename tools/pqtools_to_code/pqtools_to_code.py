@@ -26,12 +26,12 @@ hiISP_LDCI_ATTR_S
     custom_define_dict = "hiNRX_PARAM_AUTO_V1_S:customNRX_PARAM_AUTO_V1_S"
     need_remove_item = 'rb'
     is_const = True
-    include_headers = """# include "mpi_isp.h"
-# include "mpi_vi.h"
-# include "mpi_vpss.h"
-# include "hi_comm_vi.h"
-# include "hi_comm_vpss.h"
-# include "hi_isp_defines.h"
+    include_headers = """#include "mpi_isp.h"
+#include "mpi_vi.h"
+#include "mpi_vpss.h"
+#include "hi_comm_vi.h"
+#include "hi_comm_vpss.h"
+#include "hi_isp_defines.h"
 """
     add_custom_defines = """typedef struct customNRX_PARAM_AUTO_V1_S {
     HI_U32 u32ParamNum;
@@ -122,26 +122,27 @@ class PQtoolsToCode(SubWindow):
         filename_nosuffix = filename.split('/')[-1]
         if os.path.exists(filename):
             os.remove(filename)
-        head = self.params.head_copyright + "\n#ifndef _" + self.params.product_id.upper() + "_" + filename_nosuffix.upper().replace(".", "_") + \
-            "_\n" + "#define _" + self.params.product_id.upper() + "_" + filename_nosuffix.upper().replace(".", "_") + \
-            "_\n\n" + self.params.include_headers + '\n'\
-            + """
+        head_copyright = self.params.head_copyright.replace(
+            "%AUTHOR%", self.params.author).replace("%NOW_TINE%", time.strftime("%Y-%m-%d %H:%M", time.localtime()))
+        head = head_copyright + "\n#ifndef _" + filename_nosuffix.upper().replace(".", "_") + \
+            "_\n#define _" + filename_nosuffix.upper().replace(".", "_") + "_\n\n" + self.params.include_headers + """
 #ifdef __cplusplus
 #if __cplusplus
 extern "C" {
 #endif
 #endif
-""" + '\n' + self.params.add_custom_defines + '\n\n'
-        custom_define_dict_list = self.params.custom_define_dict.split(":")
-        custom_define_dict = {
-            custom_define_dict_list[0]: custom_define_dict_list[1]
-        }
+""" + '\n' + self.params.add_custom_defines + '\n'
+        custom_define_dict_list = self.params.custom_define_dict.split("\n")
+        custom_define_dict = {}
+        for custom_define_dict_item in custom_define_dict_list:
+            item = custom_define_dict_item.split(':')
+            custom_define_dict[item[0]] = item[1]
 
         end = """#ifdef __cplusplus
 #if __cplusplus
 }
 #endif
-#endif /* End of #ifdef __cplusplus */
+#endif
 
 #endif
 """
