@@ -31,7 +31,7 @@ class ShakeTestTool(SubWindow):
     vertical_direction = Direction.up
     inter_frames = 50
 
-    def __init__(self, name, parent=None):
+    def __init__(self, name='ShakeTestTool', parent=None):
         super().__init__(name, parent, Ui_ShakeTestWindow())
         self.videoview = VideoView(parent)
         self.ui.gridLayout_2.addWidget(self.videoview, 0, 0, 1, 1)

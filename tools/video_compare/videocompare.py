@@ -12,7 +12,7 @@ import os
 
 
 class VideoCompare(SubWindow):
-    def __init__(self, name, parent=None):
+    def __init__(self, name='VideoCompare', parent=None):
         super().__init__(name, parent, Ui_ShakeTestWindow())
         self.videoview = [VideoCompareView(self.ui.horizontalLayout)]
         self.videoview.append(VideoCompareView(self.ui.horizontalLayout))

@@ -10,7 +10,7 @@ import numpy as np
 
 
 class ImageEditor(SubWindow):
-    def __init__(self, name, parent=None):
+    def __init__(self, name='ImageEditor', parent=None):
         super().__init__(name, parent, Ui_ImageEditor())
         self.scene = QGraphicsScene()
         self.imageview = ImageView(self.scene, parent)

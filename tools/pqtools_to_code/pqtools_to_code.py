@@ -84,7 +84,7 @@ hiISP_LDCI_ATTR_S
 
 
 class PQtoolsToCode(SubWindow):
-    def __init__(self, name, parent=None):
+    def __init__(self, name='PQtoolsToCode', parent=None):
         super().__init__(name, parent, Ui_PQtoolsToCode(), need_processBar=True)
         self.params = self.load_params(PQtoolsParams())
         self.params.set_params(self.ui)

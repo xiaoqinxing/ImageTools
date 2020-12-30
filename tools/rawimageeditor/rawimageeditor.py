@@ -11,7 +11,7 @@ import numpy as np
 
 
 class RawImageEditor(SubWindow):
-    def __init__(self, name, parent=None):
+    def __init__(self, name='RawImageEditor', parent=None):
         super().__init__(name, parent, Ui_ImageEditor())
 
         # add 进度条和详细信息显示

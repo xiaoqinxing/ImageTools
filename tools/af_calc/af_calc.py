@@ -8,7 +8,7 @@ from ui.customwidget import MatplotlibWidget, SubWindow
 
 
 class AfCalcTool(SubWindow):
-    def __init__(self, name, parent=None):
+    def __init__(self, name='AfCalcTool', parent=None):
         super().__init__(name, parent, Ui_AFCalcToolView())
         self.ui.okbutton.clicked.connect(self.calc_ret)
         self.ui.open_in_path.clicked.connect(self.open_in_path)
