@@ -3,16 +3,13 @@
 ################################################################################
 ## Form generated from reading UI file 'imageeditor_window.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.0
+## Created by: Qt User Interface Compiler version 5.15.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
-    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
-    QPixmap, QRadialGradient)
+from PySide2.QtCore import *
+from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 import resource_rc
@@ -22,6 +19,9 @@ class Ui_ImageEditor(object):
         if not ImageEditor.objectName():
             ImageEditor.setObjectName(u"ImageEditor")
         ImageEditor.resize(800, 600)
+        icon = QIcon()
+        icon.addFile(u":/tool_icon/resource/main.png", QSize(), QIcon.Normal, QIcon.Off)
+        ImageEditor.setWindowIcon(icon)
         ImageEditor.setToolTipDuration(-1)
         ImageEditor.setAnimated(True)
         ImageEditor.setDockOptions(QMainWindow.AllowTabbedDocks|QMainWindow.AnimatedDocks|QMainWindow.GroupedDragging|QMainWindow.VerticalTabs)
@@ -36,9 +36,9 @@ class Ui_ImageEditor(object):
         self.guassian.setObjectName(u"guassian")
         self.saveimage = QAction(ImageEditor)
         self.saveimage.setObjectName(u"saveimage")
-        icon = QIcon()
-        icon.addFile(u":/tool_icon/resource/save_icon.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.saveimage.setIcon(icon)
+        icon1 = QIcon()
+        icon1.addFile(u":/tool_icon/resource/save_icon.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.saveimage.setIcon(icon1)
         self.medianblur = QAction(ImageEditor)
         self.medianblur.setObjectName(u"medianblur")
         self.medianblur.setShortcutContext(Qt.WindowShortcut)
@@ -46,19 +46,27 @@ class Ui_ImageEditor(object):
         self.bilateralblur.setObjectName(u"bilateralblur")
         self.compareimage = QAction(ImageEditor)
         self.compareimage.setObjectName(u"compareimage")
-        icon1 = QIcon()
-        icon1.addFile(u":/tool_icon/resource/compare.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.compareimage.setIcon(icon1)
+        icon2 = QIcon()
+        icon2.addFile(u":/tool_icon/resource/compare.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.compareimage.setIcon(icon2)
         self.openimage = QAction(ImageEditor)
         self.openimage.setObjectName(u"openimage")
-        icon2 = QIcon()
-        icon2.addFile(u":/tool_icon/resource/open.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.openimage.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u":/tool_icon/resource/open.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.openimage.setIcon(icon3)
         self.actionstats = QAction(ImageEditor)
         self.actionstats.setObjectName(u"actionstats")
-        icon3 = QIcon()
-        icon3.addFile(u":/tool_icon/resource/stats.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionstats.setIcon(icon3)
+        icon4 = QIcon()
+        icon4.addFile(u":/tool_icon/resource/stats.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionstats.setIcon(icon4)
+        self.make_water = QAction(ImageEditor)
+        self.make_water.setObjectName(u"make_water")
+        self.analysis_water = QAction(ImageEditor)
+        self.analysis_water.setObjectName(u"analysis_water")
+        self.actionshui = QAction(ImageEditor)
+        self.actionshui.setObjectName(u"actionshui")
+        self.watermark = QAction(ImageEditor)
+        self.watermark.setObjectName(u"watermark")
         self.centralwidget = QWidget(ImageEditor)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -80,11 +88,13 @@ class Ui_ImageEditor(object):
         ImageEditor.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ImageEditor)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 23))
+        self.menubar.setGeometry(QRect(0, 0, 800, 22))
         self.menu_2 = QMenu(self.menubar)
         self.menu_2.setObjectName(u"menu_2")
         self.blur = QMenu(self.menu_2)
         self.blur.setObjectName(u"blur")
+        self.menu_3 = QMenu(self.menubar)
+        self.menu_3.setObjectName(u"menu_3")
         ImageEditor.setMenuBar(self.menubar)
         self.statusBar = QStatusBar(ImageEditor)
         self.statusBar.setObjectName(u"statusBar")
@@ -102,11 +112,13 @@ class Ui_ImageEditor(object):
         ImageEditor.addToolBar(Qt.RightToolBarArea, self.toolBar)
 
         self.menubar.addAction(self.menu_2.menuAction())
+        self.menubar.addAction(self.menu_3.menuAction())
         self.menu_2.addAction(self.blur.menuAction())
         self.blur.addAction(self.boxblur)
         self.blur.addAction(self.guassian)
         self.blur.addAction(self.medianblur)
         self.blur.addAction(self.bilateralblur)
+        self.menu_3.addAction(self.watermark)
         self.toolBar.addAction(self.openimage)
         self.toolBar.addAction(self.saveimage)
         self.toolBar.addAction(self.compareimage)
@@ -144,8 +156,13 @@ class Ui_ImageEditor(object):
 #if QT_CONFIG(tooltip)
         self.actionstats.setToolTip(QCoreApplication.translate("ImageEditor", u"\u7edf\u8ba1\u4fe1\u606f", None))
 #endif // QT_CONFIG(tooltip)
+        self.make_water.setText(QCoreApplication.translate("ImageEditor", u"\u5236\u4f5c\u6c34\u5370", None))
+        self.analysis_water.setText(QCoreApplication.translate("ImageEditor", u"\u89e3\u6790\u6c34\u5370", None))
+        self.actionshui.setText(QCoreApplication.translate("ImageEditor", u"\u6c34\u5370\u5236\u4f5c", None))
+        self.watermark.setText(QCoreApplication.translate("ImageEditor", u"\u6c34\u5370\u5236\u4f5c", None))
         self.menu_2.setTitle(QCoreApplication.translate("ImageEditor", u"\u56fe\u50cf\u5904\u7406", None))
         self.blur.setTitle(QCoreApplication.translate("ImageEditor", u"\u6ee4\u6ce2", None))
+        self.menu_3.setTitle(QCoreApplication.translate("ImageEditor", u"\u5de5\u5177", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("ImageEditor", u"toolBar_2", None))
     # retranslateUi
 

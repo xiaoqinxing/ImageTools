@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>图片处理工具</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../../ui/resource.qrc">
+    <normaloff>:/tool_icon/resource/main.png</normaloff>:/tool_icon/resource/main.png</iconset>
+  </property>
   <property name="toolTip">
    <string/>
   </property>
@@ -66,7 +70,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_2">
@@ -84,7 +88,14 @@
     </widget>
     <addaction name="blur"/>
    </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>工具</string>
+    </property>
+    <addaction name="watermark"/>
+   </widget>
    <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="mouseTracking">
@@ -200,6 +211,26 @@
    </property>
    <property name="toolTip">
     <string>统计信息</string>
+   </property>
+  </action>
+  <action name="make_water">
+   <property name="text">
+    <string>制作水印</string>
+   </property>
+  </action>
+  <action name="analysis_water">
+   <property name="text">
+    <string>解析水印</string>
+   </property>
+  </action>
+  <action name="actionshui">
+   <property name="text">
+    <string>水印制作</string>
+   </property>
+  </action>
+  <action name="watermark">
+   <property name="text">
+    <string>水印制作</string>
    </property>
   </action>
  </widget>

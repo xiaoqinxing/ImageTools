@@ -3,11 +3,11 @@ from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileD
 from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Slot
 from tools.imageeditor.imageeditor_window import Ui_ImageEditor
-from ui.customwidget import ImageView, MatplotlibWidget, SubWindow
+from ui.customwidget import ImageView, MatplotlibWidget, SubWindow, critical
 from tools.imageeditor.imageeffect import ImageEffect, BlurType
 from tools.imageeditor.histgramview import Ui_HistgramView
+from tools.imageeditor.watermarkview import Ui_WaterMarkView
 import numpy as np
-
 
 class ImageEditor(SubWindow):
     def __init__(self, name='ImageEditor', parent=None):
@@ -29,6 +29,7 @@ class ImageEditor(SubWindow):
         # self.ui.historgram.triggered.connect(self.on_calc_hist)
         self.ui.actionstats.triggered.connect(self.on_calc_stats)
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
+        self.ui.watermark.triggered.connect(self.open_watermark_win)
         self.scale_ratio = 100
         self.img = ImageEffect()
 
@@ -51,6 +52,43 @@ class ImageEditor(SubWindow):
                 rely = QMessageBox.critical(
                     self, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
                 return
+
+    def open_watermark_win(self):
+        if(self.img.is_load_image == True):
+            self.watermark_win = QDialog(self.imageview)
+            self.watermark_ui = Ui_WaterMarkView()
+            self.watermark_ui.setupUi(self.watermark_win)
+            self.watermark_win.show()
+            self.watermark_ui.open_watermark.clicked.connect(self.open_watermark_path)
+            self.overlap_weight = 0
+            self.watermark_ui.change_transparent.valueChanged.connect(self.change_transparent_func)
+            self.watermark_ui.change_watermark_size.valueChanged.connect(self.change_size_func)
+        else:
+            critical('打开原图片失败，请先导入图片')
+    
+    def open_watermark_path(self):
+        watermarkpath = QFileDialog.getOpenFileName(
+            None, '打开图片', './', "Images (*.jpg *.png *.bmp)")
+        self.watermark_path = watermarkpath[0]
+        if (self.watermark_path != ''):
+            self.watermark_ui.watermark_path.setText(self.watermark_path)
+            self.img.set_watermark_img(self.watermark_path)
+            self.img.set_watermark_transparent(0)
+            self.displayImage(self.img.get_dst_image())
+        else:
+            critical('打开水印图片失败')
+
+    def change_transparent_func(self):
+        transparent = self.watermark_ui.change_transparent.value()
+        self.overlap_weight = transparent/100
+        self.img.set_watermark_transparent(self.overlap_weight)
+        self.displayImage(self.img.get_dst_image())
+    
+    def change_size_func(self):
+        size = self.watermark_ui.change_watermark_size.value()
+        self.img.set_watermark_size(size)
+        self.img.set_watermark_transparent(self.overlap_weight)
+        self.displayImage(self.img.get_dst_image())
 
     def boxblur_image(self):
         if(self.img.is_load_image == True):
@@ -76,7 +114,8 @@ class ImageEditor(SubWindow):
         if(self.img.is_load_image == True):
             imagepath = QFileDialog.getSaveFileName(
                 None, '保存图片', './', "Images (*.jpg)")
-            self.img.save_image(self.now_image, imagepath[0])
+            if(imagepath[0] != ''):
+                self.img.save_image(self.now_image, imagepath[0])
 
     def compare_image(self):
         if(self.img.is_load_image == True):

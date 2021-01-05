@@ -1,11 +1,13 @@
 import cv2
 from PySide2.QtGui import QImage
 import numpy as np
+from ui.customwidget import critical
 
 
 class ImageEffect(object):
     def __init__(self):
         self.is_load_image = False
+        self.is_load_watermark = False
 
     def load_image(self, filename):
         # 防止有中文
@@ -126,6 +128,40 @@ class ImageEffect(object):
             b_hist.reshape(1, 256)
             y_hist.reshape(1, 256)
             return (r_hist, g_hist, b_hist, y_hist)
+
+    def set_watermark_img(self, filename):
+        self.watermark_img = cv2.imdecode(
+            np.fromfile(filename, dtype=np.uint8), -1)
+        if (self.watermark_img is not None):
+            self.watermark_img_height = self.watermark_img.shape[0]
+            self.watermark_img_width = self.watermark_img.shape[1]
+            self.is_load_watermark = True
+            self.set_watermark_size(100)
+        else:
+            critical('水印图片无法打开')
+
+    def set_watermark_size(self, value):
+        """
+        设置水印大小，value范围在1-999之间
+        """
+        if(self.is_load_watermark == True and value <= 1000 and value > 0):
+            self.watermark_img_resized = cv2.resize(self.watermark_img, (int(
+                self.watermark_img_width*value/100), int(self.watermark_img_height*value/100)), interpolation=cv2.INTER_AREA)
+            self.watermark_img_cliped = np.zeros(self.srcImage.shape, dtype=np.uint8)
+            self.watermark_img_cliped[:,:,:] = 255
+            width = min(self.watermark_img_resized.shape[1],self.width)
+            height = min(self.watermark_img_resized.shape[0],self.height)
+            w_start = int((self.width - width)/2)
+            h_start = int((self.height - height)/2)
+            self.watermark_img_cliped[h_start:height+h_start, w_start:width+w_start] = self.watermark_img_resized[:height, :width]
+
+    def set_watermark_transparent(self, value):
+        """
+        设置水印透明度，value范围在0-1
+        """
+        if(self.is_load_watermark == True):
+            self.dstImage = cv2.addWeighted(
+                self.watermark_img_cliped, 1-value, self.srcImage, value, 0)
 
 
 class BlurType():
