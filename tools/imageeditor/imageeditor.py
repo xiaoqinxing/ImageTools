@@ -238,7 +238,7 @@ class ImageEditor(SubWindow):
 
 class HistViewDrag(QDialog):
     def __init__(self, parent):
-        super().__init__()
+        super().__init__(parent)
         self.parent = parent
         self.parent.setDragMode(QGraphicsView.RubberBandDrag)
 
