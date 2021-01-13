@@ -83,11 +83,16 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
         # bring data in range 0 to 1
         # list[i:j:2] 数组从取i 到 j 但加入了步长 这里步长为2
         # list[::2 ] 就是取奇数位，list[1::2]就是取偶数位
-        ret_img.data[::2, ::2] = raw_data[::2, ::2] - black_level[0]
-        ret_img.data[::2, 1::2] = raw_data[::2, 1::2] - black_level[1]
-        ret_img.data[1::2, ::2] = raw_data[1::2, ::2] - black_level[2]
-        ret_img.data[1::2, 1::2] = raw_data[1::2, 1::2] - black_level[3]
-        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
+        # 防止减黑电平减多了，超出阈值变成一个特别大的数
+        ret_img.data[::2, ::2] = np.clip(raw_data[::2, ::2], black_level[0], ret_img.max_data)
+        ret_img.data[::2, 1::2] = np.clip(raw_data[::2, 1::2], black_level[1], ret_img.max_data)
+        ret_img.data[1::2, ::2] = np.clip(raw_data[1::2, ::2], black_level[2], ret_img.max_data)
+        ret_img.data[1::2, 1::2] = np.clip(raw_data[1::2, 1::2], black_level[3], ret_img.max_data)
+
+        ret_img.data[::2, ::2] -= black_level[0]
+        ret_img.data[::2, 1::2] -= black_level[1]
+        ret_img.data[1::2, ::2] -= black_level[2]
+        ret_img.data[1::2, 1::2] -= black_level[3]
         return ret_img
 
     else:
@@ -226,7 +231,7 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     """
     gamma_ratio = params.get_gamma_ratio()
     max_input = raw.max_data
-    gamma_table = np.linspace(0, max_input, max_input)  # 建立映射表
+    gamma_table = np.linspace(0, max_input+1, max_input+1)  # 建立映射表
     gamma_table = (np.power(gamma_table/max_input, 1/gamma_ratio)
                    * max_input).astype(np.uint16)
 
