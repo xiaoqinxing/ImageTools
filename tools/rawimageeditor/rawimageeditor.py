@@ -8,7 +8,7 @@ from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from tools.rawimageeditor.isppipeline import IspPipeline
 from tools.rawimageeditor.rawhistgramview import Ui_HistgramView
 import numpy as np
-
+import os
 
 class RawImageEditor(SubWindow):
     def __init__(self, name='RawImageEditor', parent=None):
@@ -29,6 +29,7 @@ class RawImageEditor(SubWindow):
         self.imageview.sigDragEvent.connect(self.__init_img)
         self.imageview.sigMouseMovePoint.connect(self.show_point_rgb)
         self.imageview.sigWheelEvent.connect(self.update_wheel_ratio)
+        # 回调函数初始化
         self.ui.width.editingFinished.connect(self.update_width)
         self.ui.height.editingFinished.connect(self.update_height)
         self.ui.bit.editingFinished.connect(self.update_bit_depth)
@@ -52,19 +53,30 @@ class RawImageEditor(SubWindow):
             self.select_demosaic_type)
         self.scale_ratio = 100
 
-        self.img_pipeline = IspPipeline()
+        self.img_params = self.load_params(RawImageParams())
+        self.img_pipeline = IspPipeline(self.img_params)
         self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0
-        self.img_pipeline.params = self.load_params(self.img_pipeline.params)
-        self.img_params = self.img_pipeline.params
-        self.set_img_params()
 
+    def show(self):
+        super().show()
+        self.set_img_params()
+    
     def set_img_params(self):
         self.ui.width.setValue(self.img_params.get_width())
         self.ui.height.setValue(self.img_params.get_height())
         self.ui.bit.setValue(self.img_params.get_bit_depth())
-        # self.ui.pattern.setValue(self.img_params.get_pattern())
+        if (self.img_params.filename != "" and self.img_params.get_width() != 0 and self.img_params.get_height() != 0 and self.img_params.get_bit_depth() != 0):
+            if(self.img_pipeline.pipeline_reset() == True):
+                self.img = self.img_pipeline.get_image(0)
+                for i in range(1, self.ui.pipeline.count()):
+                    self.ui.pipeline.item(i).setCheckState(Qt.Unchecked)
+            self.img.load_image_with_params(self.img_params)
+            self.img.set_bayer_pattern(self.img_params.get_pattern())
+            self.rect = [0, 0, self.img_params.width, self.img_params.height]
+            if (self.img.get_raw_data() is not None):
+                self.displayImage(self.img)
 
     def select_demosaic_type(self, demosaic_type):
         name = demosaic_type.objectName()
@@ -86,7 +98,7 @@ class RawImageEditor(SubWindow):
 
     def update_raw_format(self):
         self.img_params.set_raw_format(self.ui.raw_format.currentText())
-
+ 
     def update_pattern(self):
         self.img_params.set_pattern(self.ui.pattern.currentText().lower())
 
@@ -151,8 +163,12 @@ class RawImageEditor(SubWindow):
             self.displayImage(self.img_pipeline.get_image(index))
 
     def open_image(self):
+        if (self.img_params.filename != ''):
+            now_path = os.path.dirname(self.img_params.filename)
+        else:
+            now_path = './'
         imagepath = QFileDialog.getOpenFileName(
-            None, '打开RAW图', './', "raw (*.raw)")
+            None, '打开RAW图', now_path, "raw (*.raw)")
         self.__init_img(imagepath[0])
 
     def __init_img(self, filename):
@@ -166,6 +182,7 @@ class RawImageEditor(SubWindow):
                     self.ui.pipeline.item(i).setCheckState(Qt.Unchecked)
             self.img.load_image(filename, height, width, bit_depth)
             self.img.set_bayer_pattern(self.img_params.get_pattern())
+            self.img_params.filename = filename
             self.rect = [0, 0, self.img_params.width, self.img_params.height]
             if (self.img.get_raw_data() is not None):
                 self.displayImage(self.img)

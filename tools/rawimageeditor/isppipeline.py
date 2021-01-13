@@ -4,11 +4,11 @@ from ui.customwidget import critical
 
 
 class IspPipeline():
-    def __init__(self):
+    def __init__(self, parmas):
         self.old_pipeline = []
         self.pipeline = []
         # self.data = RawImageInfo()
-        self.params = RawImageParams()
+        self.params = parmas
         # img_list存储了pipeline中途所有的图像
         # img_list长度比pipeline长1
         self.img_list = [RawImageInfo()]
