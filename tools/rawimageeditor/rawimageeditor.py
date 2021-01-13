@@ -30,22 +30,9 @@ class RawImageEditor(SubWindow):
         self.imageview.sigMouseMovePoint.connect(self.show_point_rgb)
         self.imageview.sigWheelEvent.connect(self.update_wheel_ratio)
         # 回调函数初始化
-        self.ui.width.editingFinished.connect(self.update_width)
-        self.ui.height.editingFinished.connect(self.update_height)
-        self.ui.bit.editingFinished.connect(self.update_bit_depth)
-        self.ui.raw_format.currentTextChanged.connect(self.update_raw_format)
-        self.ui.pattern.currentTextChanged.connect(self.update_pattern)
         self.ui.pipeline.doubleClicked.connect(self.update_img_index)
         self.ui.pipeline_ok.clicked.connect(self.update_pipeline)
         self.ui.open_image.clicked.connect(self.open_image)
-        self.ui.blc_r.editingFinished.connect(self.update_black_level)
-        self.ui.blc_gr.editingFinished.connect(self.update_black_level)
-        self.ui.blc_gb.editingFinished.connect(self.update_black_level)
-        self.ui.blc_b.editingFinished.connect(self.update_black_level)
-        self.ui.awb_r.editingFinished.connect(self.update_awb)
-        self.ui.awb_g.editingFinished.connect(self.update_awb)
-        self.ui.awb_b.editingFinished.connect(self.update_awb)
-        self.ui.gamma_ratio.editingFinished.connect(self.update_gamma)
         self.ui.select_from_raw.clicked.connect(self.select_awb_from_raw)
         self.imageview.rubberBandChanged.connect(self.update_awb_from_raw)
         self.ui.save_image.clicked.connect(self.save_now_image)
@@ -62,11 +49,6 @@ class RawImageEditor(SubWindow):
     def show(self):
         super().show()
         self.set_img_params()
-    
-    def set_img_params(self):
-        self.ui.width.setValue(self.img_params.get_width())
-        self.ui.height.setValue(self.img_params.get_height())
-        self.ui.bit.setValue(self.img_params.get_bit_depth())
         if (self.img_params.filename != "" and self.img_params.get_width() != 0 and self.img_params.get_height() != 0 and self.img_params.get_bit_depth() != 0):
             if(self.img_pipeline.pipeline_reset() == True):
                 self.img = self.img_pipeline.get_image(0)
@@ -77,6 +59,37 @@ class RawImageEditor(SubWindow):
             self.rect = [0, 0, self.img_params.width, self.img_params.height]
             if (self.img.get_raw_data() is not None):
                 self.displayImage(self.img)
+    
+    def set_img_params(self):
+        self.ui.width.setValue(self.img_params.get_width())
+        self.ui.height.setValue(self.img_params.get_height())
+        self.ui.bit.setValue(self.img_params.get_bit_depth())
+        awb_gain = self.img_params.get_awb_gain()
+        self.ui.awb_r.setValue(awb_gain[0])
+        self.ui.awb_g.setValue(awb_gain[1])
+        self.ui.awb_b.setValue(awb_gain[2])
+        index = self.ui.pattern.findText(self.img_params.get_pattern().upper())
+        self.ui.pattern.setCurrentIndex(index)
+        index = self.ui.raw_format.findText(self.img_params.get_raw_format())
+        self.ui.raw_format.setCurrentIndex(index)
+        blc_level = self.img_params.get_black_level()
+        self.ui.blc_r.setValue(blc_level[0])
+        self.ui.blc_gr.setValue(blc_level[1])
+        self.ui.blc_gb.setValue(blc_level[2])
+        self.ui.blc_b.setValue(blc_level[3])
+        self.ui.gamma_ratio.setValue(self.img_params.get_gamma_ratio())
+    
+    def get_img_params(self):
+        self.img_params.set_width(self.ui.width.value())
+        self.img_params.set_height(self.ui.height.value())
+        self.img_params.set_bit_depth(self.ui.bit.value())
+        self.img_params.set_raw_format(self.ui.raw_format.currentText())
+        self.img_params.set_pattern(self.ui.pattern.currentText().lower())
+        self.img_params.set_black_level([self.ui.blc_r.value(
+        ), self.ui.blc_gr.value(), self.ui.blc_gb.value(), self.ui.blc_b.value()])
+        self.img_params.set_awb_gain(
+            (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
+        self.img_params.set_gamma(self.ui.gamma_ratio.value())
 
     def select_demosaic_type(self, demosaic_type):
         name = demosaic_type.objectName()
@@ -86,21 +99,6 @@ class RawImageEditor(SubWindow):
             self.img_params.set_demosaic_func_type(1)
         elif (name == "Menon2007"):
             self.img_params.set_demosaic_func_type(2)
-
-    def update_width(self):
-        self.img_params.set_width(self.ui.width.value())
-
-    def update_height(self):
-        self.img_params.set_height(self.ui.height.value())
-
-    def update_bit_depth(self):
-        self.img_params.set_bit_depth(self.ui.bit.value())
-
-    def update_raw_format(self):
-        self.img_params.set_raw_format(self.ui.raw_format.currentText())
- 
-    def update_pattern(self):
-        self.img_params.set_pattern(self.ui.pattern.currentText().lower())
 
     def displayImage(self, img):
         """
@@ -113,19 +111,6 @@ class RawImageEditor(SubWindow):
             self.scene.addPixmap(QPixmap(qimage))
             self.ui.photo_title.setTitle(img.get_name())
 
-    def update_black_level(self):
-        self.img_params.set_black_level([self.ui.blc_r.value(
-        ), self.ui.blc_gr.value(), self.ui.blc_gb.value(), self.ui.blc_b.value()])
-
-    def update_awb(self):
-        self.img_params.set_awb_gain(
-            (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
-
-    def set_awb_ui(self, awb_gain):
-        self.ui.awb_r.setValue(awb_gain[0])
-        self.ui.awb_g.setValue(awb_gain[1])
-        self.ui.awb_b.setValue(awb_gain[2])
-
     def select_awb_from_raw(self):
         self.imageview.setDragMode(QGraphicsView.RubberBandDrag)
 
@@ -136,17 +121,18 @@ class RawImageEditor(SubWindow):
             awb_ratio = self.img.get_raw_img_rect(self.rect)
             if(awb_ratio is not None):
                 self.img_params.set_awb_ratio(awb_ratio)
-                self.set_awb_ui(self.img_params.awb_gain)
+                awb_gain = self.img_params.get_awb_gain()
+                self.ui.awb_r.setValue(awb_gain[0])
+                self.ui.awb_g.setValue(awb_gain[1])
+                self.ui.awb_b.setValue(awb_gain[2])
             else:
                 critical("请在raw图上进行选择")
         else:
             self.rect = [int(fromScenePoint.x()), int(fromScenePoint.y()), int(
                 toScenePoint.x()), int(toScenePoint.y())]
 
-    def update_gamma(self):
-        self.img_params.set_gamma(self.ui.gamma_ratio.value())
-
     def update_pipeline(self):
+        self.get_img_params()
         self.img_pipeline.pipeline_clear()
         for i in range(self.ui.pipeline.count()):
             if (self.ui.pipeline.item(i).checkState() == Qt.Checked):

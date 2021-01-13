@@ -37,6 +37,7 @@ class RawImageParams():
         self.gamma_table_size = 512
         # 自动刷新pipeline的参数，防止设置参数没有生效
         self.need_flush = False
+        self.filename = ''
 
     def set_demosaic_func_type(self, demosaic_type):
         """
@@ -99,7 +100,7 @@ class RawImageParams():
         return self.color_matrix
 
     def set_black_level(self, black_level):
-        if(black_level == self.black_level):
+        if(black_level != self.black_level):
             self.black_level = black_level
             self.need_flush = True
 
@@ -110,7 +111,7 @@ class RawImageParams():
         """
         设置AWB的增益 1x3
         """
-        if(awb_gain == self.awb_gain):
+        if(awb_gain != self.awb_gain):
             self.awb_gain = awb_gain
             self.need_flush = True
 
@@ -212,6 +213,25 @@ class RawImageInfo():
             self.__raw_bit_depth = bit_depth
             if (bit_depth < 14):
                 self.data = np.left_shift(self.data, 14 - bit_depth)
+            self.max_data = 1 << self.__bit_depth - 1
+    
+    def load_image_with_params(self, params):
+        """
+        function: 加载图像
+        input: RawImageParams
+        brief: 由于RAW图不同的bit深度，同样的ISP流程会导致出来的亮度不一样
+        所以在RawImageInfor将原始raw图统一对齐为14bit
+        """
+        if(params.height > 0 and params.width > 0):
+            self.data = np.fromfile(
+                params.filename, dtype="uint16", sep="").reshape((params.height, params.width))
+
+        if (self.data is not None):
+            self.name = params.filename.split('/')[-1]
+            self.__size = np.shape(self.data)
+            self.__raw_bit_depth = params.bit_depth
+            if (params.bit_depth < 14):
+                self.data = np.left_shift(self.data, 14 - params.bit_depth)
             self.max_data = 1 << self.__bit_depth - 1
 
     def create_image(self, name, shape):
