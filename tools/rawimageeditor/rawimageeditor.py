@@ -38,13 +38,14 @@ class RawImageEditor(SubWindow):
         self.ui.save_image.clicked.connect(self.save_now_image)
         self.ui.demosaic_button_group.buttonClicked.connect(
             self.select_demosaic_type)
-        self.scale_ratio = 100
 
         self.img_params = self.load_params(RawImageParams())
         self.img_pipeline = IspPipeline(self.img_params)
         self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0
+        self.scale_ratio = 100
+        self.ui.reload.clicked.connect(self.img_pipeline.reload_isp)
 
     def show(self):
         super().show()

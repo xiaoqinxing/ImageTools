@@ -1,6 +1,7 @@
 import tools.rawimageeditor.isp as isp
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from ui.customwidget import critical
+from imp import reload
 
 
 class IspPipeline():
@@ -12,6 +13,10 @@ class IspPipeline():
         # img_list存储了pipeline中途所有的图像
         # img_list长度比pipeline长1
         self.img_list = [RawImageInfo()]
+
+    def reload_isp(self):
+        reload(isp)
+        self.params.need_flush = True
 
     def set_pipeline(self, pipeline):
         self.old_pipeline = self.pipeline
