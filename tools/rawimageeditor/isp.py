@@ -70,9 +70,9 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     bayer_pattern = raw.get_bayer_pattern()
     bit_depth = raw.get_raw_bit_depth()
     raw_data = raw.get_raw_data()
-
-    if (bit_depth < 14):
-        black_level = np.left_shift(black_level, 14 - bit_depth)
+    if(np.issubdtype(raw.dtype, np.integer)):
+        if (bit_depth < 14):
+            black_level = np.left_shift(black_level, 14 - bit_depth)
 
     if(raw.get_color_space() == "raw"):
         black_level = resort_with_bayer_pattern(black_level, bayer_pattern)
@@ -226,22 +226,24 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     """
     gamma_ratio = params.get_gamma_ratio()
     max_input = raw.max_data
-    gamma_table = np.linspace(0, max_input+1, max_input+1)  # 建立映射表
-    gamma_table = (np.power(gamma_table/max_input, 1/gamma_ratio)
-                   * max_input).astype(np.uint16)
+    linear_table = np.linspace(0, max_input+1, int((max_input+1)/4))  # 建立映射表
+    gamma_table = (np.power(linear_table/max_input, 1/gamma_ratio)
+                   * max_input)
 
     raw_data = raw.get_raw_data()
 
     if (raw.get_color_space() == "raw"):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw_data.shape)
-        gamma_proc_raw(raw_data, ret_img.data, gamma_table)
+        # gamma_proc_raw(raw_data, ret_img.data, gamma_table)
+        ret_img.data = np.interp(raw_data, linear_table, gamma_table)
         ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
     elif (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw_data.shape)
-        gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
+        # gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
+        ret_img.data = np.interp(raw_data, linear_table, gamma_table)
         ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
     else:
