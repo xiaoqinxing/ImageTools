@@ -29,11 +29,7 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
         pass
     else:
         return None
-        # if (params.get_demosaic_funct_type() == 0):
-        #     ret_img.data = debayer_mhc(
-        #         raw.get_raw_data(), bayer_pattern, [0, 65535], False)
-        # else:
-        #     ret_img.data = directionally_weighted_gradient_based_interpolation(raw)
+
     if (params.get_demosaic_need_proc_color() == 1):
         ret_img.data = post_process_local_color_ratio(raw, 0.80 * 65535)
     if (params.get_demosaic_need_media_filter() == 1):
@@ -1682,19 +1678,19 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
     # CFA = as_float_array(CFA)
     R_m, G_m, B_m = masks_CFA_Bayer(CFA.shape, pattern)
 
-    H_G = np.uint16(
+    H_G = np.float32(
         [[0, 1, 0],
          [1, 4, 1],
-         [0, 1, 0]])  # yapf: disable
+         [0, 1, 0]]) * 0.25
 
-    H_RB = np.uint16(
+    H_RB = np.float32(
         [[1, 2, 1],
          [2, 4, 2],
-         [1, 2, 1]])  # yapf: disable
+         [1, 2, 1]]) * 0.25
 
-    output[:, :, 2] = np.right_shift(convolve(CFA * R_m, H_RB), 2)
-    output[:, :, 1] = np.right_shift(convolve(CFA * G_m, H_G), 2)
-    output[:, :, 0] = np.right_shift(convolve(CFA * B_m, H_RB), 2)
+    output[:, :, 2] = convolve(CFA * R_m, H_RB)
+    output[:, :, 1] = convolve(CFA * G_m, H_G)
+    output[:, :, 0] = convolve(CFA * B_m, H_RB)
 
     del R_m, G_m, B_m, H_RB, H_G
     return
@@ -1734,28 +1730,28 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
 
     R_m, G_m, B_m = masks_CFA_Bayer(CFA.shape, pattern, np.uint32)
 
-    GR_GB = np.uint32(
-        [[0, 0, -1, 0, 0],
+    GR_GB = np.float32(
+         [[0, 0, -1, 0, 0],
          [0, 0, 2, 0, 0],
          [-1, 2, 4, 2, -1],
          [0, 0, 2, 0, 0],
-         [0, 0, -1, 0, 0]])  # yapf: disable
+         [0, 0, -1, 0, 0]]) * 0.125
 
-    Rg_RB_Bg_BR = np.uint32(
-        [[0, 0, 1, 0, 0],
-         [0, -2, 0, -2, 0],
-         [-2, 8, 10, 8, - 2],
-         [0, -2, 0, -2, 0],
-         [0, 0, 1, 0, 0]])  # yapf: disable
+    Rg_RB_Bg_BR = np.float32(
+        [[0, 0, 0.5, 0, 0],
+         [0, -1, 0, -1, 0],
+         [-1, 4, 5, 4, - 1],
+         [0, -1, 0, -1, 0],
+         [0, 0, 0.5, 0, 0]]) * 0.125
 
     Rg_BR_Bg_RB = np.transpose(Rg_RB_Bg_BR)
 
-    Rb_BB_Br_RR = np.uint32(
-        [[0, 0, -3, 0, 0],
-         [0, 6, 0, 6, 0],
-         [-3, 0, 6, 0, -3],
-         [0, 4, 0, 4, 0],
-         [0, 0, -3, 0, 0]])  # yapf: disable
+    Rb_BB_Br_RR = np.float32(
+        [[0, 0, -1.5, 0, 0],
+         [0, 2, 0, 2, 0],
+         [-1.5, 0, 6, 0, -1.5],
+         [0, 2, 0, 2, 0],
+         [0, 0, -1.5, 0, 0]]) * 0.125
 
     R = CFA * R_m
     G = CFA * G_m
@@ -1763,27 +1759,22 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
 
     del G_m
 
-    G = np.where(np.logical_or(R_m == 1, B_m == 1),
-                 np.right_shift(convolve(CFA, GR_GB), 3), G)
+    G = np.where(np.logical_or(R_m == 1, B_m == 1), convolve(CFA, GR_GB), G)
 
-    RBg_RBBR = np.right_shift(convolve(CFA, Rg_RB_Bg_BR), 4)
-    RBg_BRRB = np.right_shift(convolve(CFA, Rg_BR_Bg_RB), 4)
-    RBgr_BBRR = np.right_shift(convolve(CFA, Rb_BB_Br_RR), 4)
+    RBg_RBBR = convolve(CFA, Rg_RB_Bg_BR)
+    RBg_BRRB = convolve(CFA, Rg_BR_Bg_RB)
+    RBgr_BBRR = convolve(CFA, Rb_BB_Br_RR)
 
     del GR_GB, Rg_RB_Bg_BR, Rg_BR_Bg_RB, Rb_BB_Br_RR
 
     # Red rows.
-    R_r = np.transpose(np.any(R_m == 1, axis=1)[
-                       np.newaxis]) * np.ones(R.shape, dtype=np.uint32)
+    R_r = np.transpose(np.any(R_m == 1, axis=1)[np.newaxis]) * np.ones(R.shape)
     # Red columns.
-    R_c = np.any(R_m == 1, axis=0)[np.newaxis] * \
-        np.ones(R.shape, dtype=np.uint32)
+    R_c = np.any(R_m == 1, axis=0)[np.newaxis] * np.ones(R.shape)
     # Blue rows.
-    B_r = np.transpose(np.any(B_m == 1, axis=1)[
-                       np.newaxis]) * np.ones(B.shape, dtype=np.uint32)
+    B_r = np.transpose(np.any(B_m == 1, axis=1)[np.newaxis]) * np.ones(B.shape)
     # Blue columns
-    B_c = np.any(B_m == 1, axis=0)[np.newaxis] * \
-        np.ones(B.shape, dtype=np.uint32)
+    B_c = np.any(B_m == 1, axis=0)[np.newaxis] * np.ones(B.shape)
 
     del R_m, B_m
 
@@ -1798,9 +1789,9 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
 
     del RBg_RBBR, RBg_BRRB, RBgr_BBRR, R_r, R_c, B_r, B_c
 
-    output[:, :, 2] = R.astype(np.uint16)
-    output[:, :, 1] = G.astype(np.uint16)
-    output[:, :, 0] = B.astype(np.uint16)
+    output[:, :, 2] = R
+    output[:, :, 1] = G
+    output[:, :, 0] = B
 
     return
 
