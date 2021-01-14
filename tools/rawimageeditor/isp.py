@@ -84,15 +84,10 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
         # list[i:j:2] 数组从取i 到 j 但加入了步长 这里步长为2
         # list[::2 ] 就是取奇数位，list[1::2]就是取偶数位
         # 防止减黑电平减多了，超出阈值变成一个特别大的数
-        ret_img.data[::2, ::2] = np.clip(raw_data[::2, ::2], black_level[0], ret_img.max_data)
-        ret_img.data[::2, 1::2] = np.clip(raw_data[::2, 1::2], black_level[1], ret_img.max_data)
-        ret_img.data[1::2, ::2] = np.clip(raw_data[1::2, ::2], black_level[2], ret_img.max_data)
-        ret_img.data[1::2, 1::2] = np.clip(raw_data[1::2, 1::2], black_level[3], ret_img.max_data)
-
-        ret_img.data[::2, ::2] -= black_level[0]
-        ret_img.data[::2, 1::2] -= black_level[1]
-        ret_img.data[1::2, ::2] -= black_level[2]
-        ret_img.data[1::2, 1::2] -= black_level[3]
+        ret_img.data[::2, ::2] = np.clip(raw_data[::2, ::2], black_level[0], ret_img.max_data) - black_level[0]
+        ret_img.data[::2, 1::2] = np.clip(raw_data[::2, 1::2], black_level[1], ret_img.max_data) - black_level[1]
+        ret_img.data[1::2, ::2] = np.clip(raw_data[1::2, ::2], black_level[2], ret_img.max_data) - black_level[2]
+        ret_img.data[1::2, 1::2] = np.clip(raw_data[1::2, 1::2], black_level[3], ret_img.max_data) - black_level[3]
         return ret_img
 
     else:

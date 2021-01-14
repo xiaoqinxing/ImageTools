@@ -36,8 +36,6 @@ class RawImageEditor(SubWindow):
         self.ui.select_from_raw.clicked.connect(self.select_awb_from_raw)
         self.imageview.rubberBandChanged.connect(self.update_awb_from_raw)
         self.ui.save_image.clicked.connect(self.save_now_image)
-        self.ui.demosaic_button_group.buttonClicked.connect(
-            self.select_demosaic_type)
 
         self.img_params = self.load_params(RawImageParams())
         self.img_pipeline = IspPipeline(self.img_params, process_bar=self.progress_bar)
@@ -79,7 +77,9 @@ class RawImageEditor(SubWindow):
         self.ui.blc_gb.setValue(blc_level[2])
         self.ui.blc_b.setValue(blc_level[3])
         self.ui.gamma_ratio.setValue(self.img_params.get_gamma_ratio())
-    
+        index = self.ui.demosaic_type.findText(self.img_params.get_demosaic_func_string())
+        self.ui.demosaic_type.setCurrentIndex(index)
+
     def get_img_params(self):
         self.img_params.set_width(self.ui.width.value())
         self.img_params.set_height(self.ui.height.value())
@@ -91,15 +91,7 @@ class RawImageEditor(SubWindow):
         self.img_params.set_awb_gain(
             (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
         self.img_params.set_gamma(self.ui.gamma_ratio.value())
-
-    def select_demosaic_type(self, demosaic_type):
-        name = demosaic_type.objectName()
-        if (name == "bilinear"):
-            self.img_params.set_demosaic_func_type(0)
-        elif (name == "Malvar2004"):
-            self.img_params.set_demosaic_func_type(1)
-        elif (name == "Menon2007"):
-            self.img_params.set_demosaic_func_type(2)
+        self.img_params.set_demosaic_func_type(self.ui.demosaic_type.currentText())
 
     def displayImage(self, img):
         """
@@ -154,6 +146,7 @@ class RawImageEditor(SubWindow):
             now_path = os.path.dirname(self.img_params.filename)
         else:
             now_path = './'
+        self.get_img_params()
         imagepath = QFileDialog.getOpenFileName(
             None, '打开RAW图', now_path, "raw (*.raw)")
         self.__init_img(imagepath[0])

@@ -46,10 +46,25 @@ class RawImageParams():
         1: Malvar-He-Cutler algorithm
         2: directionally weighted gradient based interpolation algorithm
         """
-        if(demosaic_type != self.__demosaic_func_type):
-            self.__demosaic_func_type = demosaic_type
+        if(demosaic_type == '双线性插值'):
+            index = 0
+        elif(demosaic_type == 'Malvar2004'):
+            index = 1
+        else:
+            index = 2
+        if(index != self.__demosaic_func_type):
+            self.__demosaic_func_type = index
             self.need_flush = True
 
+    def get_demosaic_func_string(self):
+        if(self.__demosaic_func_type == 0):
+            ret = '双线性插值'
+        elif(self.__demosaic_func_type == 1):
+            ret = 'Malvar2004'
+        else:
+            ret = 'Menon2007'
+        return ret
+    
     def get_demosaic_funct_type(self):
         return self.__demosaic_func_type
 
