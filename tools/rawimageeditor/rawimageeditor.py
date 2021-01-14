@@ -40,7 +40,7 @@ class RawImageEditor(SubWindow):
             self.select_demosaic_type)
 
         self.img_params = self.load_params(RawImageParams())
-        self.img_pipeline = IspPipeline(self.img_params)
+        self.img_pipeline = IspPipeline(self.img_params, process_bar=self.progress_bar)
         self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0
@@ -139,7 +139,7 @@ class RawImageEditor(SubWindow):
             if (self.ui.pipeline.item(i).checkState() == Qt.Checked):
                 self.img_pipeline.add_pipeline_node(
                     self.ui.pipeline.item(i).data(0))
-        self.img_pipeline.run_pipeline(self.progress_bar)
+        self.img_pipeline.run_pipeline()
         self.displayImage(self.img_pipeline.get_image(-1))
         print(self.img_pipeline.get_pipeline())
         print(self.img_pipeline.compare_pipeline())

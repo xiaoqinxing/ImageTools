@@ -5,7 +5,7 @@ from imp import reload
 
 
 class IspPipeline():
-    def __init__(self, parmas):
+    def __init__(self, parmas, process_bar=None):
         self.old_pipeline = []
         self.pipeline = []
         # self.data = RawImageInfo()
@@ -13,10 +13,13 @@ class IspPipeline():
         # img_list存储了pipeline中途所有的图像
         # img_list长度比pipeline长1
         self.img_list = [RawImageInfo()]
+        self.process_bar = process_bar
 
     def reload_isp(self):
         reload(isp)
         self.params.need_flush = True
+        if (self.process_bar is not None):
+            self.process_bar.setValue(0)
 
     def set_pipeline(self, pipeline):
         self.old_pipeline = self.pipeline
@@ -79,13 +82,13 @@ class IspPipeline():
             self.params.need_flush = False
             return self.pipeline
 
-    def run_pipeline(self, process_bar=None):
+    def run_pipeline(self):
         """
         运行pipeline，process_bar是用于显示进度的process bar
         """
         pipeline = self.check_pipeline()
-        if (process_bar is not None):
-            process_bar.setValue(0)
+        if (self.process_bar is not None):
+            self.process_bar.setValue(0)
 
         if (pipeline is not None):
             length = len(pipeline)
@@ -99,12 +102,12 @@ class IspPipeline():
                 else:
                     critical(params.get_error_str())
                     break
-                if (process_bar is not None):
-                    process_bar.setValue(i / length * 100)
+                if (self.process_bar is not None):
+                    self.process_bar.setValue(i / length * 100)
                     i += 1
         else:
-            if (process_bar is not None):
-                process_bar.setValue(100)
+            if (self.process_bar is not None):
+                self.process_bar.setValue(100)
 
     def get_pipeline(self):
         return self.pipeline
