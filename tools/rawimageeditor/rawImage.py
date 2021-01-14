@@ -208,8 +208,10 @@ class RawImageInfo():
         self.__raw_bit_depth = 12
         # 默认以14位进行处理
         self.__bit_depth = 14
-        self.max_data = 16383
+        self.max_data = 4095
         self.__size = [0, 0]
+        # 后续的ISP算法处理基本仅支持float类型，int类型不予以支持，但是保留了接口
+        self.dtype = np.float32
 
     def load_image(self, filename, height, width, bit_depth):
         """
@@ -225,10 +227,14 @@ class RawImageInfo():
         if (self.data is not None):
             self.name = filename.split('/')[-1]
             self.__size = np.shape(self.data)
+            self.data = self.data.astype(self.dtype)
             self.__raw_bit_depth = bit_depth
-            if (bit_depth < 14):
-                self.data = np.left_shift(self.data, 14 - bit_depth)
-            self.max_data = 1 << self.__bit_depth - 1
+            if(np.issubdtype(self.dtype, np.integer)):
+                if (bit_depth < 14):
+                    self.data = np.left_shift(self.data, self.__bit_depth - bit_depth)
+                self.max_data = (1 << self.__bit_depth) - 1
+            else:
+                self.max_data = (1 << self.__raw_bit_depth) - 1
     
     def load_image_with_params(self, params):
         """
@@ -244,17 +250,25 @@ class RawImageInfo():
         if (self.data is not None):
             self.name = params.filename.split('/')[-1]
             self.__size = np.shape(self.data)
+            self.data = self.data.astype(self.dtype)
             self.__raw_bit_depth = params.bit_depth
-            if (params.bit_depth < 14):
-                self.data = np.left_shift(self.data, 14 - params.bit_depth)
-            self.max_data = 1 << self.__bit_depth - 1
+            if(np.issubdtype(self.dtype, np.integer)):
+                if (params.bit_depth < 14):
+                    self.data = np.left_shift(self.data, self.__bit_depth - params.bit_depth)
+                self.max_data = (1 << self.__bit_depth) - 1
+            else:
+                self.max_data = (1 << self.__raw_bit_depth) - 1
 
     def create_image(self, name, shape):
         """
         function: 创建一个空图像
         input: 图像名称和shape
         """
-        self.data = np.zeros(shape, dtype="uint16")
+        self.data = np.zeros(shape, dtype=self.dtype)
+        if(np.issubdtype(self.dtype, np.integer)):
+            self.max_data = 16383
+        else:
+            self.max_data = 4095
         if (len(shape) == 2):
             self.__color_space = "raw"
         elif (len(shape) == 3):
@@ -326,7 +340,7 @@ class RawImageInfo():
 
     def set_bit_depth(self, bit_depth):
         self.__bit_depth = bit_depth
-        self.max_data = 1 << self.__bit_depth - 1
+        self.max_data = (1 << self.__bit_depth) - 1
 
     def get_bit_depth(self):
         """
@@ -348,8 +362,11 @@ class RawImageInfo():
         如果是YUV，获取的就是YCRCB
         """
         if(x > 0 and x < self.get_width() and y > 0 and y < self.get_height()):
-            right_shift_num = self.__bit_depth - self.__raw_bit_depth
-            return np.right_shift(self.data[y, x], right_shift_num)
+            if(np.issubdtype(self.dtype, np.integer)):
+                right_shift_num = self.__bit_depth - self.__raw_bit_depth
+                return np.right_shift(self.data[y, x], right_shift_num)
+            else:
+                return np.round(self.data[y, x])
         else:
             return None
 
@@ -427,55 +444,87 @@ class RawImageInfo():
         """
         data = np.zeros(
             (self.get_height(), self.get_width(), 3), dtype="uint8")
-        right_shift_num = self.get_bit_depth() - 8
-        if (self.__bayer_pattern == "rggb"):
-            data[::2, ::2, 2] = np.right_shift(
-                self.data[::2, ::2], right_shift_num)
-            data[::2, 1::2, 1] = np.right_shift(
-                self.data[::2, 1::2], right_shift_num)
-            data[1::2, ::2, 1] = np.right_shift(
-                self.data[1::2, ::2], right_shift_num)
-            data[1::2, 1::2, 0] = np.right_shift(
-                self.data[1::2, 1::2], right_shift_num)
-        elif (self.__bayer_pattern == "grbg"):
-            data[::2, ::2, 1] = np.right_shift(
-                self.data[::2, ::2], right_shift_num)
-            data[::2, 1::2, 2] = np.right_shift(
-                self.data[::2, 1::2], right_shift_num)
-            data[1::2, ::2, 0] = np.right_shift(
-                self.data[1::2, ::2], right_shift_num)
-            data[1::2, 1::2, 1] = np.right_shift(
-                self.data[1::2, 1::2], right_shift_num)
-        elif (self.__bayer_pattern == "gbrg"):
-            data[::2, ::2, 1] = np.right_shift(
-                self.data[::2, ::2], right_shift_num)
-            data[::2, 1::2, 0] = np.right_shift(
-                self.data[::2, 1::2], right_shift_num)
-            data[1::2, ::2, 2] = np.right_shift(
-                self.data[1::2, ::2], right_shift_num)
-            data[1::2, 1::2, 1] = np.right_shift(
-                self.data[1::2, 1::2], right_shift_num)
-        elif (self.__bayer_pattern == "bggr"):
-            data[::2, ::2, 0] = np.right_shift(
-                self.data[::2, ::2], right_shift_num)
-            data[::2, 1::2, 1] = np.right_shift(
-                self.data[::2, 1::2], right_shift_num)
-            data[1::2, ::2, 1] = np.right_shift(
-                self.data[1::2, ::2], right_shift_num)
-            data[1::2, 1::2, 2] = np.right_shift(
-                self.data[1::2, 1::2], right_shift_num)
+        if(np.issubdtype(self.dtype, np.integer)):
+            right_shift_num = self.get_bit_depth() - 8
+            if (self.__bayer_pattern == "rggb"):
+                data[::2, ::2, 2] = np.right_shift(
+                    self.data[::2, ::2], right_shift_num)
+                data[::2, 1::2, 1] = np.right_shift(
+                    self.data[::2, 1::2], right_shift_num)
+                data[1::2, ::2, 1] = np.right_shift(
+                    self.data[1::2, ::2], right_shift_num)
+                data[1::2, 1::2, 0] = np.right_shift(
+                    self.data[1::2, 1::2], right_shift_num)
+            elif (self.__bayer_pattern == "grbg"):
+                data[::2, ::2, 1] = np.right_shift(
+                    self.data[::2, ::2], right_shift_num)
+                data[::2, 1::2, 2] = np.right_shift(
+                    self.data[::2, 1::2], right_shift_num)
+                data[1::2, ::2, 0] = np.right_shift(
+                    self.data[1::2, ::2], right_shift_num)
+                data[1::2, 1::2, 1] = np.right_shift(
+                    self.data[1::2, 1::2], right_shift_num)
+            elif (self.__bayer_pattern == "gbrg"):
+                data[::2, ::2, 1] = np.right_shift(
+                    self.data[::2, ::2], right_shift_num)
+                data[::2, 1::2, 0] = np.right_shift(
+                    self.data[::2, 1::2], right_shift_num)
+                data[1::2, ::2, 2] = np.right_shift(
+                    self.data[1::2, ::2], right_shift_num)
+                data[1::2, 1::2, 1] = np.right_shift(
+                    self.data[1::2, 1::2], right_shift_num)
+            elif (self.__bayer_pattern == "bggr"):
+                data[::2, ::2, 0] = np.right_shift(
+                    self.data[::2, ::2], right_shift_num)
+                data[::2, 1::2, 1] = np.right_shift(
+                    self.data[::2, 1::2], right_shift_num)
+                data[1::2, ::2, 1] = np.right_shift(
+                    self.data[1::2, ::2], right_shift_num)
+                data[1::2, 1::2, 2] = np.right_shift(
+                    self.data[1::2, 1::2], right_shift_num)
+            else:
+                print("pattern must be one of these: rggb, grbg, gbrg, bggr")
+                return None
         else:
-            print("pattern must be one of these: rggb, grbg, gbrg, bggr")
-            return None
+            ratio = 256/(self.max_data + 1)
+            if (self.__bayer_pattern == "rggb"):
+                data[::2, ::2, 2] = np.round(ratio * self.data[::2, ::2])
+                data[::2, 1::2, 1] = np.round(ratio * self.data[::2, 1::2])
+                data[1::2, ::2, 1] = np.round(ratio * self.data[1::2, ::2])
+                data[1::2, 1::2, 0] = np.round(ratio * self.data[1::2, 1::2])
+            elif (self.__bayer_pattern == "grbg"):
+                data[::2, ::2, 1] = np.round(ratio * self.data[::2, ::2])
+                data[::2, 1::2, 2] = np.round(ratio * self.data[::2, 1::2])
+                data[1::2, ::2, 0] = np.round(ratio * self.data[1::2, ::2])
+                data[1::2, 1::2, 1] = np.round(ratio * self.data[1::2, 1::2])
+            elif (self.__bayer_pattern == "gbrg"):
+                data[::2, ::2, 1] = np.round(ratio * self.data[::2, ::2])
+                data[::2, 1::2, 0] = np.round(ratio * self.data[::2, 1::2])
+                data[1::2, ::2, 2] = np.round(ratio * self.data[1::2, ::2])
+                data[1::2, 1::2, 1] = np.round(ratio * self.data[1::2, 1::2])
+            elif (self.__bayer_pattern == "bggr"):
+                data[::2, ::2, 0] = np.round(ratio * self.data[::2, ::2])
+                data[::2, 1::2, 1] = np.round(ratio * self.data[::2, 1::2])
+                data[1::2, ::2, 1] = np.round(ratio * self.data[1::2, ::2])
+                data[1::2, 1::2, 2] = np.round(ratio * self.data[1::2, 1::2])
+            else:
+                print("pattern must be one of these: rggb, grbg, gbrg, bggr")
+                return None
         return data
 
     def convert_to_8bit(self):
         data = np.zeros(
             (self.get_height(), self.get_width(), 3), dtype="uint8")
-        right_shift_num = self.get_bit_depth() - 8
-        data[:, :, 0] = np.right_shift(self.data[:, :, 0], right_shift_num)
-        data[:, :, 1] = np.right_shift(self.data[:, :, 1], right_shift_num)
-        data[:, :, 2] = np.right_shift(self.data[:, :, 2], right_shift_num)
+        if(np.issubdtype(self.dtype, np.integer)):
+            right_shift_num = self.get_bit_depth() - 8
+            data[:, :, 0] = np.right_shift(self.data[:, :, 0], right_shift_num)
+            data[:, :, 1] = np.right_shift(self.data[:, :, 1], right_shift_num)
+            data[:, :, 2] = np.right_shift(self.data[:, :, 2], right_shift_num)
+        else:
+            ratio = 256/(self.max_data + 1)
+            data[:, :, 0] = np.round(ratio * self.data[:, :, 0])
+            data[:, :, 1] = np.round(ratio * self.data[:, :, 1])
+            data[:, :, 2] = np.round(ratio * self.data[:, :, 2])
         return data
 
     def bilinear_interpolation(self, x, y):

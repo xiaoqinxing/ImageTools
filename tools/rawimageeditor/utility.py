@@ -813,6 +813,9 @@ class create_filter:
 #   color conversion from one color space to another
 # =============================================================
 class color_conversion:
+    """
+    各种颜色空间的转换(RGB/YCC/LAB/GRAY)
+    """
     def __init__(self, data, name="color conversion"):
         self.data = np.float32(data)
         self.name = name
