@@ -12,6 +12,7 @@ import sys          # float precision
 from scipy import signal        # convolutions
 from scipy import interpolate   # for interpolation
 from numba import jit
+import cv2
 pipeline_dict = {
     "raw": 0,
     "original raw": 0,
@@ -51,6 +52,8 @@ def run_node(node, data, params):
             return debayer.demosaic(data, params)
         elif(node == pipeline_dict["gamma"]):
             return gamma_correction(data, params)
+        elif(node == pipeline_dict["LTM"]):
+            return ltm_correction(data, params)
     elif(params is None):
         params.set_error_str("输入的参数为空")
         return None
@@ -181,7 +184,6 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
         ret_img.data[::2, 1::2] = raw_channel_data[1]
         ret_img.data[1::2, ::2] = raw_channel_data[2]
         ret_img.data[1::2, 1::2] = raw_channel_data[3]
-        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
         return ret_img
     else:
         params.set_error_str("bad pixel correction need RAW data")
@@ -226,28 +228,28 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     """
     gamma_ratio = params.get_gamma_ratio()
     max_input = raw.max_data
-    linear_table = np.linspace(0, max_input+1, int((max_input+1)/4))  # 建立映射表
-    gamma_table = (np.power(linear_table/max_input, 1/gamma_ratio)
-                   * max_input)
+    # 自定义gamma-float类型
+    # linear_table = np.linspace(0, max_input+1, int((max_input+1)/4))  # 建立映射表
+    # gamma_table = (np.power(linear_table/max_input, 1/gamma_ratio) * max_input)
+    # ret_img.data = np.interp(raw_data, linear_table, gamma_table)
+    # 自定义gamma-int类型
+    # gamma_proc_raw(raw_data, ret_img.data, gamma_table)
+    # gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
 
     raw_data = raw.get_raw_data()
 
     if (raw.get_color_space() == "raw"):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw_data.shape)
-        # gamma_proc_raw(raw_data, ret_img.data, gamma_table)
-        ret_img.data = np.interp(raw_data, linear_table, gamma_table)
-        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
+        ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, 1/gamma_ratio)
         return ret_img
     elif (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw_data.shape)
-        # gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
-        ret_img.data = np.interp(raw_data, linear_table, gamma_table)
-        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
+        ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, 1/gamma_ratio)
         return ret_img
     else:
-        params.set_error_str("bad pixel correction need RAW data")
+        params.set_error_str("bad pixel correction need RAW or RGB data")
         return None
 
 
@@ -270,6 +272,45 @@ def gamma_proc_rgb(src, dst, gamma_table):
         for j in range(0, src.shape[1]):
             for k in range(3):
                 dst[i, j, k] = gamma_table[src[i, j, k]]
+
+def ltm_correction(raw: RawImageInfo, params: RawImageParams):
+    """
+    function: ltm correction 局部对比度增强
+    input: raw:RawImageInfo() params:RawImageParams()
+    输入支持bayer以及RGB域
+    原理: 
+    1. 先获取mask, 对原图进行灰度处理，然后进行一定半径的高斯模糊，然后归一化
+    如果mask的值小于0.5说明周围都是暗像素，修改gamma值，亮度上进行乘方
+    """
+    max_input = raw.max_data
+    dark_boost = params.get_dark_boost()/100
+    bright_suppress = params.get_bright_suppress()/100
+    raw_data = raw.get_raw_data()
+
+    if (raw.get_color_space() == "RGB"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after tone mapping correction', raw_data.shape)
+        
+        gray_image = raw.convert_to_gray()
+
+        # 双边滤波的保边特性，这样可以减少处理后的halo瑕疵
+        mask = cv2.GaussianBlur(gray_image, (5,5), 1.5)
+
+        # 归一化
+        mask = mask/raw.max_data
+        # 亮区和暗区用不同的LUT曲线
+        mask = np.where(mask < 0.5, 1 - dark_boost * (mask - 0.5) * (mask - 0.5), 1 + bright_suppress * (mask - 0.5) * (mask - 0.5))
+        alpha = np.empty(raw_data.shape, dtype=np.float32)
+        alpha[:, :, 0] = mask
+        alpha[:, :, 1] = mask
+        alpha[:, :, 2] = mask
+        # 在原来的基础上叠加一个乘方，相当于对每个区域的gamma值进行修改
+        ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, alpha)
+        ret_img.data = np.clip(ret_img.data, 0, raw.max_data)
+        return ret_img
+    else:
+        params.set_error_str("bad pixel correction need RGB data")
+        return None
 
 # =============================================================
 # class: lens_shading_correction
