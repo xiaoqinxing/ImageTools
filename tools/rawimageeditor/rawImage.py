@@ -35,6 +35,8 @@ class RawImageParams():
         self.__gamma_ratio = 2.2
         # gamma 查找表的长度
         self.gamma_table_size = 512
+        self.__dark_boost = 100
+        self.__bright_suppress = 100
         # 自动刷新pipeline的参数，防止设置参数没有生效
         self.need_flush = False
         self.filename = ''
@@ -85,6 +87,25 @@ class RawImageParams():
 
     def get_demosaic_need_media_filter(self):
         return self.__demosaic_need_media_filter
+
+    def set_dark_boost(self, value):
+        """
+        设置暗处提亮程度
+        """
+        if(value != self.__dark_boost):
+            self.need_flush = True
+            self.__dark_boost = value
+    
+    def get_dark_boost(self):
+        return self.__dark_boost
+
+    def set_bright_suppress(self, value):
+        if(value != self.__bright_suppress):
+            self.need_flush = True
+            self.__bright_suppress = value
+    
+    def get_bright_suppress(self):
+        return self.__bright_suppress
 
     def set_channel_gain(self, channel_gain):
         """
@@ -525,6 +546,13 @@ class RawImageInfo():
             data[:, :, 0] = np.round(ratio * self.data[:, :, 0])
             data[:, :, 1] = np.round(ratio * self.data[:, :, 1])
             data[:, :, 2] = np.round(ratio * self.data[:, :, 2])
+        return data
+    
+    def convert_to_gray(self):
+        data = np.zeros(
+            (self.get_height(), self.get_width()), dtype=self.dtype)
+        if (self.__color_space == "RGB"):
+            data = 0.299 * self.data[:, :, 0] + 0.587 * self.data[:, :, 1] + 0.114 * self.data[:, :, 2]
         return data
 
     def bilinear_interpolation(self, x, y):

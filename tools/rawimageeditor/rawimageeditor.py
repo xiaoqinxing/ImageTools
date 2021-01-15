@@ -79,6 +79,8 @@ class RawImageEditor(SubWindow):
         self.ui.gamma_ratio.setValue(self.img_params.get_gamma_ratio())
         index = self.ui.demosaic_type.findText(self.img_params.get_demosaic_func_string())
         self.ui.demosaic_type.setCurrentIndex(index)
+        self.ui.dark_boost.setValue(self.img_params.get_dark_boost())
+        self.ui.bright_suppress.setValue(self.img_params.get_bright_suppress())
 
     def get_img_params(self):
         self.img_params.set_width(self.ui.width.value())
@@ -92,6 +94,8 @@ class RawImageEditor(SubWindow):
             (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
         self.img_params.set_gamma(self.ui.gamma_ratio.value())
         self.img_params.set_demosaic_func_type(self.ui.demosaic_type.currentText())
+        self.img_params.set_dark_boost(self.ui.dark_boost.value())
+        self.img_params.set_bright_suppress(self.ui.bright_suppress.value())
 
     def displayImage(self, img):
         """
