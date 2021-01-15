@@ -3,16 +3,13 @@
 ################################################################################
 ## Form generated from reading UI file 'rawimageeditor_window.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.0
+## Created by: Qt User Interface Compiler version 5.15.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
-    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
-    QPixmap, QRadialGradient)
+from PySide2.QtCore import *
+from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 import resource_rc
@@ -22,6 +19,7 @@ class Ui_ImageEditor(object):
         if not ImageEditor.objectName():
             ImageEditor.setObjectName(u"ImageEditor")
         ImageEditor.resize(495, 577)
+        ImageEditor.setFocusPolicy(Qt.ClickFocus)
         ImageEditor.setContextMenuPolicy(Qt.DefaultContextMenu)
         ImageEditor.setToolTipDuration(-1)
         ImageEditor.setAnimated(True)
@@ -61,38 +59,15 @@ class Ui_ImageEditor(object):
 
         self.gridLayout_4 = QGridLayout()
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.height = QSpinBox(self.groupBox)
-        self.height.setObjectName(u"height")
-        self.height.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.height.setMaximum(10000)
-        self.height.setValue(0)
-
-        self.gridLayout_4.addWidget(self.height, 3, 1, 1, 1)
-
         self.label_10 = QLabel(self.groupBox)
         self.label_10.setObjectName(u"label_10")
 
         self.gridLayout_4.addWidget(self.label_10, 6, 0, 1, 1)
 
-        self.width = QSpinBox(self.groupBox)
-        self.width.setObjectName(u"width")
-        self.width.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.width.setMaximum(10000)
-        self.width.setValue(0)
-
-        self.gridLayout_4.addWidget(self.width, 2, 1, 1, 1)
-
         self.label_6 = QLabel(self.groupBox)
         self.label_6.setObjectName(u"label_6")
 
         self.gridLayout_4.addWidget(self.label_6, 3, 0, 1, 1)
-
-        self.bit = QSpinBox(self.groupBox)
-        self.bit.setObjectName(u"bit")
-        self.bit.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.bit.setValue(0)
-
-        self.gridLayout_4.addWidget(self.bit, 4, 1, 1, 1)
 
         self.label_9 = QLabel(self.groupBox)
         self.label_9.setObjectName(u"label_9")
@@ -126,6 +101,27 @@ class Ui_ImageEditor(object):
 
         self.gridLayout_4.addWidget(self.label_8, 4, 0, 1, 1)
 
+        self.width = QSpinBox(self.groupBox)
+        self.width.setObjectName(u"width")
+        self.width.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.width.setMaximum(8096)
+
+        self.gridLayout_4.addWidget(self.width, 2, 1, 1, 1)
+
+        self.height = QSpinBox(self.groupBox)
+        self.height.setObjectName(u"height")
+        self.height.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.height.setMaximum(8096)
+
+        self.gridLayout_4.addWidget(self.height, 3, 1, 1, 1)
+
+        self.bit = QSpinBox(self.groupBox)
+        self.bit.setObjectName(u"bit")
+        self.bit.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.bit.setMaximum(16)
+
+        self.gridLayout_4.addWidget(self.bit, 4, 1, 1, 1)
+
 
         self.verticalLayout_2.addLayout(self.gridLayout_4)
 
@@ -154,11 +150,6 @@ class Ui_ImageEditor(object):
         self.groupBox_2.setMaximumSize(QSize(227, 16777215))
         self.gridLayout_2 = QGridLayout(self.groupBox_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.pipeline_ok = QPushButton(self.groupBox_2)
-        self.pipeline_ok.setObjectName(u"pipeline_ok")
-
-        self.gridLayout_2.addWidget(self.pipeline_ok, 2, 1, 1, 1)
-
         self.pipeline = QListWidget(self.groupBox_2)
         __qlistwidgetitem = QListWidgetItem(self.pipeline)
         __qlistwidgetitem.setCheckState(Qt.Checked);
@@ -225,6 +216,16 @@ class Ui_ImageEditor(object):
 
         self.gridLayout_2.addWidget(self.pipeline, 1, 1, 1, 1)
 
+        self.pipeline_ok = QPushButton(self.groupBox_2)
+        self.pipeline_ok.setObjectName(u"pipeline_ok")
+
+        self.gridLayout_2.addWidget(self.pipeline_ok, 3, 1, 1, 1)
+
+        self.reload = QPushButton(self.groupBox_2)
+        self.reload.setObjectName(u"reload")
+
+        self.gridLayout_2.addWidget(self.reload, 2, 1, 1, 1)
+
 
         self.horizontalLayout_3.addWidget(self.groupBox_2)
 
@@ -241,7 +242,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 436))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 360, 399))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)
@@ -314,6 +315,38 @@ class Ui_ImageEditor(object):
 
         self.groupBox_12 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_12.setObjectName(u"groupBox_12")
+        self.gridLayout_11 = QGridLayout(self.groupBox_12)
+        self.gridLayout_11.setObjectName(u"gridLayout_11")
+        self.dark_boost = QSlider(self.groupBox_12)
+        self.dark_boost.setObjectName(u"dark_boost")
+        self.dark_boost.setMaximum(300)
+        self.dark_boost.setSingleStep(10)
+        self.dark_boost.setPageStep(50)
+        self.dark_boost.setValue(100)
+        self.dark_boost.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_11.addWidget(self.dark_boost, 0, 1, 1, 1)
+
+        self.label_14 = QLabel(self.groupBox_12)
+        self.label_14.setObjectName(u"label_14")
+
+        self.gridLayout_11.addWidget(self.label_14, 0, 0, 1, 1)
+
+        self.label_15 = QLabel(self.groupBox_12)
+        self.label_15.setObjectName(u"label_15")
+
+        self.gridLayout_11.addWidget(self.label_15, 1, 0, 1, 1)
+
+        self.bright_suppress = QSlider(self.groupBox_12)
+        self.bright_suppress.setObjectName(u"bright_suppress")
+        self.bright_suppress.setMaximum(300)
+        self.bright_suppress.setSingleStep(10)
+        self.bright_suppress.setPageStep(50)
+        self.bright_suppress.setValue(100)
+        self.bright_suppress.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_11.addWidget(self.bright_suppress, 1, 1, 1, 1)
+
 
         self.gridLayout_7.addWidget(self.groupBox_12, 7, 0, 1, 1)
 
@@ -372,27 +405,13 @@ class Ui_ImageEditor(object):
         self.groupBox_8.setObjectName(u"groupBox_8")
         self.gridLayout_10 = QGridLayout(self.groupBox_8)
         self.gridLayout_10.setObjectName(u"gridLayout_10")
-        self.Malvar2004 = QRadioButton(self.groupBox_8)
-        self.demosaic_button_group = QButtonGroup(ImageEditor)
-        self.demosaic_button_group.setObjectName(u"demosaic_button_group")
-        self.demosaic_button_group.addButton(self.Malvar2004)
-        self.Malvar2004.setObjectName(u"Malvar2004")
-        self.Malvar2004.setChecked(False)
+        self.demosaic_type = QComboBox(self.groupBox_8)
+        self.demosaic_type.addItem("")
+        self.demosaic_type.addItem("")
+        self.demosaic_type.addItem("")
+        self.demosaic_type.setObjectName(u"demosaic_type")
 
-        self.gridLayout_10.addWidget(self.Malvar2004, 2, 0, 1, 1)
-
-        self.Menon2007 = QRadioButton(self.groupBox_8)
-        self.demosaic_button_group.addButton(self.Menon2007)
-        self.Menon2007.setObjectName(u"Menon2007")
-
-        self.gridLayout_10.addWidget(self.Menon2007, 5, 0, 1, 1)
-
-        self.bilinear = QRadioButton(self.groupBox_8)
-        self.demosaic_button_group.addButton(self.bilinear)
-        self.bilinear.setObjectName(u"bilinear")
-        self.bilinear.setChecked(True)
-
-        self.gridLayout_10.addWidget(self.bilinear, 1, 0, 1, 1)
+        self.gridLayout_10.addWidget(self.demosaic_type, 0, 0, 1, 1)
 
 
         self.gridLayout_7.addWidget(self.groupBox_8, 3, 0, 1, 1)
@@ -487,7 +506,6 @@ class Ui_ImageEditor(object):
         self.open_image.setText(QCoreApplication.translate("ImageEditor", u"\u6253\u5f00\u56fe\u7247", None))
         self.save_image.setText(QCoreApplication.translate("ImageEditor", u"\u4fdd\u5b58\u56fe\u7247", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ImageEditor", u"ISP\u5904\u7406\u6d41\u7a0b", None))
-        self.pipeline_ok.setText(QCoreApplication.translate("ImageEditor", u"\u786e\u5b9a", None))
 
         __sortingEnabled = self.pipeline.isSortingEnabled()
         self.pipeline.setSortingEnabled(False)
@@ -519,6 +537,8 @@ class Ui_ImageEditor(object):
         ___qlistwidgetitem12.setText(QCoreApplication.translate("ImageEditor", u"adaptive spatial filter", None));
         self.pipeline.setSortingEnabled(__sortingEnabled)
 
+        self.pipeline_ok.setText(QCoreApplication.translate("ImageEditor", u"\u786e\u5b9a", None))
+        self.reload.setText(QCoreApplication.translate("ImageEditor", u"\u7b97\u6cd5\u70ed\u66f4\u65b0", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ImageEditor", u"ISP\u53c2\u6570", None))
         self.groupBox_13.setTitle(QCoreApplication.translate("ImageEditor", u"advanced chroma enhancement", None))
         self.groupBox_14.setTitle(QCoreApplication.translate("ImageEditor", u"wavelet denoise", None))
@@ -530,15 +550,18 @@ class Ui_ImageEditor(object):
         self.select_from_raw.setText(QCoreApplication.translate("ImageEditor", u"\u4eceraw\u56fe\u9009\u53d6", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("ImageEditor", u"rolloff", None))
         self.groupBox_12.setTitle(QCoreApplication.translate("ImageEditor", u"LTM", None))
+        self.label_14.setText(QCoreApplication.translate("ImageEditor", u"\u6697\u533a\u63d0\u5347", None))
+        self.label_15.setText(QCoreApplication.translate("ImageEditor", u"\u4eae\u533a\u6291\u5236", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("ImageEditor", u"black level", None))
         self.label_2.setText(QCoreApplication.translate("ImageEditor", u"GR", None))
         self.label_3.setText(QCoreApplication.translate("ImageEditor", u"GB", None))
         self.label.setText(QCoreApplication.translate("ImageEditor", u"R", None))
         self.label_4.setText(QCoreApplication.translate("ImageEditor", u"B", None))
         self.groupBox_8.setTitle(QCoreApplication.translate("ImageEditor", u"demosaic", None))
-        self.Malvar2004.setText(QCoreApplication.translate("ImageEditor", u"Malvar2004", None))
-        self.Menon2007.setText(QCoreApplication.translate("ImageEditor", u"Menon2007", None))
-        self.bilinear.setText(QCoreApplication.translate("ImageEditor", u"\u53cc\u7ebf\u6027\u63d2\u503c", None))
+        self.demosaic_type.setItemText(0, QCoreApplication.translate("ImageEditor", u"\u53cc\u7ebf\u6027\u63d2\u503c", None))
+        self.demosaic_type.setItemText(1, QCoreApplication.translate("ImageEditor", u"Malvar2004", None))
+        self.demosaic_type.setItemText(2, QCoreApplication.translate("ImageEditor", u"Menon2007", None))
+
         self.groupBox_11.setTitle(QCoreApplication.translate("ImageEditor", u"gamma", None))
         self.label_13.setText(QCoreApplication.translate("ImageEditor", u"ratio", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("ImageEditor", u"ABF", None))
