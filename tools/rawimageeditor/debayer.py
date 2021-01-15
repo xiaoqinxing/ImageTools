@@ -1,4 +1,4 @@
-from scipy.ndimage.filters import convolve
+from scipy.ndimage.filters import convolve, convolve1d
 import numpy as np
 import math
 import time
@@ -26,7 +26,8 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
         demosaicing_CFA_Bayer_Malvar2004(
             raw.get_raw_data(), ret_img.data, bayer_pattern)
     elif (params.get_demosaic_funct_type() == 2):
-        pass
+        demosaicing_CFA_Bayer_Menon2007(
+            raw.get_raw_data(), ret_img.data, bayer_pattern)
     else:
         return None
 
@@ -1645,34 +1646,14 @@ def fill_br_locations(data, G, bayer_pattern):
 
 def demosaicing_CFA_Bayer_bilinear(CFA, output, pattern='rggb'):
     """
-    Returns the demosaiced *RGB* colourspace array from given *Bayer* CFA using
-    bilinear interpolation.
-
-    Parameters
-    ----------
-    CFA : array_like
-        *Bayer* CFA.
-    pattern : unicode, optional
-        **{'RGGB', 'BGGR', 'GRBG', 'GBRG'}**,
-        Arrangement of the colour filters on the pixel array.
-
-    Returns
-    -------
-    ndarray
-        *RGB* colourspace array.
-
-    Notes
-    -----
-    -   The definition output is not clipped in range [0, 1] : this allows for
-        direct HDRI / radiance image generation on *Bayer* CFA data and post
-        demosaicing of the high dynamic range data as showcased in this
-        `Jupyter Notebook <https://github.com/colour-science/colour-hdri/\
-blob/develop/colour_hdri/examples/\
-examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
-
+    Bilinear Bayer CFA Demosaicing
+    ==============================
+    *Bayer* CFA (Colour Filter Array) bilinear demosaicing.
     References
     ----------
-    :cite:`Losson2010c`
+    -   :cite:`Losson2010c` : Losson, O., Macaire, L., & Yang, Y. (2010).
+        Comparison of Color Demosaicing Methods. In Advances in Imaging and
+        Electron Physics (Vol. 162, pp. 173-265). doi:10.1016/S1076-5670(10)62005-8
     """
 
     # CFA = as_float_array(CFA)
@@ -1698,37 +1679,17 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
 
 def demosaicing_CFA_Bayer_Malvar2004(CFA, output, pattern='RGGB'):
     """
-    Returns the demosaiced *RGB* colourspace array from given *Bayer* CFA using
-    *Malvar (2004)* demosaicing algorithm.
-
-    Parameters
-    ----------
-    CFA : array_like
-        *Bayer* CFA.
-    pattern : unicode, optional
-        **{'RGGB', 'BGGR', 'GRBG', 'GBRG'}**,
-        Arrangement of the colour filters on the pixel array.
-
-    Returns
-    -------
-    ndarray
-        *RGB* colourspace array.
-
-    Notes
-    -----
-    -   The definition output is not clipped in range [0, 1] : this allows for
-        direct HDRI / radiance image generation on *Bayer* CFA data and post
-        demosaicing of the high dynamic range data as showcased in this
-        `Jupyter Notebook <https://github.com/colour-science/colour-hdri/\
-blob/develop/colour_hdri/examples/\
-examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
-
+    *Bayer* CFA (Colour Filter Array) *Malvar (2004)* demosaicing.
     References
     ----------
-    :cite:`Malvar2004a`
+    -   :cite:`Malvar2004a` : Malvar, H. S., He, L.-W., Cutler, R., & Way, O. M.
+        (2004). High-Quality Linear Interpolation for Demosaicing of
+        Bayer-Patterned Color Images. International Conference of Acoustic, Speech
+        and Signal Processing, 5-8.
+        http://research.microsoft.com/apps/pubs/default.aspx?id=102068
     """
 
-    R_m, G_m, B_m = masks_CFA_Bayer(CFA.shape, pattern, np.uint32)
+    R_m, G_m, B_m = masks_CFA_Bayer(CFA.shape, pattern)
 
     GR_GB = np.float32(
          [[0, 0, -1, 0, 0],
@@ -1796,7 +1757,136 @@ examples_merge_from_raw_files_with_post_demosaicing.ipynb>`__.
     return
 
 
-def masks_CFA_Bayer(shape, pattern='rggb', cfa_dtype=np.uint16):
+def demosaicing_CFA_Bayer_Menon2007(CFA, output, pattern='RGGB'):
+    """
+    DDFAPD - Menon (2007) Bayer CFA Demosaicing
+    ===========================================
+    *Bayer* CFA (Colour Filter Array) DDFAPD - *Menon (2007)* demosaicing.
+    References
+    ----------
+    -   :cite:`Menon2007c` : Menon, D., Andriani, S., & Calvagno, G. (2007).
+        Demosaicing With Directional Filtering and a posteriori Decision. IEEE
+        Transactions on Image Processing, 16(1), 132-141.
+        doi:10.1109/TIP.2006.884928
+    """
+    R_m, G_m, B_m = masks_CFA_Bayer(CFA.shape, pattern)
+    h_0 = np.array([0, 0.5, 0, 0.5, 0], dtype=np.float32)
+    h_1 = np.array([-0.25, 0, 0.5, 0, -0.25], dtype=np.float32)
+
+    R = CFA * R_m
+    G = CFA * G_m
+    B = CFA * B_m
+
+    G_H = np.where(G_m == 0, _cnv_h(CFA, h_0) + _cnv_h(CFA, h_1), G)
+    G_V = np.where(G_m == 0, _cnv_v(CFA, h_0) + _cnv_v(CFA, h_1), G)
+
+    C_H = np.where(R_m == 1, R - G_H, 0)
+    C_H = np.where(B_m == 1, B - G_H, C_H)
+
+    C_V = np.where(R_m == 1, R - G_V, 0)
+    C_V = np.where(B_m == 1, B - G_V, C_V)
+
+    D_H = np.abs(C_H - np.pad(C_H, ((0, 0),
+                                    (0, 2)), mode=str('reflect'))[:, 2:])
+    D_V = np.abs(C_V - np.pad(C_V, ((0, 2),
+                                    (0, 0)), mode=str('reflect'))[2:, :])
+
+    del h_0, h_1, CFA, C_V, C_H
+
+    k = np.array(
+        [[0, 0, 1, 0, 1],
+         [0, 0, 0, 1, 0],
+         [0, 0, 3, 0, 3],
+         [0, 0, 0, 1, 0],
+         [0, 0, 1, 0, 1]], dtype=np.float32)
+
+    d_H = convolve(D_H, k, mode='constant')
+    d_V = convolve(D_V, np.transpose(k), mode='constant')
+
+    del D_H, D_V
+
+    mask = d_V >= d_H
+    G = np.where(mask, G_H, G_V)
+    M = np.where(mask, 1, 0)
+
+    del d_H, d_V, G_H, G_V
+
+    # Red rows.
+    R_r = np.transpose(np.any(R_m == 1, axis=1)[np.newaxis]) * np.ones(R.shape, dtype=np.float32)
+    # Blue rows.
+    B_r = np.transpose(np.any(B_m == 1, axis=1)[np.newaxis]) * np.ones(B.shape, dtype=np.float32)
+
+    k_b = np.array([0.5, 0, 0.5], dtype=np.float32)
+
+    R = np.where(
+        np.logical_and(G_m == 1, R_r == 1),
+        G + _cnv_h(R, k_b) - _cnv_h(G, k_b),
+        R,
+    )
+
+    R = np.where(
+        np.logical_and(G_m == 1, B_r == 1) == 1,
+        G + _cnv_v(R, k_b) - _cnv_v(G, k_b),
+        R,
+    )
+
+    B = np.where(
+        np.logical_and(G_m == 1, B_r == 1),
+        G + _cnv_h(B, k_b) - _cnv_h(G, k_b),
+        B,
+    )
+
+    B = np.where(
+        np.logical_and(G_m == 1, R_r == 1) == 1,
+        G + _cnv_v(B, k_b) - _cnv_v(G, k_b),
+        B,
+    )
+
+    R = np.where(
+        np.logical_and(B_r == 1, B_m == 1),
+        np.where(
+            M == 1,
+            B + _cnv_h(R, k_b) - _cnv_h(B, k_b),
+            B + _cnv_v(R, k_b) - _cnv_v(B, k_b),
+        ),
+        R,
+    )
+
+    B = np.where(
+        np.logical_and(R_r == 1, R_m == 1),
+        np.where(
+            M == 1,
+            R + _cnv_h(B, k_b) - _cnv_h(R, k_b),
+            R + _cnv_v(B, k_b) - _cnv_v(R, k_b),
+        ),
+        B,
+    )
+
+    del k_b, R_r, B_r
+
+    del M, R_m, G_m, B_m
+    output[:, :, 2] = R
+    output[:, :, 1] = G
+    output[:, :, 0] = B
+    del R,G,B
+    return
+
+def _cnv_h(x, y):
+    """
+    Helper function for horizontal convolution.
+    """
+
+    return convolve1d(x, y, mode='mirror')
+
+
+def _cnv_v(x, y):
+    """
+    Helper function for vertical convolution.
+    """
+
+    return convolve1d(x, y, mode='mirror', axis=0)
+
+def masks_CFA_Bayer(shape, pattern='rggb'):
     """
     Returns the *Bayer* CFA red, green and blue masks for given pattern.
     Parameters
@@ -1838,9 +1928,9 @@ def masks_CFA_Bayer(shape, pattern='rggb', cfa_dtype=np.uint16):
 
     pattern = pattern.lower()
 
-    channels = dict((channel, np.zeros(shape, dtype=cfa_dtype))
+    channels = dict((channel, np.zeros(shape, dtype=bool))
                     for channel in 'rgb')
     for channel, (y, x) in zip(pattern, [(0, 0), (0, 1), (1, 0), (1, 1)]):
-        channels[channel][y::2, x::2] = 1
+        channels[channel][y::2, x::2] = True
 
     return tuple(channels[c] for c in 'rgb')
