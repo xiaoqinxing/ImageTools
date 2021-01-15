@@ -17,8 +17,10 @@ class RawImageEditor(SubWindow):
         # add 进度条和详细信息显示
         self.progress_bar = QProgressBar()
         self.info_bar = QLabel()
-        self.ui.statusBar.addPermanentWidget(self.info_bar, stretch=4)
-        self.ui.statusBar.addPermanentWidget(self.progress_bar, stretch=1)
+        self.time_bar = QLabel()
+        self.ui.statusBar.addPermanentWidget(self.info_bar, stretch=8)
+        self.ui.statusBar.addPermanentWidget(self.time_bar, stretch=1)
+        self.ui.statusBar.addPermanentWidget(self.progress_bar, stretch=2)
         self.progress_bar.setRange(0, 100)  # 设置进度条的范围
         self.progress_bar.setValue(0)
 
@@ -38,7 +40,7 @@ class RawImageEditor(SubWindow):
         self.ui.save_image.clicked.connect(self.save_now_image)
 
         self.img_params = self.load_params(RawImageParams())
-        self.img_pipeline = IspPipeline(self.img_params, process_bar=self.progress_bar)
+        self.img_pipeline = IspPipeline(self.img_params, process_bar=self.progress_bar, time_bar=self.time_bar)
         self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0

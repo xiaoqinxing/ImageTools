@@ -3,6 +3,7 @@ import tools.rawimageeditor.debayer as debayer
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from ui.customwidget import critical
 from imp import reload
+import time
 
 pipeline_dict = {
     "raw":          isp.get_src_raw_data,
@@ -28,7 +29,7 @@ pipeline_dict = {
 }
 
 class IspPipeline():
-    def __init__(self, parmas, process_bar=None):
+    def __init__(self, parmas, process_bar=None, time_bar=None):
         self.old_pipeline = []
         self.pipeline = []
         # self.data = RawImageInfo()
@@ -37,6 +38,7 @@ class IspPipeline():
         # img_list长度比pipeline长1
         self.img_list = [RawImageInfo()]
         self.process_bar = process_bar
+        self.time_bar = time_bar
 
     def reload_isp(self):
         reload(isp)
@@ -129,6 +131,7 @@ class IspPipeline():
             length = len(pipeline)
             i = 1
             params = self.params
+            start_time = time.time()
             for node in pipeline:
                 data = self.img_list[-1]
                 ret_img = self.run_node(node, data)
@@ -140,6 +143,9 @@ class IspPipeline():
                 if (self.process_bar is not None):
                     self.process_bar.setValue(i / length * 100)
                     i += 1
+            stop_time = time.time()
+            if(self.time_bar != None):
+                self.time_bar.setText('总耗时:{:.3f}s'.format(stop_time-start_time))
         else:
             if (self.process_bar is not None):
                 self.process_bar.setValue(100)

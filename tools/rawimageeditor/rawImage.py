@@ -393,7 +393,7 @@ class RawImageInfo():
                 right_shift_num = self.__bit_depth - self.__raw_bit_depth
                 return np.right_shift(self.data[y, x], right_shift_num)
             else:
-                return np.round(self.data[y, x])
+                return np.int32(self.data[y, x])
         else:
             return None
 
