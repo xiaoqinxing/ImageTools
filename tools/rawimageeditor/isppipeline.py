@@ -4,6 +4,28 @@ from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from ui.customwidget import critical
 from imp import reload
 
+pipeline_dict = {
+    "raw":          isp.get_src_raw_data,
+    "original raw": isp.get_src_raw_data,
+    "black level":  isp.black_level_correction,
+    "BLC":          isp.black_level_correction,
+    "rolloff":      None,
+    "ABF":          None,
+    "demosaic":     debayer.demosaic,
+    "awb":          isp.channel_gain_white_balance,
+    "AWB":          isp.channel_gain_white_balance,
+    "ccm":          None,
+    "CCM":          None,
+    "gamma":        isp.gamma_correction,
+    "LTM":          isp.ltm_correction,
+    "advanced chroma enhancement":  None,
+    "ACE":                          None,
+    "wavelet denoise":              None,
+    "WNR":                          None,
+    "adaptive spatial filter":      None,
+    "ASF":                          None,
+    "bad pixel correction":         isp.bad_pixel_correction
+}
 
 class IspPipeline():
     def __init__(self, parmas, process_bar=None):
@@ -47,15 +69,15 @@ class IspPipeline():
         function: 为pipeline添加一个节点
         输入是pipeline_dict的字符串
         """
-        if(node in isp.pipeline_dict):
-            self.pipeline.append(isp.pipeline_dict[node])
+        if(node in pipeline_dict):
+            self.pipeline.append(node)
 
     def get_pipeline_node_index(self, node):
         """
         返回该node在pipeline的index
         """
-        if(node in isp.pipeline_dict and isp.pipeline_dict[node] in self.pipeline):
-            return self.pipeline.index(isp.pipeline_dict[node])
+        if(node in pipeline_dict and node in self.pipeline):
+            return self.pipeline.index(node)
 
     def compare_pipeline(self):
         """
@@ -83,6 +105,17 @@ class IspPipeline():
             self.remove_img_node_tail(1)
             self.params.need_flush = False
             return self.pipeline
+    
+    def run_node(self, node, data):
+        # 这里进行检查之后，后续就不需要检查了
+        if(data is not None and self.params is not None and data.data is not None):
+            return pipeline_dict[node](data, self.params)
+        elif(self.params is None):
+            self.params.set_error_str("输入的参数为空")
+            return None
+        elif (data.data is None):
+            self.params.set_error_str("输入的图片是空")
+            return None
 
     def run_pipeline(self):
         """
@@ -98,7 +131,7 @@ class IspPipeline():
             params = self.params
             for node in pipeline:
                 data = self.img_list[-1]
-                ret_img = isp.run_node(node, data, params)
+                ret_img = self.run_node(node, data)
                 if(ret_img is not None):
                     self.img_list.append(ret_img)
                 else:

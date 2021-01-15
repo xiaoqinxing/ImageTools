@@ -1,66 +1,14 @@
-# =============================================================
-# Import the libraries
-# =============================================================
 import numpy as np  # array operations
 import math         # basing math operations
-from matplotlib import pylab as plt
-import time         # measure runtime
 import tools.rawimageeditor.utility as utility
-import tools.rawimageeditor.debayer as debayer
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 import sys          # float precision
 from scipy import signal        # convolutions
-from scipy import interpolate   # for interpolation
 from numba import jit
 import cv2
-pipeline_dict = {
-    "raw": 0,
-    "original raw": 0,
-    "black level":  1,
-    "BLC":          1,
-    "rolloff":      2,
-    "ABF":          3,
-    "demosaic":     4,
-    "awb":          5,
-    "AWB":          5,
-    "ccm":          6,
-    "CCM":          6,
-    "gamma":        7,
-    "LTM":          8,
-    "advanced chroma enhancement":  9,
-    "ACE":                          9,
-    "wavelet denoise":              10,
-    "WNR":                          10,
-    "adaptive spatial filter":      11,
-    "ASF":                          11,
-    "bad pixel correction":         12
-}
 
-
-def run_node(node, data, params):
-    # 这里进行检查之后，后续就不需要检查了
-    if(data is not None and params is not None and data.data is not None):
-        if(node == pipeline_dict["raw"]):
-            return data
-        elif(node == pipeline_dict["BLC"]):
-            return black_level_correction(data, params)
-        elif(node == pipeline_dict["awb"]):
-            return channel_gain_white_balance(data, params)
-        elif (node == pipeline_dict["bad pixel correction"]):
-            return bad_pixel_correction(data, params)
-        elif(node == pipeline_dict["demosaic"]):
-            return debayer.demosaic(data, params)
-        elif(node == pipeline_dict["gamma"]):
-            return gamma_correction(data, params)
-        elif(node == pipeline_dict["LTM"]):
-            return ltm_correction(data, params)
-    elif(params is None):
-        params.set_error_str("输入的参数为空")
-        return None
-    elif (data.data is None):
-        params.set_error_str("输入的图片是空")
-        return None
-
+def get_src_raw_data(raw, params):
+    return raw
 
 def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     """

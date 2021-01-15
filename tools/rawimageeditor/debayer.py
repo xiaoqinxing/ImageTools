@@ -1,9 +1,5 @@
-from scipy.ndimage.filters import convolve, convolve1d
 import numpy as np
-import math
-import time
-import tools.rawimageeditor.utility
-from scipy import signal
+from scipy.ndimage.filters import convolve, convolve1d
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 
 
