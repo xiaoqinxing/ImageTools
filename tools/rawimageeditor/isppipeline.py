@@ -1,4 +1,5 @@
 import tools.rawimageeditor.isp as isp
+import tools.rawimageeditor.debayer as debayer
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from ui.customwidget import critical
 from imp import reload
@@ -17,6 +18,7 @@ class IspPipeline():
 
     def reload_isp(self):
         reload(isp)
+        reload(debayer)
         self.params.need_flush = True
         if (self.process_bar is not None):
             self.process_bar.setValue(0)

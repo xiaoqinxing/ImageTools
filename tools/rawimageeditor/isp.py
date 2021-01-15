@@ -80,17 +80,14 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     if(raw.get_color_space() == "raw"):
         black_level = resort_with_bayer_pattern(black_level, bayer_pattern)
         ret_img = RawImageInfo()
-        ret_img.create_image('after black level', raw_data.shape)
         # create new data so that original raw data do not change
-
-        # bring data in range 0 to 1
+        ret_img.create_image('after black level', raw_data.shape)
         # list[i:j:2] 数组从取i 到 j 但加入了步长 这里步长为2
         # list[::2 ] 就是取奇数位，list[1::2]就是取偶数位
         # 防止减黑电平减多了，超出阈值变成一个特别大的数
-        ret_img.data[::2, ::2] = np.clip(raw_data[::2, ::2], black_level[0], ret_img.max_data) - black_level[0]
-        ret_img.data[::2, 1::2] = np.clip(raw_data[::2, 1::2], black_level[1], ret_img.max_data) - black_level[1]
-        ret_img.data[1::2, ::2] = np.clip(raw_data[1::2, ::2], black_level[2], ret_img.max_data) - black_level[2]
-        ret_img.data[1::2, 1::2] = np.clip(raw_data[1::2, 1::2], black_level[3], ret_img.max_data) - black_level[3]
+        for blc, (y, x) in zip(black_level, [(0, 0), (0, 1), (1, 0), (1, 1)]):
+            ret_img.data[y::2, x::2] = raw_data[y::2, x::2] - blc
+        ret_img.clip_range()
         return ret_img
 
     else:
@@ -110,27 +107,22 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
 
     bayer_pattern = raw.get_bayer_pattern()
     raw_data = raw.get_raw_data()
-
+    ret_img = RawImageInfo()
+    ret_img.create_image('after awb', raw_data.shape)
     # ensure input color space and process
     if(raw.get_color_space() == "raw"):
-        ret_img = RawImageInfo()
-        ret_img.create_image('after awb', raw_data.shape)
         channel_gain = resort_with_bayer_pattern(channel_gain, bayer_pattern)
-        # multiply with the channel gains
         ret_img.data[::2, ::2] = raw_data[::2, ::2] * channel_gain[0]
         ret_img.data[::2, 1::2] = raw_data[::2, 1::2] * channel_gain[1]
         ret_img.data[1::2, ::2] = raw_data[1::2, ::2] * channel_gain[2]
         ret_img.data[1::2, 1::2] = raw_data[1::2, 1::2] * channel_gain[3]
-        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
+        ret_img.clip_range()
         return ret_img
     elif (raw.get_color_space() == "RGB"):
-        ret_img = RawImageInfo()
-        ret_img.create_image('after awb', raw_data.shape)
-        # multiply with the channel gains
         ret_img.data[:, :, 2] = raw_data[:, :, 2] * r_gain
         ret_img.data[:, :, 1] = raw_data[:, :, 1] * g_gain
         ret_img.data[:, :, 0] = raw_data[:, :, 0] * b_gain
-        ret_img.data = np.clip(ret_img.data, 0, ret_img.max_data)
+        ret_img.clip_range()
         return ret_img
     else:
         params.set_error_str("white balance correction need RAW data")
@@ -147,8 +139,8 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
     """
     neighborhood_size = params.get_size_for_bad_pixel_correction()
     if ((neighborhood_size % 2) == 0):
-        print("neighborhood_size shoud be odd number, recommended value 3")
-        return raw
+        params.set_error_str("neighborhood_size shoud be odd number, recommended value 3")
+        return None
 
     raw_data = raw.get_raw_data()
     raw_channel_data = list()
@@ -160,21 +152,14 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
         D = split_raw_data(raw_data)
 
         # number of pixels to be padded at the borders
-        #no_of_pixel_pad = math.floor(neighborhood_size / 2.)
         no_of_pixel_pad = neighborhood_size // 2
 
-        for idx in range(0, len(D)):  # perform same operation for each quarter
-
-            # display progress
-            print("bad pixel correction: Quarter " + str(idx+1) + " of 4")
-
-            img = D[idx]
+        for img in D:  # perform same operation for each quarter
             width, height = img.shape[1], img.shape[0]
-
             # pad pixels at the borders, 扩充边缘
             img = np.pad(img,
-                         (no_of_pixel_pad, no_of_pixel_pad),
-                         'reflect')  # reflect would not repeat the border value
+                        (no_of_pixel_pad, no_of_pixel_pad),
+                        'reflect')  # reflect would not repeat the border value
 
             raw_channel_data.append(bad_pixel_correction_subfunc(
                 img, no_of_pixel_pad, width, height))
@@ -222,20 +207,19 @@ def bad_pixel_correction_subfunc(img, no_of_pixel_pad, width, height):
 
 def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     """
-    function: gamma correction
-    input: raw:RawImageInfo() params:RawImageParams()
-    输入支持bayer以及RGB域
+    function: gamma correction 
+    input: raw:RawImageInfo() params:RawImageParams() 输入支持bayer以及RGB域
+
+    如何支持自定义gamma表：
+    - 自定义gamma-float类型
+        linear_table = np.linspace(0, max_input+1, int((max_input+1)/4))  # 建立映射表
+        gamma_table = (np.power(linear_table/max_input, 1/gamma_ratio) * max_input)
+        ret_img.data = np.interp(raw_data, linear_table, gamma_table)
+    - 自定义gamma-int类型
+        gamma_proc_raw(raw_data, ret_img.data, gamma_table)
+        gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
     """
     gamma_ratio = params.get_gamma_ratio()
-    max_input = raw.max_data
-    # 自定义gamma-float类型
-    # linear_table = np.linspace(0, max_input+1, int((max_input+1)/4))  # 建立映射表
-    # gamma_table = (np.power(linear_table/max_input, 1/gamma_ratio) * max_input)
-    # ret_img.data = np.interp(raw_data, linear_table, gamma_table)
-    # 自定义gamma-int类型
-    # gamma_proc_raw(raw_data, ret_img.data, gamma_table)
-    # gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
-
     raw_data = raw.get_raw_data()
 
     if (raw.get_color_space() == "raw"):
@@ -276,13 +260,12 @@ def gamma_proc_rgb(src, dst, gamma_table):
 def ltm_correction(raw: RawImageInfo, params: RawImageParams):
     """
     function: ltm correction 局部对比度增强
-    input: raw:RawImageInfo() params:RawImageParams()
-    输入支持bayer以及RGB域
+    input: raw:RawImageInfo() params:RawImageParams() 输入支持bayer以及RGB域
+
     原理: 
     1. 先获取mask, 对原图进行灰度处理，然后进行一定半径的高斯模糊，然后归一化
     如果mask的值小于0.5说明周围都是暗像素，修改gamma值，亮度上进行乘方
     """
-    max_input = raw.max_data
     dark_boost = params.get_dark_boost()/100
     bright_suppress = params.get_bright_suppress()/100
     raw_data = raw.get_raw_data()
@@ -290,7 +273,6 @@ def ltm_correction(raw: RawImageInfo, params: RawImageParams):
     if (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
         ret_img.create_image('after tone mapping correction', raw_data.shape)
-        
         gray_image = raw.convert_to_gray()
 
         # 双边滤波的保边特性，这样可以减少处理后的halo瑕疵
@@ -298,6 +280,7 @@ def ltm_correction(raw: RawImageInfo, params: RawImageParams):
 
         # 归一化
         mask = mask/raw.max_data
+
         # 亮区和暗区用不同的LUT曲线
         mask = np.where(mask < 0.5, 1 - dark_boost * (mask - 0.5) * (mask - 0.5), 1 + bright_suppress * (mask - 0.5) * (mask - 0.5))
         alpha = np.empty(raw_data.shape, dtype=np.float32)
@@ -306,16 +289,11 @@ def ltm_correction(raw: RawImageInfo, params: RawImageParams):
         alpha[:, :, 2] = mask
         # 在原来的基础上叠加一个乘方，相当于对每个区域的gamma值进行修改
         ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, alpha)
-        ret_img.data = np.clip(ret_img.data, 0, raw.max_data)
+        ret_img.clip_range()
         return ret_img
     else:
         params.set_error_str("bad pixel correction need RGB data")
         return None
-
-# =============================================================
-# class: lens_shading_correction
-#   Correct the lens shading / vignetting
-# =============================================================
 
 
 class lens_shading_correction:

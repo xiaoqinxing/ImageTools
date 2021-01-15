@@ -399,6 +399,9 @@ class RawImageInfo():
 
     def get_img_point_pattern(self, y, x):
         return self.__bayer_pattern[(y % 2) * 2 + x % 2]
+    
+    def clip_range(self):
+        self.data = np.clip(self.data, 0, self.max_data)
 
     def bayer_channel_separation(self):
         """
@@ -554,10 +557,19 @@ class RawImageInfo():
                 rect[1]+1, rect[0])] = np.mean(self.data[(rect[1]+1):rect[3]:2, rect[0]:rect[2]:2])
             awb_value[self.get_img_point_pattern(rect[1]+1, rect[0]+1)] = np.mean(
                 self.data[(rect[1] + 1): rect[3]:2, (rect[0] + 1): rect[2]:2])
-        # elif (self.__color_space == "RGB"):
-        #     awb_value['r'] = np.mean(self.data[:, :, 2])
-        #     awb_value['g'] = np.mean(self.data[:, :, 1])
-        #     awb_value['b'] = np.mean(self.data[:, :, 0])
             return (awb_value['g'] / awb_value['r'], awb_value['g'] / awb_value['b'])
         else:
             return None
+
+    def masks_CFA_Bayer(self):
+        """
+        Returns the *Bayer* CFA red, green and blue masks for given pattern.
+        """
+        pattern = self.__bayer_pattern
+
+        channels = dict((channel, np.zeros(self.__size, dtype=bool))
+                        for channel in 'rgb')
+        for channel, (y, x) in zip(pattern, [(0, 0), (0, 1), (1, 0), (1, 1)]):
+            channels[channel][y::2, x::2] = True
+
+        return tuple(channels[c] for c in 'rgb')
