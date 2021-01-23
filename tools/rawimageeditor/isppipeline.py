@@ -15,7 +15,7 @@ pipeline_dict = {
     "demosaic":     debayer.demosaic,
     "awb":          isp.channel_gain_white_balance,
     "AWB":          isp.channel_gain_white_balance,
-    "ccm":          None,
+    "ccm":          isp.color_correction,
     "CCM":          None,
     "gamma":        isp.gamma_correction,
     "LTM":          isp.ltm_correction,

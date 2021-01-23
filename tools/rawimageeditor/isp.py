@@ -181,7 +181,7 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
         ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, 1/gamma_ratio)
         return ret_img
     else:
-        params.set_error_str("bad pixel correction need RAW or RGB data")
+        params.set_error_str("gamma correction need RAW or RGB data")
         return None
 
 
@@ -240,7 +240,34 @@ def ltm_correction(raw: RawImageInfo, params: RawImageParams):
         ret_img.clip_range()
         return ret_img
     else:
-        params.set_error_str("bad pixel correction need RGB data")
+        params.set_error_str("ltm correction need RGB data")
+        return None
+
+def color_correction(raw: RawImageInfo, params: RawImageParams):
+    """
+    function: CCM颜色校正
+    input: raw:RawImageInfo() params:RawImageParams() 输入支持RGB域
+
+    原理: 
+    1. 先获取mask, 对原图进行灰度处理，然后进行一定半径的高斯模糊，然后归一化
+    如果mask的值小于0.5说明周围都是暗像素，修改gamma值，亮度上进行乘方
+    """
+    ccm = params.get_color_matrix()
+    raw_data = raw.get_raw_data()
+
+    if (raw.get_color_space() == "RGB"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after color correction', raw_data.shape)
+        R = raw_data[:, :, 0]
+        G = raw_data[:, :, 1]
+        B = raw_data[:, :, 2]
+        ret_img.data[:, :, 0] = R * ccm[0][0] + G * ccm[0][1] + B * ccm[0][2]
+        ret_img.data[:, :, 1] = R * ccm[1][0] + G * ccm[1][1] + B * ccm[1][2]
+        ret_img.data[:, :, 2] = R * ccm[2][0] + G * ccm[2][1] + B * ccm[2][2]
+        ret_img.clip_range()
+        return ret_img
+    else:
+        params.set_error_str("color correction need RGB data")
         return None
 
 
@@ -518,118 +545,6 @@ class bayer_denoising:
                 denoised_out, "rggb", bayer_pattern)
 
         return np.clip(denoised_out, clip_range[0], clip_range[1]), texture_degree_debug
-
-    def __str__(self):
-        return self.name
-
-
-# =============================================================
-# class: color_correction
-#   Correct the color in linaer domain
-# =============================================================
-class color_correction:
-    def __init__(self, data, color_matrix, color_space="srgb", illuminant="d65", name="color correction", clip_range=[0, 65535]):
-        # Inputs:
-        #   data:   linear rgb image before nonlinearity/gamma
-        #   xyz2cam: 3x3 matrix found from the camera metedata, specifically
-        #            color matrix 2 from the metadata
-        #   color_space: output color space
-        #   illuminance: the illuminant of the lighting condition
-        #   name: name of the class
-        self.data = np.float32(data)
-        self.xyz2cam = np.float32(color_matrix)
-        self.color_space = color_space
-        self.illuminant = illuminant
-        self.name = name
-        self.clip_range = clip_range
-
-    def get_rgb2xyz(self):
-        # Objective: get the rgb2xyz matrix dependin on the output color space
-        #            and the illuminant
-        # Source: http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
-        if (self.color_space == "srgb"):
-            if (self.illuminant == "d65"):
-                return [[.4124564,  .3575761,  .1804375],
-                        [.2126729,  .7151522,  .0721750],
-                        [.0193339,  .1191920,  .9503041]]
-            elif (self.illuminant == "d50"):
-                return [[.4360747,  .3850649,  .1430804],
-                        [.2225045,  .7168786,  .0606169],
-                        [.0139322,  .0971045,  .7141733]]
-            else:
-                print("for now, color_space must be d65 or d50")
-                return
-
-        elif (self.color_space == "adobe-rgb-1998"):
-            if (self.illuminant == "d65"):
-                return [[.5767309,  .1855540,  .1881852],
-                        [.2973769,  .6273491,  .0752741],
-                        [.0270343,  .0706872,  .9911085]]
-            elif (self.illuminant == "d50"):
-                return [[.6097559,  .2052401,  .1492240],
-                        [.3111242,  .6256560,  .0632197],
-                        [.0194811,  .0608902,  .7448387]]
-            else:
-                print("for now, illuminant must be d65 or d50")
-                return
-        else:
-            print("for now, color_space must be srgb or adobe-rgb-1998")
-            return
-
-    def calculate_cam2rgb(self):
-        # Objective: Calculates the color correction matrix
-
-        # matric multiplication
-        rgb2cam = np.dot(self.xyz2cam, self.get_rgb2xyz())
-
-        # make sum of each row to be 1.0, necessary to preserve white balance
-        # basically divice each value by its row wise sum
-        rgb2cam = np.divide(rgb2cam, np.reshape(np.sum(rgb2cam, 1), [3, 1]))
-
-        # - inverse the matrix to get cam2rgb.
-        # - cam2rgb should also have the characteristic that sum of each row
-        # equal to 1.0 to preserve white balance
-        # - check if rgb2cam is invertible by checking the condition of
-        # rgb2cam. If rgb2cam is singular it will give a warning and
-        # return an identiry matrix
-        if (np.linalg.cond(rgb2cam) < (1 / sys.float_info.epsilon)):
-            # this is cam2rgb / color correction matrix
-            return np.linalg.inv(rgb2cam)
-        else:
-            print("Warning! matrix not invertible.")
-            return np.identity(3, dtype=np.float32)
-
-    def apply_cmatrix(self):
-        # Objective: Apply the color correction matrix (cam2rgb)
-
-        print("----------------------------------------------------")
-        print("running color correction...")
-
-        # check if data is 3 dimensional
-        if (np.ndim(self.data) != 3):
-            print("data need to be three dimensional")
-            return
-
-        # get the color correction matrix
-        cam2rgb = self.calculate_cam2rgb()
-
-        # get width and height
-        width, height = utility.helpers(self.data).get_width_height()
-
-        # apply the matrix
-        R = self.data[:, :, 0]
-        G = self.data[:, :, 1]
-        B = self.data[:, :, 2]
-
-        color_corrected = np.empty((height, width, 3), dtype=np.float32)
-        color_corrected[:, :, 0] = R * cam2rgb[0, 0] + \
-            G * cam2rgb[0, 1] + B * cam2rgb[0, 2]
-        color_corrected[:, :, 1] = R * cam2rgb[1, 0] + \
-            G * cam2rgb[1, 1] + B * cam2rgb[1, 2]
-        color_corrected[:, :, 2] = R * cam2rgb[2, 0] + \
-            G * cam2rgb[2, 1] + B * cam2rgb[2, 2]
-
-        return np.clip(color_corrected, self.clip_range[0], self.clip_range[1])
 
     def __str__(self):
         return self.name
