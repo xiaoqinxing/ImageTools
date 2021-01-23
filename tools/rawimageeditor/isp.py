@@ -7,7 +7,7 @@ from scipy import signal        # convolutions
 from numba import jit
 import cv2
 
-def get_src_raw_data(raw, params):
+def get_src_raw_data(raw: RawImageInfo, params: RawImageParams):
     return raw
 
 def black_level_correction(raw: RawImageInfo, params: RawImageParams):

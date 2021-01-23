@@ -1,32 +1,8 @@
-import tools.rawimageeditor.isp as isp
-import tools.rawimageeditor.debayer as debayer
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from ui.customwidget import critical
+import tools.rawimageeditor.ispfunction as ispfunc
 from imp import reload
 import time
-
-pipeline_dict = {
-    "raw":          isp.get_src_raw_data,
-    "original raw": isp.get_src_raw_data,
-    "black level":  isp.black_level_correction,
-    "BLC":          isp.black_level_correction,
-    "rolloff":      None,
-    "ABF":          None,
-    "demosaic":     debayer.demosaic,
-    "awb":          isp.channel_gain_white_balance,
-    "AWB":          isp.channel_gain_white_balance,
-    "ccm":          isp.color_correction,
-    "CCM":          None,
-    "gamma":        isp.gamma_correction,
-    "LTM":          isp.ltm_correction,
-    "advanced chroma enhancement":  None,
-    "ACE":                          None,
-    "wavelet denoise":              None,
-    "WNR":                          None,
-    "adaptive spatial filter":      None,
-    "ASF":                          None,
-    "bad pixel correction":         isp.bad_pixel_correction
-}
 
 class IspPipeline():
     def __init__(self, parmas, process_bar=None, time_bar=None):
@@ -41,8 +17,9 @@ class IspPipeline():
         self.time_bar = time_bar
 
     def reload_isp(self):
-        reload(isp)
-        reload(debayer)
+        reload(ispfunc.debayer)
+        reload(ispfunc.isp)
+        reload(ispfunc)
         self.params.need_flush = True
         if (self.process_bar is not None):
             self.process_bar.setValue(0)
@@ -71,14 +48,14 @@ class IspPipeline():
         function: 为pipeline添加一个节点
         输入是pipeline_dict的字符串
         """
-        if(node in pipeline_dict):
+        if(node in ispfunc.pipeline_dict):
             self.pipeline.append(node)
 
     def get_pipeline_node_index(self, node):
         """
         返回该node在pipeline的index
         """
-        if(node in pipeline_dict and node in self.pipeline):
+        if(node in ispfunc.pipeline_dict and node in self.pipeline):
             return self.pipeline.index(node)
 
     def compare_pipeline(self):
@@ -111,7 +88,7 @@ class IspPipeline():
     def run_node(self, node, data):
         # 这里进行检查之后，后续就不需要检查了
         if(data is not None and self.params is not None and data.data is not None):
-            return pipeline_dict[node](data, self.params)
+            return ispfunc.pipeline_dict[node](data, self.params)
         elif(self.params is None):
             self.params.set_error_str("输入的参数为空")
             return None
