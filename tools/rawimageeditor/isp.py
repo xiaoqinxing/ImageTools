@@ -258,12 +258,13 @@ def color_correction(raw: RawImageInfo, params: RawImageParams):
     if (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
         ret_img.create_image('after color correction', raw)
-        R = raw_data[:, :, 0]
+        R = raw_data[:, :, 2]
         G = raw_data[:, :, 1]
-        B = raw_data[:, :, 2]
-        ret_img.data[:, :, 0] = R * ccm[0][0] + G * ccm[0][1] + B * ccm[0][2]
+        B = raw_data[:, :, 0]
+        # 注意RGB图的颜色排列是BGR
+        ret_img.data[:, :, 2] = R * ccm[0][0] + G * ccm[0][1] + B * ccm[0][2]
         ret_img.data[:, :, 1] = R * ccm[1][0] + G * ccm[1][1] + B * ccm[1][2]
-        ret_img.data[:, :, 2] = R * ccm[2][0] + G * ccm[2][1] + B * ccm[2][2]
+        ret_img.data[:, :, 0] = R * ccm[2][0] + G * ccm[2][1] + B * ccm[2][2]
         ret_img.clip_range()
         return ret_img
     else:
