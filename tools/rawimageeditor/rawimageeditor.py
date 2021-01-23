@@ -83,6 +83,16 @@ class RawImageEditor(SubWindow):
         self.ui.demosaic_type.setCurrentIndex(index)
         self.ui.dark_boost.setValue(self.img_params.get_dark_boost())
         self.ui.bright_suppress.setValue(self.img_params.get_bright_suppress())
+        ccm = self.img_params.get_color_matrix()
+        self.ui.ccm_rr.setValue(ccm[0][0])
+        self.ui.ccm_rg.setValue(ccm[0][1])
+        self.ui.ccm_rb.setValue(ccm[0][2])
+        self.ui.ccm_gr.setValue(ccm[1][0])
+        self.ui.ccm_gg.setValue(ccm[1][1])
+        self.ui.ccm_gb.setValue(ccm[1][2])
+        self.ui.ccm_br.setValue(ccm[2][0])
+        self.ui.ccm_bg.setValue(ccm[2][1])
+        self.ui.ccm_bb.setValue(ccm[2][2])
 
     def get_img_params(self):
         self.img_params.set_width(self.ui.width.value())
@@ -98,6 +108,9 @@ class RawImageEditor(SubWindow):
         self.img_params.set_demosaic_func_type(self.ui.demosaic_type.currentText())
         self.img_params.set_dark_boost(self.ui.dark_boost.value())
         self.img_params.set_bright_suppress(self.ui.bright_suppress.value())
+        self.img_params.set_color_matrix([[self.ui.ccm_rr.value(), self.ui.ccm_rg.value(), self.ui.ccm_rb.value()],
+                                        [self.ui.ccm_gr.value(), self.ui.ccm_gg.value(), self.ui.ccm_gb.value()],
+                                        [self.ui.ccm_br.value(), self.ui.ccm_bg.value(), self.ui.ccm_bb.value()]])
 
     def displayImage(self, img):
         """
