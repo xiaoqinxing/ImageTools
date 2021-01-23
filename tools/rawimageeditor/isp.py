@@ -29,7 +29,7 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
         black_level = resort_with_bayer_pattern(black_level, bayer_pattern)
         ret_img = RawImageInfo()
         # create new data so that original raw data do not change
-        ret_img.create_image('after black level', raw_data.shape)
+        ret_img.create_image('after black level', raw)
         # list[i:j:2] 数组从取i 到 j 但加入了步长 这里步长为2
         # list[::2 ] 就是取奇数位，list[1::2]就是取偶数位
         # 防止减黑电平减多了，超出阈值变成一个特别大的数
@@ -56,7 +56,7 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
     bayer_pattern = raw.get_bayer_pattern()
     raw_data = raw.get_raw_data()
     ret_img = RawImageInfo()
-    ret_img.create_image('after awb', raw_data.shape)
+    ret_img.create_image('after awb', raw)
     # ensure input color space and process
     if(raw.get_color_space() == "raw"):
         channel_gain = resort_with_bayer_pattern(channel_gain, bayer_pattern)
@@ -95,7 +95,7 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
 
     if (raw.get_color_space() == "raw"):
         ret_img = RawImageInfo()
-        ret_img.create_image('after bad pixel correction', raw_data.shape)
+        ret_img.create_image('after bad pixel correction', raw)
         # Separate out the quarter resolution images
         D = split_raw_data(raw_data)
 
@@ -172,12 +172,12 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
 
     if (raw.get_color_space() == "raw"):
         ret_img = RawImageInfo()
-        ret_img.create_image('after gamma correction', raw_data.shape)
+        ret_img.create_image('after gamma correction', raw)
         ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, 1/gamma_ratio)
         return ret_img
     elif (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
-        ret_img.create_image('after gamma correction', raw_data.shape)
+        ret_img.create_image('after gamma correction', raw)
         ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, 1/gamma_ratio)
         return ret_img
     else:
@@ -220,7 +220,7 @@ def ltm_correction(raw: RawImageInfo, params: RawImageParams):
 
     if (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
-        ret_img.create_image('after tone mapping correction', raw_data.shape)
+        ret_img.create_image('after tone mapping correction', raw)
         gray_image = raw.convert_to_gray()
 
         # 双边滤波的保边特性，这样可以减少处理后的halo瑕疵
@@ -257,7 +257,7 @@ def color_correction(raw: RawImageInfo, params: RawImageParams):
 
     if (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
-        ret_img.create_image('after color correction', raw_data.shape)
+        ret_img.create_image('after color correction', raw)
         R = raw_data[:, :, 0]
         G = raw_data[:, :, 1]
         B = raw_data[:, :, 2]

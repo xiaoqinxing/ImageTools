@@ -130,7 +130,9 @@ class RawImageParams():
         """
         设置CCM 3x3
         """
-        self.color_matrix = color_matrix
+        if(color_matrix != self.color_matrix):
+            self.color_matrix = color_matrix
+            self.need_flush = True
 
     def get_color_matrix(self):
         return self.color_matrix
@@ -286,16 +288,23 @@ class RawImageInfo():
             else:
                 self.max_data = (1 << self.__raw_bit_depth) - 1
 
-    def create_image(self, name, shape):
+    def create_image(self, name, raw, depth=1):
         """
-        function: 创建一个空图像
+        function: 根据原来的图像，创建一个空图像
         input: 图像名称和shape
         """
-        self.data = np.zeros(shape, dtype=self.dtype)
-        if(np.issubdtype(self.dtype, np.integer)):
-            self.max_data = 16383
+        if(depth > 1):
+            shape = (raw.get_height(), raw.get_width(), depth)
         else:
-            self.max_data = 4095
+            shape = raw.get_size()
+        self.data = np.zeros(shape, dtype=raw.dtype)
+        self.dtype = raw.dtype
+        self.__raw_bit_depth = raw.get_raw_bit_depth()
+        self.__bit_depth = raw.get_bit_depth()
+        if(np.issubdtype(self.dtype, np.integer)):
+            self.max_data = (1 << self.__bit_depth) - 1
+        else:
+            self.max_data = (1 << self.__raw_bit_depth) - 1
         if (len(shape) == 2):
             self.__color_space = "raw"
         elif (len(shape) == 3):

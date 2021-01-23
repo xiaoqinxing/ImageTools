@@ -12,7 +12,7 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
     1: directionally weighted gradient based interpolation algorithm
     """
     ret_img = RawImageInfo()
-    ret_img.create_image('after demosaic', (raw.get_height(), raw.get_width(), 3))
+    ret_img.create_image('after demosaic', raw, depth=3)
     if (params.get_demosaic_funct_type() == 0):
         demosaicing_CFA_Bayer_bilinear(raw, ret_img.data)
     elif (params.get_demosaic_funct_type() == 1):
