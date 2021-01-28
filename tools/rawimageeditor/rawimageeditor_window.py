@@ -242,7 +242,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 420))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -129, 360, 543))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)
@@ -257,6 +257,157 @@ class Ui_ImageEditor(object):
 
         self.groupBox_10 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_10.setObjectName(u"groupBox_10")
+        self.gridLayout_12 = QGridLayout(self.groupBox_10)
+        self.gridLayout_12.setObjectName(u"gridLayout_12")
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label_22 = QLabel(self.groupBox_10)
+        self.label_22.setObjectName(u"label_22")
+
+        self.horizontalLayout_2.addWidget(self.label_22)
+
+        self.ccm_rr = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_rr.setObjectName(u"ccm_rr")
+        self.ccm_rr.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_rr.setDecimals(3)
+        self.ccm_rr.setMinimum(-8.000000000000000)
+        self.ccm_rr.setMaximum(8.000000000000000)
+        self.ccm_rr.setValue(1.000000000000000)
+
+        self.horizontalLayout_2.addWidget(self.ccm_rr)
+
+        self.label_23 = QLabel(self.groupBox_10)
+        self.label_23.setObjectName(u"label_23")
+
+        self.horizontalLayout_2.addWidget(self.label_23)
+
+        self.ccm_rg = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_rg.setObjectName(u"ccm_rg")
+        self.ccm_rg.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_rg.setDecimals(3)
+        self.ccm_rg.setMinimum(-8.000000000000000)
+        self.ccm_rg.setMaximum(8.000000000000000)
+
+        self.horizontalLayout_2.addWidget(self.ccm_rg)
+
+        self.label_24 = QLabel(self.groupBox_10)
+        self.label_24.setObjectName(u"label_24")
+
+        self.horizontalLayout_2.addWidget(self.label_24)
+
+        self.ccm_rb = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_rb.setObjectName(u"ccm_rb")
+        self.ccm_rb.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_rb.setDecimals(3)
+        self.ccm_rb.setMinimum(-8.000000000000000)
+        self.ccm_rb.setMaximum(8.000000000000000)
+
+        self.horizontalLayout_2.addWidget(self.ccm_rb)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.label_25 = QLabel(self.groupBox_10)
+        self.label_25.setObjectName(u"label_25")
+
+        self.horizontalLayout_4.addWidget(self.label_25)
+
+        self.ccm_gr = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_gr.setObjectName(u"ccm_gr")
+        self.ccm_gr.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_gr.setDecimals(3)
+        self.ccm_gr.setMinimum(-8.000000000000000)
+        self.ccm_gr.setMaximum(8.000000000000000)
+
+        self.horizontalLayout_4.addWidget(self.ccm_gr)
+
+        self.label_26 = QLabel(self.groupBox_10)
+        self.label_26.setObjectName(u"label_26")
+
+        self.horizontalLayout_4.addWidget(self.label_26)
+
+        self.ccm_gg = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_gg.setObjectName(u"ccm_gg")
+        self.ccm_gg.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_gg.setDecimals(3)
+        self.ccm_gg.setMinimum(-8.000000000000000)
+        self.ccm_gg.setMaximum(8.000000000000000)
+        self.ccm_gg.setValue(1.000000000000000)
+
+        self.horizontalLayout_4.addWidget(self.ccm_gg)
+
+        self.label_27 = QLabel(self.groupBox_10)
+        self.label_27.setObjectName(u"label_27")
+
+        self.horizontalLayout_4.addWidget(self.label_27)
+
+        self.ccm_gb = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_gb.setObjectName(u"ccm_gb")
+        self.ccm_gb.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_gb.setDecimals(3)
+        self.ccm_gb.setMinimum(-8.000000000000000)
+        self.ccm_gb.setMaximum(8.000000000000000)
+
+        self.horizontalLayout_4.addWidget(self.ccm_gb)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
+
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.label_28 = QLabel(self.groupBox_10)
+        self.label_28.setObjectName(u"label_28")
+
+        self.horizontalLayout_5.addWidget(self.label_28)
+
+        self.ccm_br = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_br.setObjectName(u"ccm_br")
+        self.ccm_br.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_br.setDecimals(3)
+        self.ccm_br.setMinimum(-8.000000000000000)
+        self.ccm_br.setMaximum(8.000000000000000)
+
+        self.horizontalLayout_5.addWidget(self.ccm_br)
+
+        self.label_29 = QLabel(self.groupBox_10)
+        self.label_29.setObjectName(u"label_29")
+
+        self.horizontalLayout_5.addWidget(self.label_29)
+
+        self.ccm_bg = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_bg.setObjectName(u"ccm_bg")
+        self.ccm_bg.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_bg.setDecimals(3)
+        self.ccm_bg.setMinimum(-8.000000000000000)
+        self.ccm_bg.setMaximum(8.000000000000000)
+
+        self.horizontalLayout_5.addWidget(self.ccm_bg)
+
+        self.label_30 = QLabel(self.groupBox_10)
+        self.label_30.setObjectName(u"label_30")
+
+        self.horizontalLayout_5.addWidget(self.label_30)
+
+        self.ccm_bb = QDoubleSpinBox(self.groupBox_10)
+        self.ccm_bb.setObjectName(u"ccm_bb")
+        self.ccm_bb.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.ccm_bb.setDecimals(3)
+        self.ccm_bb.setMinimum(-8.000000000000000)
+        self.ccm_bb.setMaximum(8.000000000000000)
+        self.ccm_bb.setValue(1.000000000000000)
+
+        self.horizontalLayout_5.addWidget(self.ccm_bb)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
+
+
+        self.gridLayout_12.addLayout(self.verticalLayout_3, 1, 4, 1, 1)
+
 
         self.gridLayout_7.addWidget(self.groupBox_10, 5, 0, 1, 1)
 
@@ -543,6 +694,15 @@ class Ui_ImageEditor(object):
         self.groupBox_13.setTitle(QCoreApplication.translate("ImageEditor", u"advanced chroma enhancement", None))
         self.groupBox_14.setTitle(QCoreApplication.translate("ImageEditor", u"wavelet denoise", None))
         self.groupBox_10.setTitle(QCoreApplication.translate("ImageEditor", u"ccm", None))
+        self.label_22.setText(QCoreApplication.translate("ImageEditor", u"RR", None))
+        self.label_23.setText(QCoreApplication.translate("ImageEditor", u"RG", None))
+        self.label_24.setText(QCoreApplication.translate("ImageEditor", u"RB", None))
+        self.label_25.setText(QCoreApplication.translate("ImageEditor", u"GR", None))
+        self.label_26.setText(QCoreApplication.translate("ImageEditor", u"GG", None))
+        self.label_27.setText(QCoreApplication.translate("ImageEditor", u"GB", None))
+        self.label_28.setText(QCoreApplication.translate("ImageEditor", u"BR", None))
+        self.label_29.setText(QCoreApplication.translate("ImageEditor", u"BG", None))
+        self.label_30.setText(QCoreApplication.translate("ImageEditor", u"BB", None))
         self.groupBox_9.setTitle(QCoreApplication.translate("ImageEditor", u"awb", None))
         self.label_12.setText(QCoreApplication.translate("ImageEditor", u"B", None))
         self.label_5.setText(QCoreApplication.translate("ImageEditor", u"R", None))
