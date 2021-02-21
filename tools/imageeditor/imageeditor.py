@@ -4,7 +4,7 @@ from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Slot
 from tools.imageeditor.imageeditor_window import Ui_ImageEditor
 from ui.customwidget import ImageView, MatplotlibWidget, SubWindow, critical
-from tools.imageeditor.imageeffect import ImageEffect, BlurType
+from tools.imageeditor.imageeffect import ImageEffect, BlurType, WaterMarkParams
 from tools.imageeditor.histgramview import Ui_HistgramView
 from tools.imageeditor.watermarkview import Ui_WaterMarkView
 import numpy as np
@@ -60,9 +60,10 @@ class ImageEditor(SubWindow):
             self.watermark_ui.setupUi(self.watermark_win)
             self.watermark_win.show()
             self.watermark_ui.open_watermark.clicked.connect(self.open_watermark_path)
-            self.overlap_weight = 0
-            self.watermark_ui.change_transparent.valueChanged.connect(self.change_transparent_func)
-            self.watermark_ui.change_watermark_size.valueChanged.connect(self.change_size_func)
+            self.watermark_ui.change_transparent.valueChanged.connect(self.set_watermark_params)
+            self.watermark_ui.change_watermark_size.valueChanged.connect(self.set_watermark_params)
+            self.watermark_ui.change_watermark_th.valueChanged.connect(self.set_watermark_params)
+            self.watermark_ui.change_watermark_type.currentIndexChanged.connect(self.set_watermark_params)
         else:
             critical('打开原图片失败，请先导入图片')
     
@@ -73,21 +74,17 @@ class ImageEditor(SubWindow):
         if (self.watermark_path != ''):
             self.watermark_ui.watermark_path.setText(self.watermark_path)
             self.img.set_watermark_img(self.watermark_path)
-            self.img.set_watermark_transparent(0)
-            self.displayImage(self.img.get_dst_image())
+            self.set_watermark_params()
         else:
             critical('打开水印图片失败')
-
-    def change_transparent_func(self):
-        transparent = self.watermark_ui.change_transparent.value()
-        self.overlap_weight = transparent/100
-        self.img.set_watermark_transparent(self.overlap_weight)
-        self.displayImage(self.img.get_dst_image())
     
-    def change_size_func(self):
-        size = self.watermark_ui.change_watermark_size.value()
-        self.img.set_watermark_size(size)
-        self.img.set_watermark_transparent(self.overlap_weight)
+    def set_watermark_params(self):
+        watermark_params = WaterMarkParams()
+        watermark_params.transparent = self.watermark_ui.change_transparent.value()
+        watermark_params.size = self.watermark_ui.change_watermark_size.value()
+        watermark_params.threshold = self.watermark_ui.change_watermark_th.value()
+        watermark_params.watermark_type = self.watermark_ui.change_watermark_type.currentIndex()
+        self.img.set_watermark_show(watermark_params)
         self.displayImage(self.img.get_dst_image())
 
     def boxblur_image(self):

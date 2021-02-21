@@ -8,3 +8,4 @@ settings.json
 *.jpg
 config/
 *.exe
+*.raw

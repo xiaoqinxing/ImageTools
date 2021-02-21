@@ -66,7 +66,9 @@ class Ui_WaterMarkView(object):
 
         self.change_watermark_size = QSlider(self.groupBox)
         self.change_watermark_size.setObjectName(u"change_watermark_size")
-        self.change_watermark_size.setValue(50)
+        self.change_watermark_size.setMinimum(1)
+        self.change_watermark_size.setMaximum(1000)
+        self.change_watermark_size.setValue(100)
         self.change_watermark_size.setOrientation(Qt.Horizontal)
 
         self.gridLayout_8.addWidget(self.change_watermark_size, 3, 1, 1, 1)
@@ -79,13 +81,13 @@ class Ui_WaterMarkView(object):
 
         self.gridLayout_8.addWidget(self.change_watermark_th, 2, 1, 1, 1)
 
-        self.comboBox = QComboBox(self.groupBox)
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.setObjectName(u"comboBox")
+        self.change_watermark_type = QComboBox(self.groupBox)
+        self.change_watermark_type.addItem("")
+        self.change_watermark_type.addItem("")
+        self.change_watermark_type.addItem("")
+        self.change_watermark_type.setObjectName(u"change_watermark_type")
 
-        self.gridLayout_8.addWidget(self.comboBox, 1, 1, 1, 1)
+        self.gridLayout_8.addWidget(self.change_watermark_type, 1, 1, 1, 1)
 
         self.label_18 = QLabel(self.groupBox)
         self.label_18.setObjectName(u"label_18")
@@ -122,9 +124,9 @@ class Ui_WaterMarkView(object):
         self.label.setText(QCoreApplication.translate("WaterMarkView", u"\u6c34\u5370\u7c7b\u578b", None))
         self.label_2.setText(QCoreApplication.translate("WaterMarkView", u"\u900f\u660e\u7a0b\u5ea6", None))
         self.label_19.setText(QCoreApplication.translate("WaterMarkView", u"\u8c03\u6574\u6c34\u5370\u5927\u5c0f", None))
-        self.comboBox.setItemText(0, QCoreApplication.translate("WaterMarkView", u"\u7a7a\u57df\u9690\u5f62\u6c34\u5370", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("WaterMarkView", u"\u65f6\u57df\u9690\u5f62\u6c34\u5370", None))
-        self.comboBox.setItemText(2, QCoreApplication.translate("WaterMarkView", u"\u534a\u900f\u660e\u6c34\u5370", None))
+        self.change_watermark_type.setItemText(0, QCoreApplication.translate("WaterMarkView", u"\u534a\u900f\u660e\u6c34\u5370", None))
+        self.change_watermark_type.setItemText(1, QCoreApplication.translate("WaterMarkView", u"\u7a7a\u57df\u9690\u5f62\u6c34\u5370", None))
+        self.change_watermark_type.setItemText(2, QCoreApplication.translate("WaterMarkView", u"\u9891\u57df\u9690\u5f62\u6c34\u5370", None))
 
         self.label_18.setText(QCoreApplication.translate("WaterMarkView", u"\u4e8c\u503c\u5316", None))
         self.open_watermark.setText(QCoreApplication.translate("WaterMarkView", u"\u5bfc\u5165\u6c34\u5370", None))

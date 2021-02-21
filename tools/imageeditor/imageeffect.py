@@ -4,10 +4,33 @@ import numpy as np
 from ui.customwidget import critical
 
 
+class WaterMarkType():
+    """
+    水印的类型
+    """
+    NoWaterMark = -1
+    TransparentWaterMark = 0
+    SpaceWaterMark = 1
+    FrequencyWaterMark = 2
+
+
+class WaterMarkParams():
+    """
+    水印的参数
+    transparent：透明度 范围：0-100
+    watermark_type：水印的类型 范围：WaterMarkType
+    threshold：水印二值化的阈值 范围：0-255
+    size：水印的缩放大小 范围：0-1000
+    """
+    transparent = 0
+    watermark_type = WaterMarkType.NoWaterMark
+    threshold = 50
+    size = 100
+
+
 class ImageEffect(object):
     def __init__(self):
         self.is_load_image = False
-        self.is_load_watermark = False
 
     def load_image(self, filename):
         # 防止有中文
@@ -135,33 +158,39 @@ class ImageEffect(object):
         if (self.watermark_img is not None):
             self.watermark_img_height = self.watermark_img.shape[0]
             self.watermark_img_width = self.watermark_img.shape[1]
-            self.is_load_watermark = True
-            self.set_watermark_size(100)
         else:
             critical('水印图片无法打开')
 
-    def set_watermark_size(self, value):
+    def set_watermark_show(self, params: WaterMarkParams):
         """
-        设置水印大小，value范围在1-999之间
+        func: 设置水印的显示
+        先进行水印的缩放，如果是空域水印，就进行转换成灰度图二值化，如果是半透明水印，就进行透明化处理，最后和原图进行融合
         """
-        if(self.is_load_watermark == True and value <= 1000 and value > 0):
-            self.watermark_img_resized = cv2.resize(self.watermark_img, (int(
-                self.watermark_img_width*value/100), int(self.watermark_img_height*value/100)), interpolation=cv2.INTER_AREA)
-            self.watermark_img_cliped = np.zeros(self.srcImage.shape, dtype=np.uint8)
-            self.watermark_img_cliped[:,:,:] = 255
-            width = min(self.watermark_img_resized.shape[1],self.width)
-            height = min(self.watermark_img_resized.shape[0],self.height)
+        if(params.watermark_type != WaterMarkType.NoWaterMark):
+            watermark_img_tmp = self.watermark_img.copy()
+            self.dstImage = self.srcImage.copy()
+            if(params.size <= 1000 and params.size > 0):
+                watermark_img_tmp = cv2.resize(watermark_img_tmp, (int(
+                    self.watermark_img_width*params.size/100), int(self.watermark_img_height*params.size/100)), interpolation=cv2.INTER_AREA)
+            if(params.watermark_type == WaterMarkType.SpaceWaterMark and params.threshold <= 255 and params.threshold >= 0):
+                watermark_img_tmp = cv2.cvtColor(
+                    watermark_img_tmp, cv2.COLOR_BGR2GRAY)
+                watermark_img_tmp = cv2.threshold(
+                    watermark_img_tmp, params.threshold, 255, cv2.THRESH_BINARY)[1]
+                watermark_img_tmp = cv2.cvtColor(
+                    watermark_img_tmp, cv2.COLOR_GRAY2BGR)
+            width = min(watermark_img_tmp.shape[1], self.width)
+            height = min(watermark_img_tmp.shape[0], self.height)
             w_start = int((self.width - width)/2)
             h_start = int((self.height - height)/2)
-            self.watermark_img_cliped[h_start:height+h_start, w_start:width+w_start] = self.watermark_img_resized[:height, :width]
-
-    def set_watermark_transparent(self, value):
-        """
-        设置水印透明度，value范围在0-1
-        """
-        if(self.is_load_watermark == True):
-            self.dstImage = cv2.addWeighted(
-                self.watermark_img_cliped, 1-value, self.srcImage, value, 0)
+            clip_img = self.dstImage[h_start:height +
+                                     h_start, w_start:width+w_start]
+            if(params.watermark_type == WaterMarkType.TransparentWaterMark and params.transparent <= 100 and params.transparent >= 0):
+                self.dstImage[h_start:height+h_start, w_start:width+w_start] = cv2.addWeighted(
+                    watermark_img_tmp[:height, :width], 1-params.transparent/100, clip_img, params.transparent/100, 0)
+            else:
+                self.dstImage[h_start:height+h_start, w_start:width +
+                              w_start] = watermark_img_tmp[:height, :width]
 
 
 class BlurType():

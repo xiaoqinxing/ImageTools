@@ -60,6 +60,9 @@
         </item>
         <item row="4" column="1">
          <widget class="QSlider" name="change_transparent">
+          <property name="maximum">
+           <number>100</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -109,7 +112,12 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QComboBox" name="comboBox">
+         <widget class="QComboBox" name="change_watermark_type">
+          <item>
+           <property name="text">
+            <string>半透明水印</string>
+           </property>
+          </item>
           <item>
            <property name="text">
             <string>空域隐形水印</string>
@@ -117,12 +125,7 @@
           </item>
           <item>
            <property name="text">
-            <string>时域隐形水印</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>半透明水印</string>
+            <string>频域隐形水印</string>
            </property>
           </item>
          </widget>
