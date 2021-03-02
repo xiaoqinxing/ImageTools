@@ -64,6 +64,8 @@ class ImageEditor(SubWindow):
             self.watermark_ui.change_watermark_size.valueChanged.connect(self.set_watermark_params)
             self.watermark_ui.change_watermark_th.valueChanged.connect(self.set_watermark_params)
             self.watermark_ui.change_watermark_type.currentIndexChanged.connect(self.set_watermark_params)
+            self.watermark_ui.generate.clicked.connect(self.generate_watermark)
+            self.watermark_ui.analysis.clicked.connect(self.analysis_space_watermark)
         else:
             critical('打开原图片失败，请先导入图片')
     
@@ -78,15 +80,26 @@ class ImageEditor(SubWindow):
         else:
             critical('打开水印图片失败')
     
-    def set_watermark_params(self):
+    def get_watermark_parmas(self):
         watermark_params = WaterMarkParams()
         watermark_params.transparent = self.watermark_ui.change_transparent.value()
         watermark_params.size = self.watermark_ui.change_watermark_size.value()
         watermark_params.threshold = self.watermark_ui.change_watermark_th.value()
         watermark_params.watermark_type = self.watermark_ui.change_watermark_type.currentIndex()
-        self.img.set_watermark_show(watermark_params)
+        return watermark_params
+    
+    def set_watermark_params(self):
+        self.img.set_watermark_show(self.get_watermark_parmas())
         self.displayImage(self.img.get_dst_image())
-
+    
+    def generate_watermark(self):
+        self.img.generate_watermark(self.get_watermark_parmas())
+        self.displayImage(self.img.get_dst_image())
+    
+    def analysis_space_watermark(self):
+        self.img.analysis_space_watermark()
+        self.displayImage(self.img.get_dst_image())
+        
     def boxblur_image(self):
         if(self.img.is_load_image == True):
             self.img.blur(BlurType.BoxBlur)

@@ -26,6 +26,7 @@ class WaterMarkParams():
     watermark_type = WaterMarkType.NoWaterMark
     threshold = 50
     size = 100
+    filename = ""
 
 
 class ImageEffect(object):
@@ -192,6 +193,24 @@ class ImageEffect(object):
                 self.dstImage[h_start:height+h_start, w_start:width +
                               w_start] = watermark_img_tmp[:height, :width]
 
+    def generate_watermark(self, params: WaterMarkParams):
+        self.nowImage = self.dstImage
+        if(params.watermark_type == WaterMarkType.SpaceWaterMark):
+            watermark_img_tmp = self.watermark_img.copy()
+            self.dstImage = self.srcImage.copy()
+            watermark_img_tmp = cv2.cvtColor(watermark_img_tmp, cv2.COLOR_BGR2GRAY)
+            watermark_img_tmp = cv2.threshold(
+                    watermark_img_tmp, params.threshold, 1, cv2.THRESH_BINARY)[1]
+            width = min(watermark_img_tmp.shape[1], self.width)
+            height = min(watermark_img_tmp.shape[0], self.height)
+            w_start = int((self.width - width)/2)
+            h_start = int((self.height - height)/2)
+            self.dstImage[h_start:height+h_start, w_start:width+w_start, 0] &= 254
+            self.dstImage[h_start:height+h_start, w_start:width+w_start, 0] |= watermark_img_tmp[:height, :width]
+    
+    def analysis_space_watermark(self):
+        tmp = cv2.threshold(self.nowImage[:,:,0], 0, 255, cv2.THRESH_BINARY)[1]
+        self.dstImage = cv2.cvtColor(tmp, cv2.COLOR_GRAY2BGR)
 
 class BlurType():
     BoxBlur = 0

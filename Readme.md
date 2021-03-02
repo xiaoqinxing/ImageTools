@@ -165,4 +165,4 @@
 4. 修改pyside2-rcc的资源配置： `pyside2-rcc -o ./resource_rc.py`
 
 ### 3. 打包方法
-运行buildexe.bat, 注意需要安装打包库yinstaller和打包软件inno setup compiler
+运行buildexe.bat, 注意需要安装打包库pyinstaller和打包软件inno setup compiler

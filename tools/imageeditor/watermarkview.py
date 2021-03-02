@@ -50,6 +50,7 @@ class Ui_WaterMarkView(object):
 
         self.change_transparent = QSlider(self.groupBox)
         self.change_transparent.setObjectName(u"change_transparent")
+        self.change_transparent.setMaximum(100)
         self.change_transparent.setOrientation(Qt.Horizontal)
 
         self.gridLayout_8.addWidget(self.change_transparent, 4, 1, 1, 1)
@@ -67,7 +68,7 @@ class Ui_WaterMarkView(object):
         self.change_watermark_size = QSlider(self.groupBox)
         self.change_watermark_size.setObjectName(u"change_watermark_size")
         self.change_watermark_size.setMinimum(1)
-        self.change_watermark_size.setMaximum(1000)
+        self.change_watermark_size.setMaximum(500)
         self.change_watermark_size.setValue(100)
         self.change_watermark_size.setOrientation(Qt.Horizontal)
 
@@ -119,7 +120,7 @@ class Ui_WaterMarkView(object):
     def retranslateUi(self, WaterMarkView):
         WaterMarkView.setWindowTitle(QCoreApplication.translate("WaterMarkView", u"\u6c34\u5370\u5236\u4f5c\u5de5\u5177", None))
         self.groupBox.setTitle(QCoreApplication.translate("WaterMarkView", u"\u5236\u4f5c\u6c34\u5370", None))
-        self.analysis.setText(QCoreApplication.translate("WaterMarkView", u"\u89e3\u6790\u5e26\u6c34\u5370\u7684\u56fe\u7247", None))
+        self.analysis.setText(QCoreApplication.translate("WaterMarkView", u"\u89e3\u6790\u7a7a\u57df\u9690\u5f62\u6c34\u5370", None))
         self.generate.setText(QCoreApplication.translate("WaterMarkView", u"\u5236\u4f5c\u5e26\u6c34\u5370\u7684\u56fe\u7247", None))
         self.label.setText(QCoreApplication.translate("WaterMarkView", u"\u6c34\u5370\u7c7b\u578b", None))
         self.label_2.setText(QCoreApplication.translate("WaterMarkView", u"\u900f\u660e\u7a0b\u5ea6", None))
