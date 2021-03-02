@@ -1,0 +1,7 @@
+pyside2
+matplotlib<=3.2
+numpy
+opencv-python
+scipy
+numba
+openpyxl
