@@ -4,6 +4,7 @@ import tools.rawimageeditor.ispfunction as ispfunc
 from imp import reload
 import time
 from PySide2.QtCore import Signal, QThread
+from threading import Lock
 
 class IspPipeline():
     def __init__(self, parmas, process_bar=None):
@@ -15,7 +16,8 @@ class IspPipeline():
         # img_list长度比pipeline长1
         self.img_list = [RawImageInfo()]
         self.process_bar = process_bar
-        self.ispProcthread = ISPProc(self.params, self.img_list)
+        self.imglist_mutex = Lock()
+        self.ispProcthread = ISPProc(self.params, self.img_list, self.imglist_mutex)
 
     def reload_isp(self):
         reload(ispfunc.debayer)
@@ -38,7 +40,9 @@ class IspPipeline():
         重新开始一个pipeline，把以前的图像清除
         """
         if(len(self.img_list) > 1):
+            self.imglist_mutex.acquire()
             self.img_list = [RawImageInfo()]
+            self.imglist_mutex.release()
             self.old_pipeline = []
             self.pipeline = []
             return True
@@ -104,31 +108,36 @@ class IspPipeline():
         """
         function: 去除>=index之后的node
         """
+        self.imglist_mutex.acquire()
         while index < len(self.img_list):
             self.img_list.pop()
+        self.imglist_mutex.release()
 
     def get_image(self, index):
         """
         获取pipeline中的一幅图像
         如果输入-1，则返回最后一幅图像
         """
+        ret_img = None
+        self.imglist_mutex.acquire()
         if (index < len(self.img_list) and index >= 0):
-            return self.img_list[index]
+            ret_img = self.img_list[index]
         elif (index < 0):
-            return self.img_list[len(self.pipeline)+1 + index]
-        else:
-            return None
+            ret_img = self.img_list[len(self.pipeline)+1 + index]
+        self.imglist_mutex.release()
+        return ret_img
 
 class ISPProc(QThread):
     doneCB = Signal() # 自定义信号，其中 object 为信号承载数据的类型
     processRateCB = Signal(int)
     costTimeCB = Signal(str)
 
-    def __init__(self, params, img_list, parent=None):
+    def __init__(self, params, img_list, mutex:Lock, parent=None):
         super(ISPProc, self).__init__(parent)		
         self.params = params
         self.img_list = img_list
         self.pipeline = None
+        self.mutex = mutex
     
     def run_node(self, node, data):
         # 这里进行检查之后，后续就不需要检查了
@@ -150,6 +159,7 @@ class ISPProc(QThread):
             length = len(self.pipeline)
             i = 1
             params = self.params
+            self.mutex.acquire()
             start_time = time.time()
             for node in self.pipeline:
                 data = self.img_list[-1]
@@ -162,6 +172,7 @@ class ISPProc(QThread):
                 self.processRateCB.emit(i / length * 100)
                 i += 1
             stop_time = time.time()
+            self.mutex.release()
             self.costTimeCB.emit('总耗时:{:.3f}s'.format(stop_time-start_time))
             self.doneCB.emit()
         else:
