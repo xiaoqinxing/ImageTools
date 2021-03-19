@@ -3,9 +3,10 @@ from ui.customwidget import critical
 import tools.rawimageeditor.ispfunction as ispfunc
 from imp import reload
 import time
+from PySide2.QtCore import Signal, QThread
 
 class IspPipeline():
-    def __init__(self, parmas, process_bar=None, time_bar=None):
+    def __init__(self, parmas, process_bar=None):
         self.old_pipeline = []
         self.pipeline = []
         # self.data = RawImageInfo()
@@ -14,7 +15,7 @@ class IspPipeline():
         # img_list长度比pipeline长1
         self.img_list = [RawImageInfo()]
         self.process_bar = process_bar
-        self.time_bar = time_bar
+        self.ispProcthread = ISPProc(self.params, self.img_list)
 
     def reload_isp(self):
         reload(ispfunc.debayer)
@@ -84,48 +85,14 @@ class IspPipeline():
             self.remove_img_node_tail(1)
             self.params.need_flush = False
             return self.pipeline
-    
-    def run_node(self, node, data):
-        # 这里进行检查之后，后续就不需要检查了
-        if(data is not None and self.params is not None and data.data is not None):
-            return ispfunc.pipeline_dict[node](data, self.params)
-        elif(self.params is None):
-            self.params.set_error_str("输入的参数为空")
-            return None
-        elif (data.data is None):
-            self.params.set_error_str("输入的图片是空")
-            return None
 
     def run_pipeline(self):
         """
-        运行pipeline，process_bar是用于显示进度的process bar
+        运行pipeline，process_bar是用于显示进度的process bar, callback是运行完的回调函数
         """
         pipeline = self.check_pipeline()
-        if (self.process_bar is not None):
-            self.process_bar.setValue(0)
-
-        if (pipeline is not None):
-            length = len(pipeline)
-            i = 1
-            params = self.params
-            start_time = time.time()
-            for node in pipeline:
-                data = self.img_list[-1]
-                ret_img = self.run_node(node, data)
-                if(ret_img is not None):
-                    self.img_list.append(ret_img)
-                else:
-                    critical(params.get_error_str())
-                    break
-                if (self.process_bar is not None):
-                    self.process_bar.setValue(i / length * 100)
-                    i += 1
-            stop_time = time.time()
-            if(self.time_bar != None):
-                self.time_bar.setText('总耗时:{:.3f}s'.format(stop_time-start_time))
-        else:
-            if (self.process_bar is not None):
-                self.process_bar.setValue(100)
+        self.ispProcthread.set_pipeline(pipeline)
+        self.ispProcthread.start()
 
     def get_pipeline(self):
         return self.pipeline
@@ -151,3 +118,51 @@ class IspPipeline():
             return self.img_list[len(self.pipeline)+1 + index]
         else:
             return None
+
+class ISPProc(QThread):
+    doneCB = Signal() # 自定义信号，其中 object 为信号承载数据的类型
+    processRateCB = Signal(int)
+    costTimeCB = Signal(str)
+
+    def __init__(self, params, img_list, parent=None):
+        super(ISPProc, self).__init__(parent)		
+        self.params = params
+        self.img_list = img_list
+        self.pipeline = None
+    
+    def run_node(self, node, data):
+        # 这里进行检查之后，后续就不需要检查了
+        if(data is not None and self.params is not None and data.data is not None):
+            return ispfunc.pipeline_dict[node](data, self.params)
+        elif(self.params is None):
+            self.params.set_error_str("输入的参数为空")
+            return None
+        elif (data.data is None):
+            self.params.set_error_str("输入的图片是空")
+            return None
+    
+    def set_pipeline(self, pipeline):
+        self.pipeline = pipeline
+    
+    def run(self):
+        self.processRateCB.emit(0)
+        if (self.pipeline is not None):
+            length = len(self.pipeline)
+            i = 1
+            params = self.params
+            start_time = time.time()
+            for node in self.pipeline:
+                data = self.img_list[-1]
+                ret_img = self.run_node(node, data)
+                if(ret_img is not None):
+                    self.img_list.append(ret_img)
+                else:
+                    critical(params.get_error_str())
+                    break
+                self.processRateCB.emit(i / length * 100)
+                i += 1
+            stop_time = time.time()
+            self.costTimeCB.emit('总耗时:{:.3f}s'.format(stop_time-start_time))
+            self.doneCB.emit()
+        else:
+            self.processRateCB.emit(100)

@@ -40,12 +40,24 @@ class RawImageEditor(SubWindow):
         self.ui.save_image.clicked.connect(self.save_now_image)
 
         self.img_params = self.load_params(RawImageParams())
-        self.img_pipeline = IspPipeline(self.img_params, process_bar=self.progress_bar, time_bar=self.time_bar)
+        self.img_pipeline = IspPipeline(self.img_params, process_bar=self.progress_bar)
         self.img = self.img_pipeline.get_image(0)
         self.img_index = 0
         self.point_data = 0
         self.scale_ratio = 100
         self.ui.reload.clicked.connect(self.img_pipeline.reload_isp)
+        self.img_pipeline.ispProcthread.doneCB.connect(self.update_img)
+        self.img_pipeline.ispProcthread.processRateCB.connect(self.update_process_bar)
+        self.img_pipeline.ispProcthread.costTimeCB.connect(self.update_time_bar)
+    
+    def update_img(self):
+        self.displayImage(self.img_pipeline.get_image(-1))
+    
+    def update_process_bar(self, value):
+        self.progress_bar.setValue(value)
+    
+    def update_time_bar(self, value):
+        self.time_bar.setText(value)
 
     def show(self):
         super().show()
@@ -151,9 +163,7 @@ class RawImageEditor(SubWindow):
                 self.img_pipeline.add_pipeline_node(
                     self.ui.pipeline.item(i).data(0))
         self.img_pipeline.run_pipeline()
-        self.displayImage(self.img_pipeline.get_image(-1))
         print(self.img_pipeline.get_pipeline())
-        print(self.img_pipeline.compare_pipeline())
 
     def update_img_index(self, item):
         if (self.ui.pipeline.item(item.row()).checkState() == Qt.Checked):
