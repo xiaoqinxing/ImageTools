@@ -37,7 +37,7 @@ class IspPipeline():
 
     def pipeline_reset(self):
         """
-        重新开始一个pipeline，把以前的图像清除
+        func: 重新开始一个pipeline，把以前的图像清除
         """
         if(len(self.img_list) > 1):
             self.imglist_mutex.acquire()
@@ -50,7 +50,7 @@ class IspPipeline():
 
     def add_pipeline_node(self, node):
         """
-        function: 为pipeline添加一个节点
+        func: 为pipeline添加一个节点
         输入是pipeline_dict的字符串
         """
         if(node in ispfunc.pipeline_dict):
@@ -58,14 +58,16 @@ class IspPipeline():
 
     def get_pipeline_node_index(self, node):
         """
-        返回该node在pipeline的index
+        func: 返回该node在pipeline的index, 如果不存在，就返回-1
         """
         if(node in ispfunc.pipeline_dict and node in self.pipeline):
             return self.pipeline.index(node)
+        else:
+            return -1
 
     def compare_pipeline(self):
         """
-        function: 对比新老pipeline的区别
+        func: 对比新老pipeline的区别
         如果不同的话，会返回一个index，表示从第index个值开始不一样的,注意这个index可能不存在于老的pipeline中
         如果相同的话，会返回0
         """
@@ -76,7 +78,7 @@ class IspPipeline():
 
     def check_pipeline(self):
         """
-        检查pipeline，如果有不同的，修改img_list
+        func: 检查pipeline，如果有不同的，修改img_list
         ret: 如果pipeline不需要修改，就返回None，如果需要修改，就返回需要修改的pipeline
         """
         if(self.params.need_flush == False):
@@ -92,21 +94,15 @@ class IspPipeline():
 
     def run_pipeline(self):
         """
-        运行pipeline，process_bar是用于显示进度的process bar, callback是运行完的回调函数
+        func: 运行pipeline，process_bar是用于显示进度的process bar, callback是运行完的回调函数
         """
         pipeline = self.check_pipeline()
         self.ispProcthread.set_pipeline(pipeline)
         self.ispProcthread.start()
 
-    def get_pipeline(self):
-        return self.pipeline
-
-    def update_pipeline(self, pipeline):
-        self.pipeline = pipeline
-
     def remove_img_node_tail(self, index):
         """
-        function: 去除>=index之后的node
+        func: 去除>=index之后的node
         """
         self.imglist_mutex.acquire()
         while index < len(self.img_list):
@@ -115,7 +111,7 @@ class IspPipeline():
 
     def get_image(self, index):
         """
-        获取pipeline中的一幅图像
+        func: 获取pipeline中的一幅图像
         如果输入-1，则返回最后一幅图像
         """
         ret_img = None

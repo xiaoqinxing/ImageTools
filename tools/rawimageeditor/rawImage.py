@@ -40,6 +40,63 @@ class RawImageParams():
         # 自动刷新pipeline的参数，防止设置参数没有生效
         self.need_flush = False
         self.filename = ''
+    
+    def set_img_params_ui(self, ui):
+        """
+        设置参数界面的显示
+        """
+        ui.width.setValue(self.get_width())
+        ui.height.setValue(self.get_height())
+        ui.bit.setValue(self.get_bit_depth())
+        awb_gain = self.get_awb_gain()
+        ui.awb_r.setValue(awb_gain[0])
+        ui.awb_g.setValue(awb_gain[1])
+        ui.awb_b.setValue(awb_gain[2])
+        index = ui.pattern.findText(self.get_pattern().upper())
+        ui.pattern.setCurrentIndex(index)
+        index = ui.raw_format.findText(self.get_raw_format())
+        ui.raw_format.setCurrentIndex(index)
+        blc_level = self.get_black_level()
+        ui.blc_r.setValue(blc_level[0])
+        ui.blc_gr.setValue(blc_level[1])
+        ui.blc_gb.setValue(blc_level[2])
+        ui.blc_b.setValue(blc_level[3])
+        ui.gamma_ratio.setValue(self.get_gamma_ratio())
+        index = ui.demosaic_type.findText(self.get_demosaic_func_string())
+        ui.demosaic_type.setCurrentIndex(index)
+        ui.dark_boost.setValue(self.get_dark_boost())
+        ui.bright_suppress.setValue(self.get_bright_suppress())
+        ccm = self.get_color_matrix()
+        ui.ccm_rr.setValue(ccm[0][0])
+        ui.ccm_rg.setValue(ccm[0][1])
+        ui.ccm_rb.setValue(ccm[0][2])
+        ui.ccm_gr.setValue(ccm[1][0])
+        ui.ccm_gg.setValue(ccm[1][1])
+        ui.ccm_gb.setValue(ccm[1][2])
+        ui.ccm_br.setValue(ccm[2][0])
+        ui.ccm_bg.setValue(ccm[2][1])
+        ui.ccm_bb.setValue(ccm[2][2])
+
+    def get_img_params(self, ui):
+        """
+        func: 获取界面参数
+        """
+        self.set_width(ui.width.value())
+        self.set_height(ui.height.value())
+        self.set_bit_depth(ui.bit.value())
+        self.set_raw_format(ui.raw_format.currentText())
+        self.set_pattern(ui.pattern.currentText().lower())
+        self.set_black_level([ui.blc_r.value(
+        ), ui.blc_gr.value(), ui.blc_gb.value(), ui.blc_b.value()])
+        self.set_awb_gain(
+            (ui.awb_r.value(), ui.awb_g.value(), ui.awb_b.value()))
+        self.set_gamma(ui.gamma_ratio.value())
+        self.set_demosaic_func_type(ui.demosaic_type.currentText())
+        self.set_dark_boost(ui.dark_boost.value())
+        self.set_bright_suppress(ui.bright_suppress.value())
+        self.set_color_matrix([[ui.ccm_rr.value(), ui.ccm_rg.value(), ui.ccm_rb.value()],
+                                        [ui.ccm_gr.value(), ui.ccm_gg.value(), ui.ccm_gb.value()],
+                                        [ui.ccm_br.value(), ui.ccm_bg.value(), ui.ccm_bb.value()]])
 
     def set_demosaic_func_type(self, demosaic_type):
         """

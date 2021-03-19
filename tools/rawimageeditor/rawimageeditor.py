@@ -10,6 +10,7 @@ from tools.rawimageeditor.rawhistgramview import Ui_HistgramView
 import numpy as np
 import os
 
+
 class RawImageEditor(SubWindow):
     def __init__(self, name='RawImageEditor', parent=None):
         super().__init__(name, parent, Ui_ImageEditor())
@@ -26,6 +27,14 @@ class RawImageEditor(SubWindow):
 
         self.scene = QGraphicsScene()
         self.imageview = ImageView(self.scene, parent)
+        self.img_params = RawImageParams()
+        self.img_params = self.load_params(RawImageParams())
+        self.img_pipeline = IspPipeline(
+            self.img_params, process_bar=self.progress_bar)
+        self.img = self.img_pipeline.get_image(0)
+        self.point_data = 0
+        self.scale_ratio = 100
+
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.graphicsView.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
@@ -38,31 +47,40 @@ class RawImageEditor(SubWindow):
         self.ui.select_from_raw.clicked.connect(self.select_awb_from_raw)
         self.imageview.rubberBandChanged.connect(self.update_awb_from_raw)
         self.ui.save_image.clicked.connect(self.save_now_image)
-
-        self.img_params = self.load_params(RawImageParams())
-        self.img_pipeline = IspPipeline(self.img_params, process_bar=self.progress_bar)
-        self.img = self.img_pipeline.get_image(0)
-        self.img_index = 0
-        self.point_data = 0
-        self.scale_ratio = 100
         self.ui.reload.clicked.connect(self.img_pipeline.reload_isp)
+        # ISP 处理线程回调
         self.img_pipeline.ispProcthread.doneCB.connect(self.update_img)
-        self.img_pipeline.ispProcthread.processRateCB.connect(self.update_process_bar)
-        self.img_pipeline.ispProcthread.costTimeCB.connect(self.update_time_bar)
-    
+        self.img_pipeline.ispProcthread.processRateCB.connect(
+            self.update_process_bar)
+        self.img_pipeline.ispProcthread.costTimeCB.connect(
+            self.update_time_bar)
+
     def update_img(self):
+        """
+        func: ISP 处理完成后的显示回调函数
+        """
         self.displayImage(self.img_pipeline.get_image(-1))
-    
+
     def update_process_bar(self, value):
+        """
+        func: ISP 处理进度回调
+        """
         self.progress_bar.setValue(value)
-    
+
     def update_time_bar(self, value):
+        """
+        func：ISP 处理时长回调
+        """
         self.time_bar.setText(value)
 
     def show(self):
+        """
+        func: 显示初始化
+        """
         super().show()
-        self.set_img_params()
-        if (self.img_params.filename != "" and self.img_params.get_width() != 0 and self.img_params.get_height() != 0 and self.img_params.get_bit_depth() != 0):
+        self.img_params.set_img_params_ui(self.ui)
+        if (self.img_params.filename != "" and self.img_params.get_width() != 0 
+            and self.img_params.get_height() != 0 and self.img_params.get_bit_depth() != 0):
             if(self.img_pipeline.pipeline_reset() == True):
                 self.img = self.img_pipeline.get_image(0)
                 for i in range(1, self.ui.pipeline.count()):
@@ -72,57 +90,6 @@ class RawImageEditor(SubWindow):
             self.rect = [0, 0, self.img_params.width, self.img_params.height]
             if (self.img.get_raw_data() is not None):
                 self.displayImage(self.img)
-    
-    def set_img_params(self):
-        self.ui.width.setValue(self.img_params.get_width())
-        self.ui.height.setValue(self.img_params.get_height())
-        self.ui.bit.setValue(self.img_params.get_bit_depth())
-        awb_gain = self.img_params.get_awb_gain()
-        self.ui.awb_r.setValue(awb_gain[0])
-        self.ui.awb_g.setValue(awb_gain[1])
-        self.ui.awb_b.setValue(awb_gain[2])
-        index = self.ui.pattern.findText(self.img_params.get_pattern().upper())
-        self.ui.pattern.setCurrentIndex(index)
-        index = self.ui.raw_format.findText(self.img_params.get_raw_format())
-        self.ui.raw_format.setCurrentIndex(index)
-        blc_level = self.img_params.get_black_level()
-        self.ui.blc_r.setValue(blc_level[0])
-        self.ui.blc_gr.setValue(blc_level[1])
-        self.ui.blc_gb.setValue(blc_level[2])
-        self.ui.blc_b.setValue(blc_level[3])
-        self.ui.gamma_ratio.setValue(self.img_params.get_gamma_ratio())
-        index = self.ui.demosaic_type.findText(self.img_params.get_demosaic_func_string())
-        self.ui.demosaic_type.setCurrentIndex(index)
-        self.ui.dark_boost.setValue(self.img_params.get_dark_boost())
-        self.ui.bright_suppress.setValue(self.img_params.get_bright_suppress())
-        ccm = self.img_params.get_color_matrix()
-        self.ui.ccm_rr.setValue(ccm[0][0])
-        self.ui.ccm_rg.setValue(ccm[0][1])
-        self.ui.ccm_rb.setValue(ccm[0][2])
-        self.ui.ccm_gr.setValue(ccm[1][0])
-        self.ui.ccm_gg.setValue(ccm[1][1])
-        self.ui.ccm_gb.setValue(ccm[1][2])
-        self.ui.ccm_br.setValue(ccm[2][0])
-        self.ui.ccm_bg.setValue(ccm[2][1])
-        self.ui.ccm_bb.setValue(ccm[2][2])
-
-    def get_img_params(self):
-        self.img_params.set_width(self.ui.width.value())
-        self.img_params.set_height(self.ui.height.value())
-        self.img_params.set_bit_depth(self.ui.bit.value())
-        self.img_params.set_raw_format(self.ui.raw_format.currentText())
-        self.img_params.set_pattern(self.ui.pattern.currentText().lower())
-        self.img_params.set_black_level([self.ui.blc_r.value(
-        ), self.ui.blc_gr.value(), self.ui.blc_gb.value(), self.ui.blc_b.value()])
-        self.img_params.set_awb_gain(
-            (self.ui.awb_r.value(), self.ui.awb_g.value(), self.ui.awb_b.value()))
-        self.img_params.set_gamma(self.ui.gamma_ratio.value())
-        self.img_params.set_demosaic_func_type(self.ui.demosaic_type.currentText())
-        self.img_params.set_dark_boost(self.ui.dark_boost.value())
-        self.img_params.set_bright_suppress(self.ui.bright_suppress.value())
-        self.img_params.set_color_matrix([[self.ui.ccm_rr.value(), self.ui.ccm_rg.value(), self.ui.ccm_rb.value()],
-                                        [self.ui.ccm_gr.value(), self.ui.ccm_gg.value(), self.ui.ccm_gb.value()],
-                                        [self.ui.ccm_br.value(), self.ui.ccm_bg.value(), self.ui.ccm_bb.value()]])
 
     def displayImage(self, img):
         """
@@ -136,9 +103,15 @@ class RawImageEditor(SubWindow):
             self.ui.photo_title.setTitle(img.get_name())
 
     def select_awb_from_raw(self):
+        """
+        func: 进入raw图选择模式，修改鼠标类型
+        """
         self.imageview.setDragMode(QGraphicsView.RubberBandDrag)
 
     def update_awb_from_raw(self, viewportRect, fromScenePoint, toScenePoint):
+        """
+        func: 更新AWB参数
+        """
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0
                 and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
             self.imageview.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -156,26 +129,35 @@ class RawImageEditor(SubWindow):
                 toScenePoint.x()), int(toScenePoint.y())]
 
     def update_pipeline(self):
-        self.get_img_params()
+        """
+        func: 运行ISP pipeline
+        """
+        self.img_params.get_img_params(self.ui)
         self.img_pipeline.pipeline_clear()
         for i in range(self.ui.pipeline.count()):
             if (self.ui.pipeline.item(i).checkState() == Qt.Checked):
                 self.img_pipeline.add_pipeline_node(
                     self.ui.pipeline.item(i).data(0))
         self.img_pipeline.run_pipeline()
-        print(self.img_pipeline.get_pipeline())
+        print(self.img_pipeline.pipeline)
 
     def update_img_index(self, item):
+        """
+        func: 更新当前画面的序号
+        """
         if (self.ui.pipeline.item(item.row()).checkState() == Qt.Checked):
             index = self.img_pipeline.get_pipeline_node_index(item.data())+1
             self.displayImage(self.img_pipeline.get_image(index))
 
     def open_image(self):
+        """
+        func: 打开图片的回调函数
+        """
         if (self.img_params.filename != ''):
             now_path = os.path.dirname(self.img_params.filename)
         else:
             now_path = './'
-        self.get_img_params()
+        self.img_params.get_img_params(self.ui)
         imagepath = QFileDialog.getOpenFileName(
             None, '打开RAW图', now_path, "raw (*.raw)")
         self.__init_img(imagepath[0])
@@ -196,15 +178,14 @@ class RawImageEditor(SubWindow):
             if (self.img.get_raw_data() is not None):
                 self.displayImage(self.img)
             else:
-                rely = QMessageBox.critical(
-                    self, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
-                return
+                critical("打开图片失败,图片格式错误")
         else:
-            rely = QMessageBox.critical(
-                self, '警告', '打开图片失败,图片格式错误', QMessageBox.Yes, QMessageBox.Yes)
-            return
+            critical("打开图片失败,图片格式错误")
 
     def save_now_image(self):
+        """
+        func: 保存图片的回调
+        """
         if(self.img.get_raw_data() is not None):
             imagepath = QFileDialog.getSaveFileName(
                 None, '保存图片', './', "Images (*.jpg)")
@@ -225,6 +206,9 @@ class RawImageEditor(SubWindow):
         return
 
     def show_point_rgb(self, point):
+        """
+        func: 鼠标移动的回调
+        """
         self.x = int(point.x())
         self.y = int(point.y())
         if(self.img.get_raw_data() is not None):
@@ -234,9 +218,23 @@ class RawImageEditor(SubWindow):
                 self.set_img_info_show()
 
     def update_wheel_ratio(self, ratio):
+        """
+        func: 鼠标滚轮的回调
+        """
         if(self.img.get_raw_data() is not None):
             self.scale_ratio = int(ratio * 100)
             self.set_img_info_show()
+    
+    def set_img_info_show(self):
+        """
+        func: 显示像素点的值以及缩放比例
+        """
+        if(self.point_data.size == 1):
+            self.info_bar.setText(
+                "x:{},y:{} : {}: 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.img.get_img_point_pattern(self.y, self.x).upper(), self.point_data, self.scale_ratio))
+        elif(self.point_data.size == 3):
+            self.info_bar.setText(
+                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
 
     def on_calc_stats(self):
         if(self.img.get_raw_data() is not None):
@@ -319,14 +317,6 @@ class RawImageEditor(SubWindow):
         self.hist_view_ui.snr_y.setValue(snr_yuv[0])
         self.hist_view_ui.snr_cr.setValue(snr_yuv[1])
         self.hist_view_ui.snr_cb.setValue(snr_yuv[2])
-
-    def set_img_info_show(self):
-        if(self.point_data.size == 1):
-            self.info_bar.setText(
-                "x:{},y:{} : {}: 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.img.get_img_point_pattern(self.y, self.x).upper(), self.point_data, self.scale_ratio))
-        elif(self.point_data.size == 3):
-            self.info_bar.setText(
-                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
 
 
 class HistViewDrag(QDialog):
