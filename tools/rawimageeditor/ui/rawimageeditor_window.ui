@@ -203,6 +203,13 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="analysis_img">
+               <property name="text">
+                <string>图片分析</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
@@ -517,9 +524,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-129</y>
-              <width>360</width>
-              <height>543</height>
+              <y>0</y>
+              <width>364</width>
+              <height>517</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
@@ -1109,7 +1116,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../../ui/resource.qrc"/>
+  <include location="../../../ui/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

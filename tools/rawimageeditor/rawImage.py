@@ -379,21 +379,16 @@ class RawImageInfo():
     def get_raw_data(self):
         return self.data
 
-    def get_qimage(self):
+    def get_showimage(self):
         """
         function: convert to QImage
-        brief: 把图像转换为QImage，用于显示
+        brief: 把图像转换为用于显示的正常图像
         """
         if (self.__color_space == "raw"):
             self.show_data = self.convert_bayer2color()
         elif (self.__color_space == "RGB"):
             self.show_data = self.convert_to_8bit()
-
-        if(self.show_data is not None):
-            return QImage(self.show_data, self.show_data.shape[1],
-                          self.show_data.shape[0], QImage.Format_BGR888)
-        else:
-            return None
+        return self.show_data
 
     def set_name(self, name):
         self.name = name

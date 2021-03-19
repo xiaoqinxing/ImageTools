@@ -97,6 +97,7 @@ class IspPipeline():
         func: 运行pipeline，process_bar是用于显示进度的process bar, callback是运行完的回调函数
         """
         pipeline = self.check_pipeline()
+        print(pipeline)
         self.ispProcthread.set_pipeline(pipeline)
         self.ispProcthread.start()
 

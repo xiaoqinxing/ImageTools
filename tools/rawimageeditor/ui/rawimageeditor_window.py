@@ -139,6 +139,11 @@ class Ui_ImageEditor(object):
 
         self.verticalLayout_2.addWidget(self.save_image)
 
+        self.analysis_img = QPushButton(self.groupBox)
+        self.analysis_img.setObjectName(u"analysis_img")
+
+        self.verticalLayout_2.addWidget(self.analysis_img)
+
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
 
@@ -242,7 +247,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -129, 360, 543))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 517))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)
@@ -656,6 +661,7 @@ class Ui_ImageEditor(object):
         self.label_8.setText(QCoreApplication.translate("ImageEditor", u"\u50cf\u7d20\u70b9\u4f4d\u6570", None))
         self.open_image.setText(QCoreApplication.translate("ImageEditor", u"\u6253\u5f00\u56fe\u7247", None))
         self.save_image.setText(QCoreApplication.translate("ImageEditor", u"\u4fdd\u5b58\u56fe\u7247", None))
+        self.analysis_img.setText(QCoreApplication.translate("ImageEditor", u"\u56fe\u7247\u5206\u6790", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ImageEditor", u"ISP\u5904\u7406\u6d41\u7a0b", None))
 
         __sortingEnabled = self.pipeline.isSortingEnabled()
