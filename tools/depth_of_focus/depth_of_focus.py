@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 from tools.depth_of_focus.field_depth_window import Ui_FieldDepthWindow
 from tools.depth_of_focus.LenParameters import LenParameters, SettingParamters, cmos_size_dist
-from ui.customwidget import MatplotlibLayout, ParamsTable, SubWindow
+from components.customwidget import MatplotlibLayout, ParamsTable
+from components.window import SubWindow
 
 
 class FieldDepthWindow(SubWindow):

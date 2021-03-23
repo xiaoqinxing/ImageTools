@@ -1,5 +1,5 @@
-from ui.help_window import Ui_HelpWindow
-from ui.customwidget import SubWindow
+from components.ui.help_window import Ui_HelpWindow
+from components.window import SubWindow
 
 
 class HelpDoc(SubWindow):

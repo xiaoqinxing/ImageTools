@@ -14,7 +14,7 @@
    <string>图片处理工具</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../ui/resource.qrc">
+   <iconset resource="../../../components/resource.qrc">
     <normaloff>:/tool_icon/resource/main.png</normaloff>:/tool_icon/resource/main.png</iconset>
   </property>
   <property name="toolTip">
@@ -154,7 +154,7 @@
   </action>
   <action name="saveimage">
    <property name="icon">
-    <iconset resource="../../ui/resource.qrc">
+    <iconset resource="../../../components/resource.qrc">
      <normaloff>:/tool_icon/resource/save_icon.png</normaloff>:/tool_icon/resource/save_icon.png</iconset>
    </property>
    <property name="text">
@@ -179,7 +179,7 @@
   </action>
   <action name="compareimage">
    <property name="icon">
-    <iconset resource="../../ui/resource.qrc">
+    <iconset resource="../../../components/resource.qrc">
      <normaloff>:/tool_icon/resource/compare.png</normaloff>:/tool_icon/resource/compare.png</iconset>
    </property>
    <property name="text">
@@ -191,7 +191,7 @@
   </action>
   <action name="openimage">
    <property name="icon">
-    <iconset resource="../../ui/resource.qrc">
+    <iconset resource="../../../components/resource.qrc">
      <normaloff>:/tool_icon/resource/open.png</normaloff>:/tool_icon/resource/open.png</iconset>
    </property>
    <property name="text">
@@ -203,7 +203,7 @@
   </action>
   <action name="actionstats">
    <property name="icon">
-    <iconset resource="../../ui/resource.qrc">
+    <iconset resource="../../../components/resource.qrc">
      <normaloff>:/tool_icon/resource/stats.png</normaloff>:/tool_icon/resource/stats.png</iconset>
    </property>
    <property name="text">
@@ -235,7 +235,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../../ui/resource.qrc"/>
+  <include location="../../../components/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

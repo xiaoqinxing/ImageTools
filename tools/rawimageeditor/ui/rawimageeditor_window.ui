@@ -1116,7 +1116,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../../../ui/resource.qrc"/>
+  <include location="../../../components/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

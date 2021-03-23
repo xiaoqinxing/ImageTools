@@ -1,27 +1,18 @@
-from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog, QProgressBar, QLabel
+from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog
 from PySide2.QtGui import QPixmap, Qt, QImage
-from ui.customwidget import ImageView, SubWindow, critical
+from components.customwidget import ImageView, critical
+from components.window import SubWindow
 from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
 from tools.rawimageeditor.isppipeline import IspPipeline
-from tools.rawimageeditor.histview import HistView
+from components.histview import HistView
 import numpy as np
 import os
 
 
 class RawImageEditor(SubWindow):
     def __init__(self, name='RawImageEditor', parent=None):
-        super().__init__(name, parent, Ui_ImageEditor())
-
-        # add 进度条和详细信息显示
-        self.progress_bar = QProgressBar()
-        self.info_bar = QLabel()
-        self.time_bar = QLabel()
-        self.ui.statusBar.addPermanentWidget(self.info_bar, stretch=8)
-        self.ui.statusBar.addPermanentWidget(self.time_bar, stretch=1)
-        self.ui.statusBar.addPermanentWidget(self.progress_bar, stretch=2)
-        self.progress_bar.setRange(0, 100)  # 设置进度条的范围
-        self.progress_bar.setValue(0)
+        super().__init__(name, parent, Ui_ImageEditor(), need_processBar=True)
 
         self.scene = QGraphicsScene()
         self.imageview = ImageView(self.scene, parent)

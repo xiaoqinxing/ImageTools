@@ -1,7 +1,6 @@
 import cv2
-from PySide2.QtGui import QImage
 import numpy as np
-from ui.customwidget import critical
+from components.customwidget import critical
 
 
 class WaterMarkType():
@@ -30,6 +29,8 @@ class WaterMarkParams():
 
 
 class ImageEffect(object):
+    nowImage = None
+    img_index = 0
     def __init__(self):
         self.is_load_image = False
 
@@ -45,6 +46,7 @@ class ImageEffect(object):
         #     self.srcImage = cv2.cvtColor(self.srcImage, cv2.COLOR_BGR2BGRA)
         # else:
         #     self.srcImage == None
+        self.depth = 0
         if (self.srcImage is not None):
             self.height = self.srcImage.shape[0]
             self.width = self.srcImage.shape[1]
@@ -54,16 +56,23 @@ class ImageEffect(object):
             self.is_load_image = True
 
     def save_image(self, img, filename):
-        self.imageconvert(img)
         # cv2.imwrite(filename, self.nowImage)
         # 解决中文路径的问题
         cv2.imencode('.jpg', self.nowImage)[1].tofile(filename)
 
-    def imageconvert(self, img):
-        if (img == self.srcImage):
+    def imageconvert(self, index):
+        """
+        func: 切换需要操作的img， 0 为原图，1为目标图
+        """
+        if (index == 0):
             self.nowImage = self.srcImage
-        elif (img == self.dstImage):
+            self.img_index = 0
+        elif (index == 1):
             self.nowImage = self.dstImage
+            self.img_index = 1
+    
+    def get_img_index(self):
+        return self.img_index
 
     def get_img_point(self, x, y):
         """
@@ -75,20 +84,10 @@ class ImageEffect(object):
             return None
 
     def get_src_image(self):
-        return self.convert_qImage(self.srcImage)
+        return self.srcImage
 
     def get_dst_image(self):
-        return self.convert_qImage(self.dstImage)
-
-    def convert_qImage(self, img):
-        if self.depth == 3:
-            return QImage(img, img.shape[1],
-                          img.shape[0], QImage.Format_BGR888)
-        elif self.depth == 4:
-            return QImage(img, img.shape[1],
-                          img.shape[0], QImage.Format_BGR32)
-        else:
-            return
+        return self.dstImage
 
     def blur(self, type):
         if (type == BlurType.BoxBlur):
@@ -101,57 +100,6 @@ class ImageEffect(object):
         elif (type == BlurType.BilateralBlur):
             self.dstImage = cv2.bilateralFilter(self.srcImage, BlurType.BilateralSize,
                                                 BlurType.BilateralSize * 2, BlurType.BilateralSize / 2)
-
-    def calcStatics(self, img, rect):
-        x1, y1, x2, y2 = rect
-        self.imageconvert(img)
-        i1 = max(x1, 0)
-        i2 = min(x2, self.width)
-        j1 = max(y1, 0)
-        j2 = min(self.height, y2)
-        if (i2 > i1 and j2 > j1):
-            image = self.nowImage[j1:j2, i1:i2]
-            (average_rgb, stddv_rgb) = cv2.meanStdDev(image)
-            snr_rgb = average_rgb/stddv_rgb
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
-            (average_yuv, stddv_yuv) = cv2.meanStdDev(image)
-            snr_yuv = average_yuv/stddv_yuv
-            rgb_ratio = [0.0, 0.0]
-            awb_gain = [0.0, 0.0, 0.0]
-            rgb_ratio[0] = average_rgb[2]/average_rgb[1]
-            rgb_ratio[1] = average_rgb[0]/average_rgb[1]
-            awb_gain[0] = 1/rgb_ratio[0]
-            awb_gain[1] = 1
-            awb_gain[2] = 1/rgb_ratio[1]
-            enable_rect = [i1, j1, i2-i1, j2-j1]
-            return (average_rgb, snr_rgb, average_yuv, snr_yuv, rgb_ratio, awb_gain, enable_rect)
-
-    def calcHist(self, img, rect):
-        x1, y1, x2, y2 = rect
-        self.imageconvert(img)
-        # height, width, depth = img.shape
-        i1 = max(x1, 0)
-        i2 = min(x2, self.width)
-        j1 = max(y1, 0)
-        j2 = min(self.height, y2)
-        if (i2 > i1 and j2 > j1):
-            image = self.nowImage[j1:j2, i1:i2]
-            chans = cv2.split(image)
-            b_hist = (cv2.calcHist([chans[0]], [0], None, [
-                256], [0, 256]))
-            g_hist = (cv2.calcHist([chans[1]], [0], None, [
-                256], [0, 256]))
-            r_hist = (cv2.calcHist([chans[2]], [0], None, [
-                256], [0, 256]))
-            # 转为灰度图，然后算亮度直方图
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            y_hist = (cv2.calcHist([image], [0], None, [
-                256], [0, 256]))
-            r_hist.reshape(1, 256)
-            g_hist.reshape(1, 256)
-            b_hist.reshape(1, 256)
-            y_hist.reshape(1, 256)
-            return (r_hist, g_hist, b_hist, y_hist)
 
     def set_watermark_img(self, filename):
         self.watermark_img = cv2.imdecode(
@@ -194,7 +142,6 @@ class ImageEffect(object):
                               w_start] = watermark_img_tmp[:height, :width]
 
     def generate_watermark(self, params: WaterMarkParams):
-        self.nowImage = self.dstImage
         if(params.watermark_type == WaterMarkType.SpaceWaterMark):
             watermark_img_tmp = self.watermark_img.copy()
             self.dstImage = self.srcImage.copy()

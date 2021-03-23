@@ -1,5 +1,5 @@
 from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
-from ui.customwidget import critical
+from components.customwidget import critical
 import tools.rawimageeditor.ispfunction as ispfunc
 from imp import reload
 import time
@@ -10,7 +10,6 @@ class IspPipeline():
     def __init__(self, parmas, process_bar=None):
         self.old_pipeline = []
         self.pipeline = []
-        # self.data = RawImageInfo()
         self.params = parmas
         # img_list存储了pipeline中途所有的图像
         # img_list长度比pipeline长1
@@ -20,6 +19,9 @@ class IspPipeline():
         self.ispProcthread = ISPProc(self.params, self.img_list, self.imglist_mutex)
 
     def reload_isp(self):
+        """
+        func: 热更新 重载ISP算法模块
+        """
         reload(ispfunc.debayer)
         reload(ispfunc.isp)
         reload(ispfunc)

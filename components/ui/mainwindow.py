@@ -78,7 +78,6 @@ class Ui_MainWindow(object):
         self.menu_2.addAction(self.video_compare)
         self.menuISP.addAction(self.pqtools2code)
         self.menuISP.addAction(self.field_depth_tool)
-        self.menuISP.addAction(self.af_calc_tool)
         self.menu.addAction(self.userguide)
 
         self.retranslateUi(MainWindow)

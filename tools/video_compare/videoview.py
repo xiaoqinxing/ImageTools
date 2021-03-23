@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QDialog, QWidget, QGraphicsScene, QFileDialog, QMessageBox
 from PySide2.QtGui import QImage, QPixmap
 from PySide2.QtCore import QTimer
-from ui.customwidget import ImageView
+from components.customwidget import ImageView
 from tools.video_compare.video_pre_settings import Ui_video_pre_settings
 from tools.video_compare.rtspconfigview import Ui_RtspConfigView
 import os

@@ -179,9 +179,9 @@ class Ui_PQtoolsToCode(object):
         self.gridLayout.addWidget(self.groupBox, 0, 2, 1, 1, Qt.AlignLeft)
 
         PQtoolsToCode.setCentralWidget(self.centralwidget)
-        self.statusbar = QStatusBar(PQtoolsToCode)
-        self.statusbar.setObjectName(u"statusbar")
-        PQtoolsToCode.setStatusBar(self.statusbar)
+        self.statusBar = QStatusBar(PQtoolsToCode)
+        self.statusBar.setObjectName(u"statusBar")
+        PQtoolsToCode.setStatusBar(self.statusBar)
 
         self.retranslateUi(PQtoolsToCode)
 

@@ -1,6 +1,6 @@
-from tools.rawimageeditor.ui.rawhistgramview import Ui_HistgramView
+from components.ui.histgramview import Ui_HistgramView
 from PySide2.QtWidgets import QGraphicsView, QDialog
-from ui.customwidget import MatplotlibWidget
+from components.customwidget import MatplotlibWidget
 import numpy as np
 import cv2
 

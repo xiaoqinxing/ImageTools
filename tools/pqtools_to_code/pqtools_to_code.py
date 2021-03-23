@@ -1,4 +1,5 @@
-from ui.customwidget import SubWindow, critical
+from components.customwidget import critical
+from components.window import SubWindow
 from tools.pqtools_to_code.pqtools2code_window import Ui_PQtoolsToCode
 import xml.dom.minidom as xmldom
 import os

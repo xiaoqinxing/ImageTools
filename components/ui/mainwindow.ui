@@ -76,7 +76,6 @@
     </property>
     <addaction name="pqtools2code"/>
     <addaction name="field_depth_tool"/>
-    <addaction name="af_calc_tool"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">

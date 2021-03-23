@@ -4,7 +4,8 @@ from PySide2.QtGui import QImage, QPixmap
 from PySide2.QtCore import QTimer
 from tools.video_compare.shake_test_window import Ui_ShakeTestWindow
 from tools.video_compare.rtspconfigview import Ui_RtspConfigView
-from ui.customwidget import VideoView, SubWindow
+from components.customwidget import VideoView
+from components.window import SubWindow
 from tools.video_compare.videoview import VideoCompareView
 import numpy as np
 import math
