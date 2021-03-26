@@ -220,8 +220,12 @@ class RawImageEditor(SubWindow):
             self.info_bar.setText(
                 "x:{},y:{} : {}: 亮度:{} 缩放比例:{}%".format(self.x, self.y, self.img.get_img_point_pattern(self.y, self.x).upper(), self.point_data, self.scale_ratio))
         elif(self.point_data.size == 3):
-            self.info_bar.setText(
-                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
+            if(self.img.get_color_space() == 'RGB'):
+                self.info_bar.setText(
+                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[2], self.point_data[1], self.point_data[0], self.scale_ratio))
+            else:
+                self.info_bar.setText(
+                    "x:{},y:{} : Y:{} Cr:{} Cb:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[0], self.point_data[1], self.point_data[2], self.scale_ratio))
     
     def openHistView(self):
         self.histView = HistView(self.imageview)

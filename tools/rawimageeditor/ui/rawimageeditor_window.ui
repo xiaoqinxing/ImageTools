@@ -227,6 +227,13 @@
            <string>ISP处理流程</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
+           <item row="3" column="1">
+            <widget class="QPushButton" name="pipeline_ok">
+             <property name="text">
+              <string>确定</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="1">
             <widget class="QListWidget" name="pipeline">
              <property name="font">
@@ -433,7 +440,7 @@
              </item>
              <item>
               <property name="text">
-               <string>advanced chroma enhancement</string>
+               <string>CSC</string>
               </property>
               <property name="background">
                <brush brushstyle="SolidPattern">
@@ -484,13 +491,6 @@
              </item>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QPushButton" name="pipeline_ok">
-             <property name="text">
-              <string>确定</string>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="1">
             <widget class="QPushButton" name="reload">
              <property name="text">
@@ -524,17 +524,99 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
-              <width>364</width>
-              <height>517</height>
+              <y>-449</y>
+              <width>360</width>
+              <height>669</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
              <item row="8" column="0">
               <widget class="QGroupBox" name="groupBox_13">
                <property name="title">
-                <string>advanced chroma enhancement</string>
+                <string>CSC</string>
                </property>
+               <layout class="QGridLayout" name="gridLayout_13">
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_19">
+                  <property name="text">
+                   <string>饱和度    </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_17">
+                  <property name="text">
+                   <string>对比度     </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QSlider" name="luma">
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_16">
+                  <property name="text">
+                   <string>亮度        </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_18">
+                  <property name="text">
+                   <string>色调      </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QSlider" name="contrast">
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QSlider" name="hue">
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QSlider" name="saturation">
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item row="9" column="0">
@@ -887,7 +969,7 @@
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_14">
                   <property name="text">
-                   <string>暗区提升</string>
+                   <string>暗区提升    </string>
                   </property>
                  </widget>
                 </item>
