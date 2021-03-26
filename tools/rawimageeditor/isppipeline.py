@@ -4,9 +4,11 @@ import tools.rawimageeditor.ispfunction as ispfunc
 from imp import reload
 import time
 from PySide2.QtCore import Signal, QThread
+from PySide2.QtWidgets import QMessageBox
 from threading import Lock
 
 class IspPipeline():
+    endebug = False
     def __init__(self, parmas, process_bar=None):
         self.old_pipeline = []
         self.pipeline = []
@@ -28,6 +30,7 @@ class IspPipeline():
         self.params.need_flush = True
         if (self.process_bar is not None):
             self.process_bar.setValue(0)
+            self.endebug = True
 
     def set_pipeline(self, pipeline):
         self.old_pipeline = self.pipeline
@@ -101,7 +104,10 @@ class IspPipeline():
         pipeline = self.check_pipeline()
         print(pipeline)
         self.ispProcthread.set_pipeline(pipeline)
-        self.ispProcthread.start()
+        if(self.endebug == True):
+            self.ispProcthread.run()
+        else:
+            self.ispProcthread.start()
 
     def remove_img_node_tail(self, index):
         """
@@ -158,20 +164,25 @@ class ISPProc(QThread):
             length = len(self.pipeline)
             i = 1
             params = self.params
-            self.mutex.acquire()
             start_time = time.time()
             for node in self.pipeline:
                 data = self.img_list[-1]
-                ret_img = self.run_node(node, data)
+                try:
+                    ret_img = self.run_node(node, data)
+                except Exception as e:
+                    print("ISP算法[{}]运行错误: {}".format(node, e))
+                    return
+
                 if(ret_img is not None):
+                    self.mutex.acquire()
                     self.img_list.append(ret_img)
+                    self.mutex.release()
                 else:
                     critical(params.get_error_str())
                     break
                 self.processRateCB.emit(i / length * 100)
                 i += 1
             stop_time = time.time()
-            self.mutex.release()
             self.costTimeCB.emit('总耗时:{:.3f}s'.format(stop_time-start_time))
             self.doneCB.emit()
         else:
