@@ -391,6 +391,7 @@ class RawImageInfo():
             self.data = np.zeros(shape, dtype=raw.dtype)
         self.dtype = raw.dtype
         self.name = name
+        self.__size = shape
         self.__raw_bit_depth = raw.get_raw_bit_depth()
         self.__bit_depth = raw.get_bit_depth()
         if(np.issubdtype(self.dtype, np.integer)):
@@ -401,9 +402,6 @@ class RawImageInfo():
             self.__color_space = "raw"
         elif (len(shape) == 3):
             self.__color_space = "RGB"
-
-        if (self.data is not None):
-            self.__size = np.shape(self.data)
 
     def save_image(self, filename):
         # cv2.imwrite(filename, self.nowImage)
