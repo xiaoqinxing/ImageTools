@@ -17,6 +17,8 @@ pipeline_dict = {
     "LTM":          isp.ltm_correction,
     "advanced chroma enhancement":  None,
     "ACE":                          None,
+    "CSC":                          isp.color_space_conversion,
+    "csc":                          isp.color_space_conversion,
     "wavelet denoise":              None,
     "WNR":                          None,
     "adaptive spatial filter":      None,

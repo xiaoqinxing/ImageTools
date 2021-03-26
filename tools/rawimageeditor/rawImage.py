@@ -3,6 +3,7 @@
 # =============================================================
 import numpy as np  # array operations
 from PySide2.QtGui import QImage
+from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor
 import cv2
 
 
@@ -40,8 +41,12 @@ class RawImageParams():
         # 自动刷新pipeline的参数，防止设置参数没有生效
         self.need_flush = False
         self.filename = ''
+        self.csc_luma = 50
+        self.csc_contrast = 50
+        self.csc_hue = 50
+        self.csc_satu = 50
     
-    def set_img_params_ui(self, ui):
+    def set_img_params_ui(self, ui:Ui_ImageEditor):
         """
         设置参数界面的显示
         """
@@ -76,8 +81,12 @@ class RawImageParams():
         ui.ccm_br.setValue(ccm[2][0])
         ui.ccm_bg.setValue(ccm[2][1])
         ui.ccm_bb.setValue(ccm[2][2])
+        ui.luma.setValue(self.csc_luma)
+        ui.contrast.setValue(self.csc_contrast)
+        ui.hue.setValue(self.csc_hue)
+        ui.saturation.setValue(self.csc_satu)
 
-    def get_img_params(self, ui):
+    def get_img_params(self, ui:Ui_ImageEditor):
         """
         func: 获取界面参数
         """
@@ -97,6 +106,10 @@ class RawImageParams():
         self.set_color_matrix([[ui.ccm_rr.value(), ui.ccm_rg.value(), ui.ccm_rb.value()],
                                         [ui.ccm_gr.value(), ui.ccm_gg.value(), ui.ccm_gb.value()],
                                         [ui.ccm_br.value(), ui.ccm_bg.value(), ui.ccm_bb.value()]])
+        self.set_csc_contrast(ui.contrast.value())
+        self.set_csc_hue(ui.hue.value())
+        self.set_csc_satu(ui.saturation.value())
+        self.set_csc_luma(ui.luma.value())
 
     def set_demosaic_func_type(self, demosaic_type):
         """
@@ -193,6 +206,26 @@ class RawImageParams():
 
     def get_color_matrix(self):
         return self.color_matrix
+    
+    def set_csc_luma(self, value):
+        if(value != self.csc_luma):
+            self.csc_luma = value
+            self.need_flush = True
+    
+    def set_csc_contrast(self, value):
+        if(value != self.csc_contrast):
+            self.csc_contrast = value
+            self.need_flush = True
+
+    def set_csc_hue(self, value):
+        if(value != self.csc_hue):
+            self.csc_hue = value
+            self.need_flush = True
+
+    def set_csc_satu(self, value):
+        if(value != self.csc_satu):
+            self.csc_satu = value
+            self.need_flush = True
 
     def set_black_level(self, black_level):
         if(black_level != self.black_level):
@@ -345,7 +378,7 @@ class RawImageInfo():
             else:
                 self.max_data = (1 << self.__raw_bit_depth) - 1
 
-    def create_image(self, name, raw, depth=1):
+    def create_image(self, name, raw, init_value=True, depth=1):
         """
         function: 根据原来的图像，创建一个空图像
         input: 图像名称和shape
@@ -354,8 +387,10 @@ class RawImageInfo():
             shape = (raw.get_height(), raw.get_width(), depth)
         else:
             shape = raw.get_size()
-        self.data = np.zeros(shape, dtype=raw.dtype)
+        if(init_value is True):
+            self.data = np.zeros(shape, dtype=raw.dtype)
         self.dtype = raw.dtype
+        self.name = name
         self.__raw_bit_depth = raw.get_raw_bit_depth()
         self.__bit_depth = raw.get_bit_depth()
         if(np.issubdtype(self.dtype, np.integer)):
@@ -368,7 +403,6 @@ class RawImageInfo():
             self.__color_space = "RGB"
 
         if (self.data is not None):
-            self.name = name
             self.__size = np.shape(self.data)
 
     def save_image(self, filename):
@@ -388,6 +422,9 @@ class RawImageInfo():
             self.show_data = self.convert_bayer2color()
         elif (self.__color_space == "RGB"):
             self.show_data = self.convert_to_8bit()
+        elif (self.__color_space == "YCrCb"):
+            ratio = 256/(self.max_data + 1)
+            self.show_data = np.uint8(ratio * cv2.cvtColor(self.data, cv2.COLOR_YCrCb2BGR))
         return self.show_data
 
     def set_name(self, name):
@@ -462,7 +499,11 @@ class RawImageInfo():
         return self.__bayer_pattern[(y % 2) * 2 + x % 2]
     
     def clip_range(self):
-        self.data = np.clip(self.data, 0, self.max_data)
+        if(self.__color_space == "YCrCb"):
+            self.data[:,:,0] = np.clip(self.data[:,:,0], 0, self.max_data)
+            self.data[:,:,1:] = np.clip(self.data[:,:,1:], -self.max_data/2, self.max_data/2)
+        else:
+            self.data = np.clip(self.data, 0, self.max_data)
 
     def bayer_channel_separation(self):
         """
@@ -562,9 +603,7 @@ class RawImageInfo():
             data[:, :, 2] = np.right_shift(self.data[:, :, 2], right_shift_num)
         else:
             ratio = 256/(self.max_data + 1)
-            data[:, :, 0] = np.uint8(ratio * self.data[:, :, 0])
-            data[:, :, 1] = np.uint8(ratio * self.data[:, :, 1])
-            data[:, :, 2] = np.uint8(ratio * self.data[:, :, 2])
+            data = np.int8(ratio * self.data)
         return data
     
     def convert_to_gray(self):

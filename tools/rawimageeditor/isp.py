@@ -271,6 +271,57 @@ def color_correction(raw: RawImageInfo, params: RawImageParams):
         params.set_error_str("color correction need RGB data")
         return None
 
+def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
+    """
+    function: CSC色彩空间转换 从BGR色彩空间转换成YUV 并可以调节对比度亮度等属性
+    input: raw:RawImageInfo() params:RawImageParams()
+    
+    原理：
+    对比度和亮度调整：a * rgb + b，其中a为对比度，b为亮度
+    色调调整：
+        cb = cb * cos(m) + cr * sin(m);
+        cr = cr * cos(m) - cb * sin(m); 其中m从-180度到180度变化
+    饱和度调整：UV同时乘以一个值
+
+    注意：YUV没有负值,Y,Cr,Cb最高位为符号位,U = Cr + 128;V = Cb +128
+
+    """
+    raw_data = raw.get_raw_data()
+
+    if (raw.get_color_space() == "RGB"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after color space conversion(CSC)', raw, init_value=False)
+        ret_img.set_color_space("YCrCb")
+
+        luma = (params.csc_luma - 50) / 50 * (32/255) * raw.max_data
+        contrast = params.csc_contrast / 50
+        hue = (params.csc_hue - 50 ) / 50
+        satu = params.csc_satu / 50
+
+        ret_img.data = raw_data + luma
+        ret_img.data = cv2.cvtColor(ret_img.data, cv2.COLOR_BGR2YCrCb)
+
+        csc = np.array([
+            [1., 0., 0.],
+            [0., satu * math.cos(hue * math.pi), satu * math.sin(hue * math.pi)],
+            [0., -satu * math.sin(hue * math.pi), satu * math.cos(hue * math.pi)]
+        ])
+        
+        csc *= contrast
+        
+        Y = ret_img.data[:, :, 0]
+        U = ret_img.data[:, :, 1]
+        V = ret_img.data[:, :, 2]
+        # # # 注意RGB图的颜色排列是BGR
+        ret_img.data[:, :, 0] = Y * csc[0][0]
+        ret_img.data[:, :, 1] = U * csc[1][1] + V * csc[1][2]
+        ret_img.data[:, :, 2] = U * csc[2][1] + V * csc[2][2]
+        ret_img.clip_range()
+        return ret_img
+    else:
+        params.set_error_str("color correction need RGB data")
+        return None
+
 
 class lens_shading_correction:
     def __init__(self, data, name="lens_shading_correction"):
