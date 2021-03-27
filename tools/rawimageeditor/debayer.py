@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.ndimage.filters import convolve, convolve1d
-from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
+from tools.rawimageeditor.RawImageParams import RawImageParams
+from tools.rawimageeditor.RawImageInfo import RawImageInfo
 
 
 def demosaic(raw: RawImageInfo, params: RawImageParams):

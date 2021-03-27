@@ -1,7 +1,8 @@
 import numpy as np  # array operations
 import math         # basing math operations
 import tools.rawimageeditor.utility as utility
-from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
+from tools.rawimageeditor.RawImageParams import RawImageParams
+from tools.rawimageeditor.RawImageInfo import RawImageInfo
 import sys          # float precision
 from scipy import signal        # convolutions
 from numba import jit
@@ -297,16 +298,16 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
 
     """
     raw_data = raw.get_raw_data()
-    rule = "bt709"
+    # TODO: limitrange不生效
+    # TODO: 过曝区域偏红
     kr_kb_dict = {
         "BT601": [0.299, 0.114],
         "BT709": [0.2126, 0.0722],
         "BT2020": [0.2627, 0.0593]
     }
-    limitrange = True
 
-    kr = kr_kb_dict[rule][0]
-    kb = kr_kb_dict[rule][1]
+    kr = kr_kb_dict[params.csc.colorspace][0]
+    kb = kr_kb_dict[params.csc.colorspace][1]
     kg = 1 - (kr + kb)
 
     if (raw.get_color_space() == "RGB"):
@@ -314,20 +315,18 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
         ret_img.create_image('after color space conversion(CSC)', raw, init_value=False)
         ratio = (raw.max_data + 1) / 256
 
-        luma = (params.csc_luma - 50) / 50 * 32
-        contrast = params.csc_contrast / 50
-        hue = (params.csc_hue - 50 ) / 50
-        satu = params.csc_satu / 50
+        luma = (params.csc.luma - 50) / 50 * 32
+        contrast = params.csc.contrast / 50
+        hue = (params.csc.hue - 50 ) / 50
+        satu = params.csc.satu / 50
 
-        if(limitrange == True):
+        if(params.csc.limitrange == True):
             csc_ratio = np.array([219/255, 224/255, 244/255]).reshape((3,1))
             blackin = -128 * ratio
-            # blackout = ratio * np.array([16 + luma + 128, 128, 128]).reshape((3,1))
             blackout = (16 + luma + 128) * ratio
         else:
             csc_ratio = 1
             blackin = -128 * ratio
-            # blackout = ratio * np.array([luma + 128, 128, 128]).reshape((3,1))
             blackout = (luma + 128) * ratio
 
         # Y CR CB - Y V U
@@ -357,6 +356,7 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
         ret_img.data = cv2.merge([Y,Cr,Cb])
         ret_img.set_color_space("YCrCb")
         ret_img.clip_range()
+        print('Y最小值{}, 最大值{}'.format(ret_img.data[:,:,0].min(), ret_img.data[:,:,0].max()))
         return ret_img
     else:
         params.set_error_str("color correction need RGB data")

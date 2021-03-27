@@ -524,9 +524,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-476</y>
-              <width>367</width>
-              <height>717</height>
+              <y>-360</y>
+              <width>364</width>
+              <height>650</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">

@@ -6,7 +6,7 @@ from tools.depth_of_focus.depth_of_focus import FieldDepthWindow
 from tools.shake_test.shake_test import ShakeTestTool
 from tools.imageeditor.imageeditor import ImageEditor
 from components.help_doc import HelpDoc
-from tools.rawimageeditor.rawimageeditor import RawImageEditor
+from tools.rawimageeditor.RawImageEditor import RawImageEditor
 from tools.video_compare.videocompare import VideoCompare
 from tools.pqtools_to_code.pqtools_to_code import PQtoolsToCode
 

@@ -1,4 +1,5 @@
-from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
+from tools.rawimageeditor.RawImageParams import RawImageParams
+from tools.rawimageeditor.RawImageInfo import RawImageInfo
 from components.customwidget import critical
 import tools.rawimageeditor.ispfunction as ispfunc
 from imp import reload

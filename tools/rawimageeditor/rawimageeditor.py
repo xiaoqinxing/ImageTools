@@ -3,7 +3,7 @@ from PySide2.QtGui import QPixmap, Qt, QImage
 from components.customwidget import ImageView, critical
 from components.window import SubWindow
 from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor
-from tools.rawimageeditor.rawImage import RawImageInfo, RawImageParams
+from tools.rawimageeditor.RawImageParams import RawImageParams
 from tools.rawimageeditor.isppipeline import IspPipeline
 from components.histview import HistView
 import numpy as np
