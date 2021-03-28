@@ -118,7 +118,9 @@ class RawImageInfo():
             self.show_data = self.convert_to_8bit()
         elif (self.__color_space == "YCrCb"):
             ratio = 256/(self.max_data + 1)
-            self.show_data = np.uint8(ratio * cv2.cvtColor(self.data, cv2.COLOR_YCrCb2BGR))
+            tmp = cv2.cvtColor(self.data, cv2.COLOR_YCrCb2BGR)
+            tmp = np.clip(tmp, 0, self.max_data)
+            self.show_data = np.uint8(ratio * tmp)
         return self.show_data
 
     def set_name(self, name):

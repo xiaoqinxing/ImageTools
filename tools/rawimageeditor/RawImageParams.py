@@ -280,7 +280,7 @@ class CscParams:
     contrast = 50
     hue = 50
     satu = 50
-    limitrange = False
+    limitrange = 0
     colorspace = 'BT709'
     need_flush = False
     
@@ -294,7 +294,7 @@ class CscParams:
         ui.saturation.setValue(self.satu)
         index = ui.color_space.findText(self.colorspace)
         ui.color_space.setCurrentIndex(index)
-        ui.limitrange.setChecked(self.limitrange)
+        ui.limitrange.setCheckState(self.limitrange)
     
     def get(self, ui:Ui_ImageEditor):
         """
@@ -305,7 +305,7 @@ class CscParams:
         self.set_satu(ui.saturation.value())
         self.set_luma(ui.luma.value())
         self.set_colorspace(ui.color_space.currentText())
-        self.set_limitrange(ui.limitrange.isCheckable())
+        self.set_limitrange(ui.limitrange.checkState())
         return self.need_flush
     
     def set_luma(self, value):
@@ -334,6 +334,9 @@ class CscParams:
             self.need_flush = True
     
     def set_limitrange(self, value):
+        """
+        设置是否限制YUV的输出范围，TV标准是16-235，PC标准是0-255。0为关，2为开
+        """
         if(value != self.limitrange):
             self.limitrange = value
             self.need_flush = True

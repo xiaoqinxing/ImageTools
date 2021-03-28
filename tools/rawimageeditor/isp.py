@@ -277,29 +277,40 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
     function: CSC色彩空间转换 从BGR色彩空间转换成YUV 并可以调节对比度亮度等属性
     input: raw:RawImageInfo() params:RawImageParams()
     
-    原理：
-    对比度调整：
-    contrast * (rgb - 128) + 128
-    亮度调整：整张图像同时加减一个值
-    色调调整：
+    原理:
+    模拟海思的算法
+    对比度调整:
+        contrast * (rgb - 128) + 128，先减去128，然后乘以相应的倍数，最后在加上128
+    亮度调整:
+        整张图像同时加减一个值
+    色调调整:
         cb = cb * cos(m) + cr * sin(m);
         cr = cr * cos(m) - cb * sin(m); 其中m从-180度到180度变化
-    饱和度调整：UV同时乘以一个值
-    总公式：saturation * hue * csc * (contrast * (RGB - 128) + 128 + luma)
+    饱和度调整:
+        UV同时乘以一个值
+    总公式:
+        saturation * hue * csc * (contrast * (RGB - 128) + 128 + luma)
 
-    注意：
+    注意:
     1. YUV没有负值,Y,Cr,Cb最高位为符号位,U = Cr + 128;V = Cb +128
     2. 在8bit位深前提下，TV标准的yuv范围是16-235， PC标准的yuv范围是0-255，而RGB全是0-255
     3. Cb为蓝色色度分量，对应U；Cr为红色色度分量，对应V
 
-    参考：
+    参考:
     http://avisynth.nl/index.php/Color_conversions
     ITU-R BT.709-6标准: https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.709-6-201506-I!!PDF-C.pdf
 
     """
+
+    # 参数初始化
     raw_data = raw.get_raw_data()
-    # TODO: limitrange不生效
-    # TODO: 过曝区域偏红
+    luma = (params.csc.luma - 50) / 50 * 32
+    contrast = params.csc.contrast / 50
+    hue = (params.csc.hue - 50 ) / 50
+    satu = params.csc.satu / 50
+    ratio = (raw.max_data + 1) / 256
+
+    # 各个标准的YUV转换矩阵值kr,kb,kg
     kr_kb_dict = {
         "BT601": [0.299, 0.114],
         "BT709": [0.2126, 0.0722],
@@ -310,31 +321,23 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
     kb = kr_kb_dict[params.csc.colorspace][1]
     kg = 1 - (kr + kb)
 
+    # RGB转YCRCB/YVU矩阵
+    csc = np.array([
+        [kr, kg, kb],
+        [0.5, -0.5 * kg/(1-kr), -0.5 * kb/(1-kr)],
+        [-0.5 * kr/(1-kb), -0.5 * kg/(1-kb), 0.5],
+    ])
+
     if (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
         ret_img.create_image('after color space conversion(CSC)', raw, init_value=False)
-        ratio = (raw.max_data + 1) / 256
+        blackin = -128 * ratio
+        blackout = (luma + 128) * ratio
 
-        luma = (params.csc.luma - 50) / 50 * 32
-        contrast = params.csc.contrast / 50
-        hue = (params.csc.hue - 50 ) / 50
-        satu = params.csc.satu / 50
-
-        if(params.csc.limitrange == True):
-            csc_ratio = np.array([219/255, 224/255, 244/255]).reshape((3,1))
-            blackin = -128 * ratio
-            blackout = (16 + luma + 128) * ratio
+        if(params.csc.limitrange == 2):
+            csc_ratio = np.array([219/255, 224/255, 224/255]).reshape((3,1))
         else:
             csc_ratio = 1
-            blackin = -128 * ratio
-            blackout = (luma + 128) * ratio
-
-        # Y CR CB - Y V U
-        csc = np.array([
-            [kr, kg, kb],
-            [0.5, -0.5 * kg/(1-kr), -0.5 * kb/(1-kr)],
-            [-0.5 * kr/(1-kb), -0.5 * kg/(1-kb), 0.5],
-        ])
 
         # 色调和饱和度调整矩阵
         adjust_matrix = np.array([
@@ -344,8 +347,7 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
         ])
 
         ret_img.data = raw_data + blackin
-        (B, G, R) = cv2.split(ret_img.data)
-        print('RGB最小值{}, 最大值{}'.format(ret_img.data[:,:,0].min(), ret_img.data[:,:,0].max()))
+        B, G, R = cv2.split(ret_img.data)
 
         matrix = np.dot(adjust_matrix, csc * csc_ratio * contrast)
         
@@ -356,7 +358,6 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
         ret_img.data = cv2.merge([Y,Cr,Cb])
         ret_img.set_color_space("YCrCb")
         ret_img.clip_range()
-        print('Y最小值{}, 最大值{}'.format(ret_img.data[:,:,0].min(), ret_img.data[:,:,0].max()))
         return ret_img
     else:
         params.set_error_str("color correction need RGB data")

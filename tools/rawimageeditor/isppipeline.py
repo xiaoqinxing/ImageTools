@@ -9,7 +9,6 @@ from PySide2.QtWidgets import QMessageBox
 from threading import Lock
 
 class IspPipeline():
-    endebug = False
     def __init__(self, parmas, process_bar=None):
         self.old_pipeline = []
         self.pipeline = []
@@ -31,7 +30,6 @@ class IspPipeline():
         self.params.need_flush = True
         if (self.process_bar is not None):
             self.process_bar.setValue(0)
-            self.endebug = True
 
     def set_pipeline(self, pipeline):
         self.old_pipeline = self.pipeline
@@ -105,10 +103,7 @@ class IspPipeline():
         pipeline = self.check_pipeline()
         print(pipeline)
         self.ispProcthread.set_pipeline(pipeline)
-        if(self.endebug == True):
-            self.ispProcthread.run()
-        else:
-            self.ispProcthread.start()
+        self.ispProcthread.start()
 
     def remove_img_node_tail(self, index):
         """
