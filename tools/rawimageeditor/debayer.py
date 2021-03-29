@@ -14,11 +14,11 @@ def demosaic(raw: RawImageInfo, params: RawImageParams):
     """
     ret_img = RawImageInfo()
     ret_img.create_image('after demosaic', raw, depth=3)
-    if (params.get_demosaic_funct_type() == 0):
+    if (params.demosaic.get_demosaic_funct_type() == 0):
         demosaicing_CFA_Bayer_bilinear(raw, ret_img.data)
-    elif (params.get_demosaic_funct_type() == 1):
+    elif (params.demosaic.get_demosaic_funct_type() == 1):
         demosaicing_CFA_Bayer_Malvar2004(raw, ret_img.data)
-    elif (params.get_demosaic_funct_type() == 2):
+    elif (params.demosaic.get_demosaic_funct_type() == 2):
         demosaicing_CFA_Bayer_Menon2007(raw, ret_img.data)
     else:
         return None

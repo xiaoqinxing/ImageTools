@@ -58,18 +58,18 @@ class RawImageInfo():
         brief: 由于RAW图不同的bit深度，同样的ISP流程会导致出来的亮度不一样
         所以在RawImageInfor将原始raw图统一对齐为14bit
         """
-        if(params.height > 0 and params.width > 0):
+        if(params.rawformat.height > 0 and params.rawformat.width > 0):
             self.data = np.fromfile(
-                params.filename, dtype="uint16", sep="").reshape((params.height, params.width))
+                params.rawformat.filename, dtype="uint16", sep="").reshape((params.rawformat.height, params.rawformat.width))
 
         if (self.data is not None):
-            self.name = params.filename.split('/')[-1]
+            self.name = params.rawformat.filename.split('/')[-1]
             self.__size = np.shape(self.data)
             self.data = self.data.astype(self.dtype)
-            self.__raw_bit_depth = params.bit_depth
+            self.__raw_bit_depth = params.rawformat.bit_depth
             if(np.issubdtype(self.dtype, np.integer)):
-                if (params.bit_depth < 14):
-                    self.data = np.left_shift(self.data, self.__bit_depth - params.bit_depth)
+                if (params.rawformat.bit_depth < 14):
+                    self.data = np.left_shift(self.data, self.__bit_depth - params.rawformat.bit_depth)
                 self.max_data = (1 << self.__bit_depth) - 1
             else:
                 self.max_data = (1 << self.__raw_bit_depth) - 1

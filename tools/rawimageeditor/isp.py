@@ -18,7 +18,7 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     input: raw:RawImageInfo() params:RawImageParams()
     根据不同的bit_depth，需要对black_level进行移位
     """
-    black_level = params.get_black_level()
+    black_level = params.blc.get_black_level()
     bayer_pattern = raw.get_bayer_pattern()
     bit_depth = raw.get_raw_bit_depth()
     raw_data = raw.get_raw_data()
@@ -51,7 +51,7 @@ def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
     input: raw:RawImageInfo() params:RawImageParams()
     """
     # get params
-    (r_gain, g_gain, b_gain) = params.get_awb_gain()
+    (r_gain, g_gain, b_gain) = params.awb.get_awb_gain()
     channel_gain = (r_gain, g_gain, g_gain, b_gain)
 
     bayer_pattern = raw.get_bayer_pattern()
@@ -86,7 +86,7 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
     卷积核neighborhood_size * neighborhood_size，当这个值大于卷积核内最大的值或者小于最小的值，会将这个值替代掉
     这个算法应该会损失不少分辨率
     """
-    neighborhood_size = params.get_size_for_bad_pixel_correction()
+    neighborhood_size = params.bpc.get_size_for_bad_pixel_correction()
     if ((neighborhood_size % 2) == 0):
         params.set_error_str("neighborhood_size shoud be odd number, recommended value 3")
         return None
@@ -168,7 +168,7 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
         gamma_proc_raw(raw_data, ret_img.data, gamma_table)
         gamma_proc_rgb(raw_data, ret_img.data, gamma_table)
     """
-    gamma_ratio = params.get_gamma_ratio()
+    gamma_ratio = params.gamma.get_gamma_ratio()
     raw_data = raw.get_raw_data()
 
     if (raw.get_color_space() == "raw"):
@@ -215,8 +215,8 @@ def ltm_correction(raw: RawImageInfo, params: RawImageParams):
     1. 先获取mask, 对原图进行灰度处理，然后进行一定半径的高斯模糊，然后归一化
     如果mask的值小于0.5说明周围都是暗像素，修改gamma值，亮度上进行乘方
     """
-    dark_boost = params.get_dark_boost()/100
-    bright_suppress = params.get_bright_suppress()/100
+    dark_boost = params.ltm.get_dark_boost()/100
+    bright_suppress = params.ltm.get_bright_suppress()/100
     raw_data = raw.get_raw_data()
 
     if (raw.get_color_space() == "RGB"):
@@ -253,7 +253,7 @@ def color_correction(raw: RawImageInfo, params: RawImageParams):
     1. 先获取mask, 对原图进行灰度处理，然后进行一定半径的高斯模糊，然后归一化
     如果mask的值小于0.5说明周围都是暗像素，修改gamma值，亮度上进行乘方
     """
-    ccm = params.get_color_matrix()
+    ccm = params.ccm.get_color_matrix()
     raw_data = raw.get_raw_data()
 
     if (raw.get_color_space() == "RGB"):

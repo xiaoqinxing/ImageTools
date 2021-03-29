@@ -57,15 +57,15 @@ class IspPipeline():
         func: 为pipeline添加一个节点
         输入是pipeline_dict的字符串
         """
-        if(node in ispfunc.pipeline_dict):
-            self.pipeline.append(node)
+        if(node.lower() in ispfunc.pipeline_dict):
+            self.pipeline.append(node.lower())
 
     def get_pipeline_node_index(self, node):
         """
         func: 返回该node在pipeline的index, 如果不存在，就返回-1
         """
-        if(node in ispfunc.pipeline_dict and node in self.pipeline):
-            return self.pipeline.index(node)
+        if(node.lower() in ispfunc.pipeline_dict and node.lower() in self.pipeline):
+            return self.pipeline.index(node.lower())
         else:
             return -1
 
@@ -88,11 +88,22 @@ class IspPipeline():
         if(self.params.need_flush == False):
             index = self.compare_pipeline()
             if(index != -1):
-                self.remove_img_node_tail(index + 1)
+                self.remove_img_node_tail(index)
                 return self.pipeline[index:]
             return None
+        elif(len(self.params.need_flush_isp) > 0):
+            index = -1
+            self.params.need_flush = False
+            for node in self.params.need_flush_isp:
+                index = self.get_pipeline_node_index(node)
+                if(index != -1):
+                    self.remove_img_node_tail(index)
+            if index != -1:
+                return self.pipeline[index:]
+            else:
+                return None
         else:
-            self.remove_img_node_tail(1)
+            self.remove_img_node_tail(0)
             self.params.need_flush = False
             return self.pipeline
 
@@ -107,8 +118,9 @@ class IspPipeline():
 
     def remove_img_node_tail(self, index):
         """
-        func: 去除>=index之后的node
+        func: 去除>=index之后的node，由于image的长度比pipeline多1，因此需要将index+1
         """
+        index += 1
         self.imglist_mutex.acquire()
         while index < len(self.img_list):
             self.img_list.pop()
@@ -123,7 +135,7 @@ class IspPipeline():
         self.imglist_mutex.acquire()
         if (index < len(self.img_list) and index >= 0):
             ret_img = self.img_list[index]
-        elif (index < 0):
+        elif (index < 0 and len(self.pipeline)+1 + index < len(self.img_list)):
             ret_img = self.img_list[len(self.pipeline)+1 + index]
         self.imglist_mutex.release()
         return ret_img

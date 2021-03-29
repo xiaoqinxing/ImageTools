@@ -21,7 +21,7 @@ class RawImageEditor(SubWindow):
         self.img_pipeline = IspPipeline(
             self.img_params, process_bar=self.progress_bar)
         self.img = self.img_pipeline.get_image(0)
-        self.point_data = 0
+        self.point_data = np.array([0])
         self.scale_ratio = 100
         self.histShow = None
         self.show_img = None
@@ -72,15 +72,15 @@ class RawImageEditor(SubWindow):
         """
         super().show()
         self.img_params.set_img_params_ui(self.ui)
-        if (self.img_params.filename != "" and self.img_params.get_width() != 0 
-            and self.img_params.get_height() != 0 and self.img_params.get_bit_depth() != 0):
+        if (self.img_params.rawformat.filename != "" and self.img_params.rawformat.width != 0 
+            and self.img_params.rawformat.height != 0 and self.img_params.rawformat.bit_depth != 0):
             if(self.img_pipeline.pipeline_reset() == True):
                 self.img = self.img_pipeline.get_image(0)
                 for i in range(1, self.ui.pipeline.count()):
                     self.ui.pipeline.item(i).setCheckState(Qt.Unchecked)
             self.img.load_image_with_params(self.img_params)
-            self.img.set_bayer_pattern(self.img_params.get_pattern())
-            self.rect = [0, 0, self.img_params.width, self.img_params.height]
+            self.img.set_bayer_pattern(self.img_params.rawformat.pattern)
+            self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
             if (self.img.get_raw_data() is not None):
                 self.displayImage(self.img)
 
@@ -115,8 +115,8 @@ class RawImageEditor(SubWindow):
                 self.select_awb = False
                 awb_ratio = self.img.get_raw_img_rect(self.rect)
                 if(awb_ratio is not None):
-                    self.img_params.set_awb_ratio(awb_ratio)
-                    awb_gain = self.img_params.get_awb_gain()
+                    self.img_params.awb.set_awb_ratio(awb_ratio)
+                    awb_gain = self.img_params.awb.get_awb_gain()
                     self.ui.awb_r.setValue(awb_gain[0])
                     self.ui.awb_g.setValue(awb_gain[1])
                     self.ui.awb_b.setValue(awb_gain[2])
@@ -153,8 +153,8 @@ class RawImageEditor(SubWindow):
         """
         func: 打开图片的回调函数
         """
-        if (self.img_params.filename != ''):
-            now_path = os.path.dirname(self.img_params.filename)
+        if (self.img_params.rawformat.filename != ''):
+            now_path = os.path.dirname(self.img_params.rawformat.filename)
         else:
             now_path = './'
         self.img_params.get_img_params(self.ui)
@@ -163,18 +163,18 @@ class RawImageEditor(SubWindow):
         self.__init_img(imagepath[0])
 
     def __init_img(self, filename):
-        width = self.img_params.get_width()
-        height = self.img_params.get_height()
-        bit_depth = self.img_params.get_bit_depth()
+        width = self.img_params.rawformat.width
+        height = self.img_params.rawformat.height
+        bit_depth = self.img_params.rawformat.bit_depth
         if (filename != "" and width != 0 and height != 0 and bit_depth != 0):
             if(self.img_pipeline.pipeline_reset() == True):
                 self.img = self.img_pipeline.get_image(0)
                 for i in range(1, self.ui.pipeline.count()):
                     self.ui.pipeline.item(i).setCheckState(Qt.Unchecked)
             self.img.load_image(filename, height, width, bit_depth)
-            self.img.set_bayer_pattern(self.img_params.get_pattern())
-            self.img_params.filename = filename
-            self.rect = [0, 0, self.img_params.width, self.img_params.height]
+            self.img.set_bayer_pattern(self.img_params.rawformat.pattern)
+            self.img_params.rawformat.filename = filename
+            self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
             if (self.img.get_raw_data() is not None):
                 self.displayImage(self.img)
             else:
