@@ -398,20 +398,24 @@ class BPCParams():
 #   Helps set up necessary information/metadata of the image
 # =============================================================
 class RawImageParams():
-    error_str = ""
-    # 自动刷新pipeline的参数，防止设置参数没有生效
-    need_flush = False
-    need_flush_isp = []
-    rawformat = FormatParams()
-    demosaic = DemosaicParams()
-    ltm = LTMParams()
-    awb = AWBParams()
-    blc = BLCParams()
-    gamma = GammaParams()
-    ccm = CCMParams()
-    csc = CscParams()
-    bpc = BPCParams()
-    
+    def __init__(self):
+        """
+        zh
+        """
+        self.error_str = ""
+        # 自动刷新pipeline的参数，防止设置参数没有生效
+        self.need_flush = False
+        self.need_flush_isp = []
+        self.rawformat = FormatParams()
+        self.demosaic = DemosaicParams()
+        self.ltm = LTMParams()
+        self.awb = AWBParams()
+        self.blc = BLCParams()
+        self.gamma = GammaParams()
+        self.ccm = CCMParams()
+        self.csc = CscParams()
+        self.bpc = BPCParams()
+
     def set_img_params_ui(self, ui:Ui_ImageEditor):
         """
         设置参数界面的显示

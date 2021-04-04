@@ -8,9 +8,8 @@ from components.window import SubWindow
 class FieldDepthWindow(SubWindow):
     def __init__(self, name='FieldDepthWindow', parent=None):
         super().__init__(name, parent, Ui_FieldDepthWindow())
-        self.params, self.setting = self.load_params(
-            (LenParameters(), SettingParamters()))
-        self.get_ui_params()
+        [self.params, self.setting] = self.load_params(
+            [LenParameters(), SettingParamters()])
         self.init_params_range()
 
     def show(self):

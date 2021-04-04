@@ -8,13 +8,14 @@ from PySide2.QtWidgets import QFileDialog
 
 
 class PQtoolsParams:
-    tab_space = 4
-    max_line_char_counts = 120
-    xmlfile = ''
-    product_id = 'imx415'
-    output_path = ''
-    author = 'liqinxing'
-    filter_struct = """hiISP_SHARPEN_ATTR_S
+    def __init__(self):
+        self.tab_space = 4
+        self.max_line_char_counts = 120
+        self.xmlfile = ''
+        self.product_id = 'imx415'
+        self.output_path = ''
+        self.author = 'liqinxing'
+        self.filter_struct = """hiISP_SHARPEN_ATTR_S
 customNRX_PARAM_AUTO_V1_S
 hiNRX_PARAM_MANUAL_V1_S
 hiVPSS_GRP_SHARPEN_ATTR_S
@@ -24,23 +25,23 @@ hiISP_DEMOSAIC_ATTR_S
 hiISP_CR_ATTR_S
 hiISP_LDCI_ATTR_S
 """
-    custom_define_dict = "hiNRX_PARAM_AUTO_V1_S:customNRX_PARAM_AUTO_V1_S"
-    need_remove_item = 'rb'
-    is_const = True
-    include_headers = """#include "mpi_isp.h"
+        self.custom_define_dict = "hiNRX_PARAM_AUTO_V1_S:customNRX_PARAM_AUTO_V1_S"
+        self.need_remove_item = 'rb'
+        self.is_const = True
+        self.include_headers = """#include "mpi_isp.h"
 #include "mpi_vi.h"
 #include "mpi_vpss.h"
 #include "hi_comm_vi.h"
 #include "hi_comm_vpss.h"
 #include "hi_isp_defines.h"
 """
-    add_custom_defines = """typedef struct customNRX_PARAM_AUTO_V1_S {
+        self.add_custom_defines = """typedef struct customNRX_PARAM_AUTO_V1_S {
     HI_U32 u32ParamNum;
     HI_U32 ATTRIBUTE au32ISO[16];
     VI_PIPE_NRX_PARAM_V1_S ATTRIBUTE pastNRXParamV1[16];
 } CUSTOM_NRX_PARAM_AUTO_V1_S;"""
 
-    head_copyright = """/*
+        self.head_copyright = """/*
 * Copyright (c) 2020
 * All rights reserved.
 *
