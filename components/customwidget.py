@@ -216,8 +216,8 @@ class VideoView(QLabel):
                 print(e)
 
 
-def critical(string: str):
+def critical(string: str, parent=None):
     if(string is not None):
         QMessageBox.critical(
-            None, '警告', string, QMessageBox.Yes, QMessageBox.Yes)
+            parent, '警告', string, QMessageBox.Yes, QMessageBox.Yes)
     return

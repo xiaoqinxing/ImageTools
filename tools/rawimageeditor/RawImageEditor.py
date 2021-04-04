@@ -4,6 +4,7 @@ from components.customwidget import ImageView, critical
 from components.window import SubWindow
 from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor
 from tools.rawimageeditor.RawImageParams import RawImageParams
+from tools.rawimageeditor.RawImageInfo import RawImageInfo
 from tools.rawimageeditor.isppipeline import IspPipeline
 from components.histview import HistView
 import numpy as np
@@ -20,7 +21,7 @@ class RawImageEditor(SubWindow):
         self.img_params = self.load_params(RawImageParams())
         self.img_pipeline = IspPipeline(
             self.img_params, process_bar=self.progress_bar)
-        self.img = self.img_pipeline.get_image(0)
+        self.img = RawImageInfo()
         self.point_data = np.array([0])
         self.scale_ratio = 100
         self.histShow = None
@@ -47,6 +48,13 @@ class RawImageEditor(SubWindow):
             self.update_process_bar)
         self.img_pipeline.ispProcthread.costTimeCB.connect(
             self.update_time_bar)
+        self.img_pipeline.ispProcthread.errorCB.connect(self.error_report)
+    
+    def error_report(self, value):
+        """
+        func: 报告ISP算法错误
+        """
+        critical(value, self)
 
     def update_img(self):
         """
@@ -72,17 +80,12 @@ class RawImageEditor(SubWindow):
         """
         super().show()
         self.img_params.set_img_params_ui(self.ui)
-        if (self.img_params.rawformat.filename != "" and self.img_params.rawformat.width != 0 
-            and self.img_params.rawformat.height != 0 and self.img_params.rawformat.bit_depth != 0):
-            if(self.img_pipeline.pipeline_reset() == True):
-                self.img = self.img_pipeline.get_image(0)
-                for i in range(1, self.ui.pipeline.count()):
-                    self.ui.pipeline.item(i).setCheckState(Qt.Unchecked)
-            self.img.load_image_with_params(self.img_params)
-            self.img.set_bayer_pattern(self.img_params.rawformat.pattern)
+        self.ui.filename.repaint()
+        if (self.img_params.rawformat.filename != ""):
+            self.update_pipeline()
+            self.img = self.img_pipeline.get_image(-1)
+            self.displayImage(self.img)
             self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
-            if (self.img.get_raw_data() is not None):
-                self.displayImage(self.img)
 
     def displayImage(self, img):
         """
@@ -157,30 +160,16 @@ class RawImageEditor(SubWindow):
             now_path = os.path.dirname(self.img_params.rawformat.filename)
         else:
             now_path = './'
-        self.img_params.get_img_params(self.ui)
         imagepath = QFileDialog.getOpenFileName(
             None, '打开RAW图', now_path, "raw (*.raw)")
         self.__init_img(imagepath[0])
 
     def __init_img(self, filename):
-        width = self.img_params.rawformat.width
-        height = self.img_params.rawformat.height
-        bit_depth = self.img_params.rawformat.bit_depth
-        if (filename != "" and width != 0 and height != 0 and bit_depth != 0):
-            if(self.img_pipeline.pipeline_reset() == True):
-                self.img = self.img_pipeline.get_image(0)
-                for i in range(1, self.ui.pipeline.count()):
-                    self.ui.pipeline.item(i).setCheckState(Qt.Unchecked)
-            self.img.load_image(filename, height, width, bit_depth)
-            self.img.set_bayer_pattern(self.img_params.rawformat.pattern)
-            self.img_params.rawformat.filename = filename
-            self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
-            if (self.img.get_raw_data() is not None):
-                self.displayImage(self.img)
-            else:
-                critical("打开图片失败,图片格式错误")
-        else:
-            critical("打开图片失败,图片格式错误")
+        self.ui.filename.setText(filename)
+        self.ui.filename.repaint()
+        self.update_pipeline()
+        self.img = self.img_pipeline.get_image(-1)
+        self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
 
     def save_now_image(self):
         """

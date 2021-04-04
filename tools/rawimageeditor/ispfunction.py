@@ -3,7 +3,6 @@ import tools.rawimageeditor.debayer as debayer
 
 # pipeline名称全部小写
 pipeline_dict = {
-    "raw":          isp.get_src_raw_data,
     "original raw": isp.get_src_raw_data,
     "black level":  isp.black_level_correction,
     "blc":          isp.black_level_correction,

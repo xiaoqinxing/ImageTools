@@ -98,14 +98,46 @@ class FormatParams():
         ui.pattern.setCurrentIndex(index)
         index = ui.raw_format.findText(self.raw_format)
         ui.raw_format.setCurrentIndex(index)
+        ui.filename.setText(self.filename)
     
     def get(self, ui:Ui_ImageEditor):
-        self.width = ui.width.value()
-        self.height = ui.height.value()
-        self.bit_depth = ui.bit.value()
-        self.raw_format = ui.raw_format.currentText()
-        self.pattern = ui.pattern.currentText().lower()
+        self.set_width(ui.width.value())
+        self.set_height(ui.height.value())
+        self.set_bit_depth(ui.bit.value())
+        self.set_raw_format(ui.raw_format.currentText())
+        self.set_pattern(ui.pattern.currentText().lower())
+        self.set_filename(ui.filename.text())
         return self.need_flush
+    
+    def set_width(self, value):
+        if(self.width != value):
+            self.width = value
+            self.need_flush = True
+    
+    def set_height(self, value):
+        if(self.height != value):
+            self.height = value
+            self.need_flush = True
+    
+    def set_bit_depth(self, value):
+        if(self.bit_depth != value):
+            self.bit_depth = value
+            self.need_flush = True
+    
+    def set_raw_format(self, value):
+        if(self.raw_format != value):
+            self.raw_format = value
+            self.need_flush = True
+    
+    def set_pattern(self, value):
+        if(self.pattern != value):
+            self.pattern = value
+            self.need_flush = True
+    
+    def set_filename(self, value):
+        if(self.filename != value):
+            self.filename = value
+            self.need_flush = True
 
 class DemosaicParams():
     """
@@ -215,7 +247,6 @@ class LTMParams():
 class AWBParams():
     need_flush = False
     name = 'AWB'
-    channel_gain = (1.0, 1.0, 1.0, 1.0)
     awb_gain = [1., 1., 1.]
 
     def set(self, ui:Ui_ImageEditor):
@@ -226,7 +257,7 @@ class AWBParams():
     
     def get(self, ui:Ui_ImageEditor):
         self.set_awb_gain(
-            (ui.awb_r.value(), ui.awb_g.value(), ui.awb_b.value()))
+            [ui.awb_r.value(), ui.awb_g.value(), ui.awb_b.value()])
         return self.need_flush
     
     def set_awb_gain(self, awb_gain):
@@ -252,20 +283,10 @@ class AWBParams():
             self.awb_gain = awb_gain
             self.need_flush = True
     
-    def set_channel_gain(self, channel_gain):
-        """
-        设置raw图上RGGB每个通道的增益
-        """
-        self.channel_gain = channel_gain
-
-    def get_channel_gain(self):
-        return self.channel_gain
-    
 class BLCParams():
     need_flush = False
     name = 'black level'
-    black_level = (0, 0, 0, 0)
-    white_level = (1, 1, 1, 1)
+    black_level = [0, 0, 0, 0]
 
     def set(self, ui:Ui_ImageEditor):
         blc_level = self.get_black_level()

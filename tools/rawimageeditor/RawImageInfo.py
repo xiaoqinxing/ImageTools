@@ -112,16 +112,19 @@ class RawImageInfo():
         function: convert to QImage
         brief: 把图像转换为用于显示的正常图像
         """
-        if (self.__color_space == "raw"):
-            self.show_data = self.convert_bayer2color()
-        elif (self.__color_space == "RGB"):
-            self.show_data = self.convert_to_8bit()
-        elif (self.__color_space == "YCrCb"):
-            ratio = 256/(self.max_data + 1)
-            tmp = cv2.cvtColor(self.data, cv2.COLOR_YCrCb2BGR)
-            tmp = np.clip(tmp, 0, self.max_data)
-            self.show_data = np.uint8(ratio * tmp)
-        return self.show_data
+        if(self.data is not None):
+            if (self.__color_space == "raw"):
+                self.show_data = self.convert_bayer2color()
+            elif (self.__color_space == "RGB"):
+                self.show_data = self.convert_to_8bit()
+            elif (self.__color_space == "YCrCb"):
+                ratio = 256/(self.max_data + 1)
+                tmp = cv2.cvtColor(self.data, cv2.COLOR_YCrCb2BGR)
+                tmp = np.clip(tmp, 0, self.max_data)
+                self.show_data = np.uint8(ratio * tmp)
+            return self.show_data
+        else:
+            return None
 
     def set_name(self, name):
         self.name = name

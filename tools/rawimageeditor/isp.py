@@ -9,7 +9,18 @@ from numba import jit
 import cv2
 
 def get_src_raw_data(raw: RawImageInfo, params: RawImageParams):
-    return raw
+    width = params.rawformat.width
+    height = params.rawformat.height
+    bit_depth = params.rawformat.bit_depth
+    filename = params.rawformat.filename
+    ret_img = RawImageInfo()
+    if (filename != "" and width != 0 and height != 0 and bit_depth != 0):
+        ret_img.load_image(filename, height, width, bit_depth)
+        ret_img.set_bayer_pattern(params.rawformat.pattern)
+        return ret_img
+    else:
+        params.set_error_str("图片格式不正确")
+        return None
 
 def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     """

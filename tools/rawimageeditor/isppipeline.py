@@ -114,7 +114,7 @@ class IspPipeline():
         pipeline = self.check_pipeline()
         print(pipeline)
         self.ispProcthread.set_pipeline(pipeline)
-        self.ispProcthread.start()
+        self.ispProcthread.run()
 
     def remove_img_node_tail(self, index):
         """
@@ -138,12 +138,16 @@ class IspPipeline():
         elif (index < 0 and len(self.pipeline)+1 + index < len(self.img_list)):
             ret_img = self.img_list[len(self.pipeline)+1 + index]
         self.imglist_mutex.release()
-        return ret_img
+        if(ret_img is not None):
+            return ret_img
+        else:
+            return RawImageInfo()
 
 class ISPProc(QThread):
     doneCB = Signal() # 自定义信号，其中 object 为信号承载数据的类型
     processRateCB = Signal(int)
     costTimeCB = Signal(str)
+    errorCB = Signal(str)
 
     def __init__(self, params, img_list, mutex:Lock, parent=None):
         super(ISPProc, self).__init__(parent)		
@@ -154,13 +158,10 @@ class ISPProc(QThread):
     
     def run_node(self, node, data):
         # 这里进行检查之后，后续就不需要检查了
-        if(data is not None and self.params is not None and data.data is not None):
+        if(data is not None and self.params is not None):
             return ispfunc.pipeline_dict[node](data, self.params)
         elif(self.params is None):
             self.params.set_error_str("输入的参数为空")
-            return None
-        elif (data.data is None):
-            self.params.set_error_str("输入的图片是空")
             return None
     
     def set_pipeline(self, pipeline):
@@ -178,7 +179,7 @@ class ISPProc(QThread):
                 try:
                     ret_img = self.run_node(node, data)
                 except Exception as e:
-                    print("ISP算法[{}]运行错误: {}".format(node, e))
+                    self.errorCB.emit("ISP算法[{}]运行错误:{}\r\n{}".format(node, params.get_error_str(),e))
                     return
 
                 if(ret_img is not None):

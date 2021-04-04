@@ -129,6 +129,11 @@ class Ui_ImageEditor(object):
 
         self.verticalLayout_2.addItem(self.verticalSpacer)
 
+        self.filename = QLineEdit(self.groupBox)
+        self.filename.setObjectName(u"filename")
+
+        self.verticalLayout_2.addWidget(self.filename)
+
         self.open_image = QPushButton(self.groupBox)
         self.open_image.setObjectName(u"open_image")
 
@@ -247,7 +252,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -476, 367, 717))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 650))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)
