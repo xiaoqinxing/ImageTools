@@ -372,7 +372,7 @@ class CCMParams():
 class BPCParams():
     need_flush = False
     name = 'bad pixel correction'
-    __neighborhood_size_for_bad_pixel_correction = 3
+    __neighborhood_size_for_bad_pixel_correction = 0
 
     def set_size_for_bad_pixel_correction(self, value):
         """
@@ -384,13 +384,25 @@ class BPCParams():
             self.need_flush = True
 
     def get_size_for_bad_pixel_correction(self):
-        return self.__neighborhood_size_for_bad_pixel_correction
+        return self.__neighborhood_size_for_bad_pixel_correction * 2 + 3
     
     def set(self, ui:Ui_ImageEditor):
-        pass
+        ui.badpixelcorrection.setValue(self.__neighborhood_size_for_bad_pixel_correction)
     
     def get(self, ui:Ui_ImageEditor):
+        self.set_size_for_bad_pixel_correction(ui.badpixelcorrection.value())
         return self.need_flush
+
+# class RolloffParams():
+#     need_flush = False
+#     name = 'rolloff'
+#     flatphoto = None
+    
+#     def set(self, ui:Ui_ImageEditor):
+#         pass
+    
+#     def get(self, ui:Ui_ImageEditor):
+#         return self.need_flush
     
 # =============================================================
 # class RawImageParams:

@@ -114,7 +114,7 @@ class IspPipeline():
         pipeline = self.check_pipeline()
         print(pipeline)
         self.ispProcthread.set_pipeline(pipeline)
-        self.ispProcthread.run()
+        self.ispProcthread.start()
 
     def remove_img_node_tail(self, index):
         """

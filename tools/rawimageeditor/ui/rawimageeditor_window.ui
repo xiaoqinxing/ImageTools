@@ -529,11 +529,151 @@
               <x>0</x>
               <y>0</y>
               <width>364</width>
-              <height>650</height>
+              <height>743</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
+             <item row="10" column="0">
+              <widget class="QGroupBox" name="groupBox_14">
+               <property name="title">
+                <string>wavelet denoise</string>
+               </property>
+              </widget>
+             </item>
              <item row="8" column="0">
+              <widget class="QGroupBox" name="groupBox_12">
+               <property name="title">
+                <string>LTM</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_11">
+                <item row="0" column="1">
+                 <widget class="QSlider" name="dark_boost">
+                  <property name="maximum">
+                   <number>300</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>10</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>50</number>
+                  </property>
+                  <property name="value">
+                   <number>100</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_14">
+                  <property name="text">
+                   <string>暗区提升    </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_15">
+                  <property name="text">
+                   <string>亮区抑制</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QSlider" name="bright_suppress">
+                  <property name="maximum">
+                   <number>300</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>10</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>50</number>
+                  </property>
+                  <property name="value">
+                   <number>100</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QGroupBox" name="groupBox_4">
+               <property name="title">
+                <string>black level</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_3">
+                <item row="0" column="3">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>GR</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="5">
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>GB</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="8">
+                 <widget class="QSpinBox" name="blc_b">
+                  <property name="maximum">
+                   <number>10000</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="6">
+                 <widget class="QSpinBox" name="blc_gb">
+                  <property name="maximum">
+                   <number>1000</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="4">
+                 <widget class="QSpinBox" name="blc_gr">
+                  <property name="maximum">
+                   <number>10000</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>R</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="7">
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>B</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QSpinBox" name="blc_r">
+                  <property name="maximum">
+                   <number>10000</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QGroupBox" name="groupBox_7">
+               <property name="title">
+                <string>ABF</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="0">
               <widget class="QGroupBox" name="groupBox_13">
                <property name="title">
                 <string>CSC</string>
@@ -658,14 +798,30 @@
                </layout>
               </widget>
              </item>
-             <item row="9" column="0">
-              <widget class="QGroupBox" name="groupBox_14">
+             <item row="7" column="0">
+              <widget class="QGroupBox" name="groupBox_11">
                <property name="title">
-                <string>wavelet denoise</string>
+                <string>gamma</string>
                </property>
+               <layout class="QGridLayout" name="gridLayout_9">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_13">
+                  <property name="text">
+                   <string>ratio</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QDoubleSpinBox" name="gamma_ratio">
+                  <property name="value">
+                   <double>2.200000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
-             <item row="5" column="0">
+             <item row="6" column="0">
               <widget class="QGroupBox" name="groupBox_10">
                <property name="title">
                 <string>ccm</string>
@@ -906,7 +1062,23 @@
                </layout>
               </widget>
              </item>
-             <item row="4" column="0">
+             <item row="2" column="0">
+              <widget class="QGroupBox" name="groupBox_5">
+               <property name="title">
+                <string>rolloff</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_14">
+                <item row="0" column="0">
+                 <widget class="QPushButton" name="inputflatphoto">
+                  <property name="text">
+                   <string>导入平场图（均匀光照的图片）</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="5" column="0">
               <widget class="QGroupBox" name="groupBox_9">
                <property name="title">
                 <string>awb</string>
@@ -973,140 +1145,7 @@
                </layout>
               </widget>
              </item>
-             <item row="1" column="0">
-              <widget class="QGroupBox" name="groupBox_5">
-               <property name="title">
-                <string>rolloff</string>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <widget class="QGroupBox" name="groupBox_12">
-               <property name="title">
-                <string>LTM</string>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_11">
-                <item row="0" column="1">
-                 <widget class="QSlider" name="dark_boost">
-                  <property name="maximum">
-                   <number>300</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>10</number>
-                  </property>
-                  <property name="pageStep">
-                   <number>50</number>
-                  </property>
-                  <property name="value">
-                   <number>100</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_14">
-                  <property name="text">
-                   <string>暗区提升    </string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_15">
-                  <property name="text">
-                   <string>亮区抑制</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QSlider" name="bright_suppress">
-                  <property name="maximum">
-                   <number>300</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>10</number>
-                  </property>
-                  <property name="pageStep">
-                   <number>50</number>
-                  </property>
-                  <property name="value">
-                   <number>100</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QGroupBox" name="groupBox_4">
-               <property name="title">
-                <string>black level</string>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_3">
-                <item row="0" column="3">
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>GR</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="5">
-                 <widget class="QLabel" name="label_3">
-                  <property name="text">
-                   <string>GB</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="8">
-                 <widget class="QSpinBox" name="blc_b">
-                  <property name="maximum">
-                   <number>10000</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="6">
-                 <widget class="QSpinBox" name="blc_gb">
-                  <property name="maximum">
-                   <number>1000</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="4">
-                 <widget class="QSpinBox" name="blc_gr">
-                  <property name="maximum">
-                   <number>10000</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>R</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="7">
-                 <widget class="QLabel" name="label_4">
-                  <property name="text">
-                   <string>B</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QSpinBox" name="blc_r">
-                  <property name="maximum">
-                   <number>10000</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="3" column="0">
+             <item row="4" column="0">
               <widget class="QGroupBox" name="groupBox_8">
                <property name="title">
                 <string>demosaic</string>
@@ -1134,41 +1173,37 @@
                </layout>
               </widget>
              </item>
-             <item row="6" column="0">
-              <widget class="QGroupBox" name="groupBox_11">
-               <property name="title">
-                <string>gamma</string>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_9">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_13">
-                  <property name="text">
-                   <string>ratio</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QDoubleSpinBox" name="gamma_ratio">
-                  <property name="value">
-                   <double>2.200000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QGroupBox" name="groupBox_7">
-               <property name="title">
-                <string>ABF</string>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="0">
+             <item row="11" column="0">
               <widget class="QGroupBox" name="groupBox_15">
                <property name="title">
                 <string>adaptive spatial filter</string>
                </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QGroupBox" name="groupBox_6">
+               <property name="title">
+                <string>bad pixel correction</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_15">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_21">
+                  <property name="text">
+                   <string>检测区域     </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QSlider" name="badpixelcorrection">
+                  <property name="maximum">
+                   <number>2</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
