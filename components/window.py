@@ -9,7 +9,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.sub_windows = list()
-        self.filename = './config/ImageToolsSubWindows.txt'
+        self.filename = './config/ImageToolsSubWindows.tmp'
         self.sub_windows_list = list()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -32,10 +32,10 @@ class MainWindow(QMainWindow):
             if not os.path.exists("./config"):
                 os.mkdir("./config")
             sub_windows_list = list()
-            for win in self.sub_windows:
-                if (win.name is not None):
-                    sub_windows_list.append(win.name)
-                    win.close()
+            while len(self.sub_windows) > 0:
+                if (self.sub_windows[0].name is not None):
+                    sub_windows_list.append(self.sub_windows[0].name)
+                    self.sub_windows[0].close()
             with open(self.filename, "wb") as fp:
                 pickle.dump(sub_windows_list, fp)
             event.accept()
@@ -48,8 +48,9 @@ class SubWindow(QMainWindow):
 
     def __init__(self, name, parent, ui_view, need_processBar=False):
         super().__init__(parent)
+        self.parent = parent
         self.name = name
-        self.filename = "./config/" + name + ".txt"
+        self.filename = "./config/" + name + ".tmp"
         self.__saved_params = None
         self.ui = ui_view
         self.ui.setupUi(self)
@@ -86,4 +87,8 @@ class SubWindow(QMainWindow):
         self.name = None
         with open(self.filename, "wb") as fp:
             pickle.dump(self.__saved_params, fp)
+        try:
+            self.parent.sub_windows.remove(self)
+        except Exception:
+            print('{}工具不支持记忆存储'.format(self.name))
         event.accept()
