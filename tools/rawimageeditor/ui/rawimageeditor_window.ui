@@ -527,7 +527,7 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
+              <y>-532</y>
               <width>364</width>
               <height>743</height>
              </rect>
@@ -1271,6 +1271,50 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>width</tabstop>
+  <tabstop>height</tabstop>
+  <tabstop>bit</tabstop>
+  <tabstop>raw_format</tabstop>
+  <tabstop>pattern</tabstop>
+  <tabstop>filename</tabstop>
+  <tabstop>open_image</tabstop>
+  <tabstop>save_image</tabstop>
+  <tabstop>analysis_img</tabstop>
+  <tabstop>pipeline</tabstop>
+  <tabstop>reload</tabstop>
+  <tabstop>pipeline_ok</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>blc_r</tabstop>
+  <tabstop>blc_gr</tabstop>
+  <tabstop>blc_gb</tabstop>
+  <tabstop>blc_b</tabstop>
+  <tabstop>badpixelcorrection</tabstop>
+  <tabstop>inputflatphoto</tabstop>
+  <tabstop>demosaic_type</tabstop>
+  <tabstop>awb_r</tabstop>
+  <tabstop>awb_g</tabstop>
+  <tabstop>awb_b</tabstop>
+  <tabstop>select_from_raw</tabstop>
+  <tabstop>ccm_rr</tabstop>
+  <tabstop>ccm_rg</tabstop>
+  <tabstop>ccm_rb</tabstop>
+  <tabstop>ccm_gr</tabstop>
+  <tabstop>ccm_gg</tabstop>
+  <tabstop>ccm_gb</tabstop>
+  <tabstop>ccm_br</tabstop>
+  <tabstop>ccm_bg</tabstop>
+  <tabstop>ccm_bb</tabstop>
+  <tabstop>gamma_ratio</tabstop>
+  <tabstop>dark_boost</tabstop>
+  <tabstop>bright_suppress</tabstop>
+  <tabstop>limitrange</tabstop>
+  <tabstop>color_space</tabstop>
+  <tabstop>luma</tabstop>
+  <tabstop>contrast</tabstop>
+  <tabstop>hue</tabstop>
+  <tabstop>saturation</tabstop>
+ </tabstops>
  <resources>
   <include location="../../../components/resource.qrc"/>
  </resources>
