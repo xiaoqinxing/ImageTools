@@ -94,17 +94,25 @@ class IspPipeline():
                     index = self.get_pipeline_node_index(node)
                     if(index != -1):
                         self.remove_img_node_tail(index)
+                        # 需要把新老pipeline进行对比
+                        index_ret = self.compare_pipeline()
+                        if(index_ret != -1):
+                            self.remove_img_node_tail(index_ret)
+                            return self.pipeline[index_ret:]
+                        else:
+                            return self.pipeline[index:]
+                    else:
+                        return None
             else:
                 self.remove_img_node_tail(0)
                 self.params.need_flush = False
                 return self.pipeline
-
-        # 不管有没有修改参数，都要把新老pipeline进行对比
-        index = self.compare_pipeline()
-        if(index != -1):
-            self.remove_img_node_tail(index)
-            return self.pipeline[index:]
-        return None
+        else:
+            index = self.compare_pipeline()
+            if(index != -1):
+                self.remove_img_node_tail(index)
+                return self.pipeline[index:]
+            return None
 
     def run_pipeline(self):
         """
