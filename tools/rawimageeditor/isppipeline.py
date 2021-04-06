@@ -85,27 +85,26 @@ class IspPipeline():
         func: 检查pipeline，如果有不同的，修改img_list
         ret: 如果pipeline不需要修改，就返回None，如果需要修改，就返回需要修改的pipeline
         """
-        if(self.params.need_flush == False):
-            index = self.compare_pipeline()
-            if(index != -1):
-                self.remove_img_node_tail(index)
-                return self.pipeline[index:]
-            return None
-        elif(len(self.params.need_flush_isp) > 0):
-            index = -1
-            self.params.need_flush = False
-            for node in self.params.need_flush_isp:
-                index = self.get_pipeline_node_index(node)
-                if(index != -1):
-                    self.remove_img_node_tail(index)
-            if index != -1:
-                return self.pipeline[index:]
+        # 如果参数有修改，优先返回需要修改的pipeline
+        if(self.params.need_flush == True):
+            if(len(self.params.need_flush_isp) > 0):
+                index = -1
+                self.params.need_flush = False
+                for node in self.params.need_flush_isp:
+                    index = self.get_pipeline_node_index(node)
+                    if(index != -1):
+                        self.remove_img_node_tail(index)
             else:
-                return None
-        else:
-            self.remove_img_node_tail(0)
-            self.params.need_flush = False
-            return self.pipeline
+                self.remove_img_node_tail(0)
+                self.params.need_flush = False
+                return self.pipeline
+
+        # 不管有没有修改参数，都要把新老pipeline进行对比
+        index = self.compare_pipeline()
+        if(index != -1):
+            self.remove_img_node_tail(index)
+            return self.pipeline[index:]
+        return None
 
     def run_pipeline(self):
         """

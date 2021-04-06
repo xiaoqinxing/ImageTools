@@ -6,7 +6,7 @@ pipeline_dict = {
     "original raw": isp.get_src_raw_data,
     "black level":  isp.black_level_correction,
     "blc":          isp.black_level_correction,
-    "rolloff":      None,
+    "rolloff":      isp.rolloff_correction,
     "abf":          None,
     "demosaic":     debayer.demosaic,
     "awb":          isp.channel_gain_white_balance,

@@ -4,7 +4,10 @@
 import numpy as np  # array operations
 from PySide2.QtGui import QImage
 from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QFileDialog
 from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor
+from components.customwidget import critical
+import cv2
     
 
 class CscParams():
@@ -393,16 +396,39 @@ class BPCParams():
         self.set_size_for_bad_pixel_correction(ui.badpixelcorrection.value())
         return self.need_flush
 
-# class RolloffParams():
-#     need_flush = False
-#     name = 'rolloff'
-#     flatphoto = None
+class RolloffParams():
+    need_flush = False
+    name = 'rolloff'
+    flatphoto = 1
+    rgb_pattern_dict = {
+        'r':2,
+        'g':1,
+        'b':0
+    }
+    def __init__(self, rawformat):
+        self.rawformat = rawformat # 应该只是引用
+
+    def set_flatphoto(self):
+        self.flatphoto = np.zeros((self.rawformat.height, self.rawformat.width), dtype=np.float32)
+        imagepath = QFileDialog.getOpenFileName(
+            None, '打开平场图(RAW)', './', "raw (*.raw)")
+        if imagepath[0] != '':
+            try:
+                flatphoto_ratio = np.fromfile(imagepath[0], dtype="uint16", sep="").reshape(
+                    (self.rawformat.height, self.rawformat.width))
+            except Exception:
+                critical('打开图片错误')
+            for channel, (y, x) in zip(self.rawformat.pattern, [(0, 0), (0, 1), (1, 0), (1, 1)]):
+                tmp = cv2.medianBlur(flatphoto_ratio[y::2, x::2], 5)
+                max_value = tmp.max()
+                self.flatphoto[y::2, x::2] = max_value / tmp
+            self.need_flush = True
     
-#     def set(self, ui:Ui_ImageEditor):
-#         pass
+    def set(self, ui:Ui_ImageEditor):
+        pass
     
-#     def get(self, ui:Ui_ImageEditor):
-#         return self.need_flush
+    def get(self, ui:Ui_ImageEditor):
+        return self.need_flush
     
 # =============================================================
 # class RawImageParams:
@@ -427,6 +453,7 @@ class RawImageParams():
         self.ccm = CCMParams()
         self.csc = CscParams()
         self.bpc = BPCParams()
+        self.rolloff = RolloffParams(self.rawformat)
 
     def set_img_params_ui(self, ui:Ui_ImageEditor):
         """
@@ -441,6 +468,7 @@ class RawImageParams():
         self.ccm.set(ui)
         self.csc.set(ui)
         self.bpc.set(ui)
+        self.rolloff.set(ui)
 
     def get_img_params(self, ui:Ui_ImageEditor):
         """
@@ -456,6 +484,7 @@ class RawImageParams():
         self.get_params(self.ccm, ui)
         self.get_params(self.csc, ui)
         self.get_params(self.bpc, ui)
+        self.get_params(self.rolloff, ui)
         if(len(self.need_flush_isp) > 0):
             self.need_flush = True
 

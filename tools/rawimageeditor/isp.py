@@ -164,6 +164,27 @@ def bad_pixel_correction_subfunc(img, no_of_pixel_pad, width, height):
     # Put the corrected image to the dictionary
     return img[no_of_pixel_pad: height + no_of_pixel_pad, no_of_pixel_pad: width + no_of_pixel_pad]
 
+def rolloff_correction(raw: RawImageInfo, params: RawImageParams):
+    """
+    function: 暗影矫正 rolloff
+    input: raw:RawImageInfo() params:RawImageParams() 仅输入支持bayer
+
+    获取平场图后的处理：先对raw图的每个通道进行中值滤波，防止坏点的影响，
+                      然后把画面的最大值作为矫正后的目标值，其他的像素点需要得到与之的比值。
+    获得到的每个通道的比值，与色温相关，需要处理好与awb的关系，否则容易引起震荡。
+    """
+    rolloff_ratio = params.rolloff.flatphoto
+    raw_data = raw.get_raw_data()
+
+    if (raw.get_color_space() == "raw"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after rolloff correction', raw, init_value=False)
+        ret_img.data = raw_data * rolloff_ratio
+        ret_img.clip_range()
+        return ret_img
+    else:
+        params.set_error_str("gamma correction need RAW or RGB data")
+        return None
 
 def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     """

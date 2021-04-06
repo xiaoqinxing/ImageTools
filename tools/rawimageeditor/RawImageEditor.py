@@ -42,6 +42,7 @@ class RawImageEditor(SubWindow):
         self.imageview.rubberBandChanged.connect(self.update_awb_from_raw)
         self.ui.save_image.clicked.connect(self.save_now_image)
         self.ui.reload.clicked.connect(self.img_pipeline.reload_isp)
+        self.ui.inputflatphoto.clicked.connect(self.img_params.rolloff.set_flatphoto)
         # ISP 处理线程回调
         self.img_pipeline.ispProcthread.doneCB.connect(self.update_img)
         self.img_pipeline.ispProcthread.processRateCB.connect(
@@ -165,11 +166,12 @@ class RawImageEditor(SubWindow):
         self.__init_img(imagepath[0])
 
     def __init_img(self, filename):
-        self.ui.filename.setText(filename)
-        self.ui.filename.repaint()
-        self.update_pipeline()
-        self.img = self.img_pipeline.get_image(-1)
-        self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
+        if(filename != ''):
+            self.ui.filename.setText(filename)
+            self.ui.filename.repaint()
+            self.update_pipeline()
+            self.img = self.img_pipeline.get_image(-1)
+            self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
 
     def save_now_image(self):
         """
