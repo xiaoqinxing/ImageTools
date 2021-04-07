@@ -169,7 +169,7 @@ def rolloff_correction(raw: RawImageInfo, params: RawImageParams):
     function: 暗影矫正 rolloff
     input: raw:RawImageInfo() params:RawImageParams() 仅输入支持bayer
 
-    获取平场图后的处理：先对raw图的每个通道进行中值滤波，防止坏点的影响，
+    获取平场图后的处理：先对raw图的每个通道先减去黑电平，然后进行中值滤波，防止坏点的影响，
                       然后把画面的最大值作为矫正后的目标值，其他的像素点需要得到与之的比值。
     获得到的每个通道的比值，与色温相关，需要处理好与awb的关系，否则容易引起震荡。
     """

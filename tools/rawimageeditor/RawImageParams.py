@@ -405,8 +405,9 @@ class RolloffParams():
         'g':1,
         'b':0
     }
-    def __init__(self, rawformat):
+    def __init__(self, rawformat, blc):
         self.rawformat = rawformat # 应该只是引用
+        self.blc = blc
 
     def set_flatphoto(self):
         self.flatphoto = np.zeros((self.rawformat.height, self.rawformat.width), dtype=np.float32)
@@ -418,8 +419,8 @@ class RolloffParams():
                     (self.rawformat.height, self.rawformat.width))
             except Exception:
                 critical('打开图片错误')
-            for channel, (y, x) in zip(self.rawformat.pattern, [(0, 0), (0, 1), (1, 0), (1, 1)]):
-                tmp = cv2.medianBlur(flatphoto_ratio[y::2, x::2], 5)
+            for blc, (y, x) in zip(self.blc.black_level, [(0, 0), (0, 1), (1, 0), (1, 1)]):
+                tmp = cv2.medianBlur(flatphoto_ratio[y::2, x::2] - blc, 5)
                 max_value = tmp.max()
                 self.flatphoto[y::2, x::2] = max_value / tmp
             self.need_flush = True
@@ -453,7 +454,7 @@ class RawImageParams():
         self.ccm = CCMParams()
         self.csc = CscParams()
         self.bpc = BPCParams()
-        self.rolloff = RolloffParams(self.rawformat)
+        self.rolloff = RolloffParams(self.rawformat, self.blc)
 
     def set_img_params_ui(self, ui:Ui_ImageEditor):
         """
