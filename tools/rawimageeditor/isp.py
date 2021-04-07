@@ -7,6 +7,7 @@ import sys          # float precision
 from scipy import signal        # convolutions
 from numba import jit
 import cv2
+import pywt
 
 def get_src_raw_data(raw: RawImageInfo, params: RawImageParams):
     width = params.rawformat.width
@@ -393,6 +394,47 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
         return ret_img
     else:
         params.set_error_str("color correction need RGB data")
+        return None
+
+def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
+    """
+    func: 小波降噪
+    """
+    w = 'sym4' # 定义小波基的类型
+    l = 3 # 变换层次为3
+    threshold = [0.01, 0.02, 0.04]
+    color_denoise_threhold = 25
+    if (raw.get_color_space() == "YCrCb"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after wavelet denoise', raw)
+        ret_img.set_color_space("YCrCb")
+        raw_data = raw.get_raw_data()
+        Y = raw_data[:,:,0]
+        coeffs = pywt.wavedec2(data=Y, wavelet=w, level=l) # 对图像进行小波分解
+
+        list_coeffs = []
+        for i in range(1, len(coeffs)):
+            list_coeffs_ = list(coeffs[i])
+            list_coeffs.append(list_coeffs_)
+
+        for r1 in range(len(list_coeffs)):
+            for r2 in range(len(list_coeffs[r1])):
+                # 对噪声滤波(软阈值)
+                list_coeffs[r1][r2] = pywt.threshold(list_coeffs[r1][r2], threshold[r1]*np.max(list_coeffs[r1][r2])) 
+
+        rec_coeffs = [] # 重构系数
+        rec_coeffs.append(coeffs[0]) # 将原图像的低尺度系数保留进来
+
+        for j in range(len(list_coeffs)):
+            rec_coeffs_ = tuple(list_coeffs[j])
+            rec_coeffs.append(rec_coeffs_)
+
+        ret_img.data[:,:,0] = pywt.waverec2(rec_coeffs, w)
+        ret_img.data[:,:,1] = cv2.bilateralFilter(raw_data[:,:,1], color_denoise_threhold, color_denoise_threhold*2, color_denoise_threhold/2)
+        ret_img.data[:,:,2] = cv2.bilateralFilter(raw_data[:,:,2], color_denoise_threhold, color_denoise_threhold*2, color_denoise_threhold/2)
+        return ret_img
+    else:
+        params.set_error_str("wavelet denoise need YCrCb data")
         return None
 
 

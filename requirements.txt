@@ -4,4 +4,4 @@ numpy
 opencv-python
 scipy
 numba
-openpyxl
+PyWavelets

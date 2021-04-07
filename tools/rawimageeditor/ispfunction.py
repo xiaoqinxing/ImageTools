@@ -13,11 +13,8 @@ pipeline_dict = {
     "ccm":          isp.color_correction,
     "gamma":        isp.gamma_correction,
     "ltm":          isp.ltm_correction,
-    "advanced chroma enhancement":  None,
-    "ace":                          None,
     "csc":                          isp.color_space_conversion,
-    "wavelet denoise":              None,
-    "wnr":                          None,
+    "wavelet denoise":              isp.wavelet_denoise,
     "adaptive spatial filter":      None,
     "asf":                          None,
     "bad pixel correction":         isp.bad_pixel_correction
