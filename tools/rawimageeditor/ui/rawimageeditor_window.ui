@@ -341,7 +341,7 @@
              </item>
              <item>
               <property name="text">
-               <string>ABF</string>
+               <string>bayer denoise</string>
               </property>
               <property name="background">
                <brush brushstyle="SolidPattern">
@@ -460,7 +460,7 @@
              </item>
              <item>
               <property name="text">
-               <string>wavelet denoise</string>
+               <string>yuv denoise</string>
               </property>
               <property name="background">
                <brush brushstyle="SolidPattern">
@@ -477,7 +477,7 @@
              </item>
              <item>
               <property name="text">
-               <string>adaptive spatial filter</string>
+               <string>yuv sharpen</string>
               </property>
               <property name="background">
                <brush brushstyle="SolidPattern">
@@ -527,16 +527,16 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
+              <y>-600</y>
               <width>364</width>
-              <height>743</height>
+              <height>811</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
              <item row="10" column="0">
               <widget class="QGroupBox" name="groupBox_14">
                <property name="title">
-                <string>wavelet denoise</string>
+                <string>yuv denoise</string>
                </property>
               </widget>
              </item>
@@ -669,7 +669,7 @@
              <item row="3" column="0">
               <widget class="QGroupBox" name="groupBox_7">
                <property name="title">
-                <string>ABF</string>
+                <string>bayer denoise</string>
                </property>
               </widget>
              </item>
@@ -1176,8 +1176,64 @@
              <item row="11" column="0">
               <widget class="QGroupBox" name="groupBox_15">
                <property name="title">
-                <string>adaptive spatial filter</string>
+                <string>yuv sharpen</string>
                </property>
+               <layout class="QGridLayout" name="gridLayout_16">
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_32">
+                  <property name="text">
+                   <string>3x3中值滤波强度</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QSlider" name="horizontalSlider_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_31">
+                  <property name="text">
+                   <string>边缘检测范围</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QSlider" name="horizontalSlider">
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_33">
+                  <property name="text">
+                   <string>整体强度</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QSlider" name="horizontalSlider_3">
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item row="1" column="0">

@@ -434,7 +434,78 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
         ret_img.data[:,:,2] = cv2.bilateralFilter(raw_data[:,:,2], color_denoise_threhold, color_denoise_threhold*2, color_denoise_threhold/2)
         return ret_img
     else:
-        params.set_error_str("wavelet denoise need YCrCb data")
+        params.set_error_str("YUV denoise need YCrCb data")
+        return None
+
+def sharpen(raw: RawImageInfo, params: RawImageParams):
+    """
+    func: yuv域的锐化
+    原理：高通算法 https://image.qinxing.xyz/20210413231951.png
+    1. 先进行一个3x3的中值滤波得到图Xm，sp是中值滤波的强度 𝑋𝑚 = sp ∙ media(X) + (1 − sp) ∙ X
+    2. 利用垂直和水平两个边缘检测滤波器对图Xm进行边缘检测，输出的图像作用在LUT权重表1(weight table)上得到一个锐化强度表Xw，强度可以大于1，
+    作用在LUT权重表2(sharpening weight)得到一个锐化权重α,范围为[0,1]
+    3. 对图Xm进行7x7的锐化，与锐化强度表Xw相乘，仅增强图像的边缘，得到锐化后的图像Xedge，然后对Xedge进行反差的限制
+    4. 对图Xm进行7x7的平滑滤波得到图像基础层Xsmooth
+    5. 对Xedge乘以锐化权重α, 对Xsmooth乘以(1-α) , 两者相加得到最后的Xout. 公式为Y = α ⋅ Y_HPF + (1−α) ⋅ Y_LPF
+    """
+    # sp = params.sharpen.medianblur_strength
+    # sharpen_strength = params.sharpen.sharpen_strength
+    # sharpen_weight = params.sharpen.sharpen_weight
+    sp = 0
+    sharpen_strength = 0.05
+    sharpen_weight = 0.05
+    edge_kernel = np.array([
+        [0, 0, 0, 0, 0, 0, 0],
+        [-0.0208, -0.0208, 0.0208, 0.0417, 0.0208, -0.0208, -0.0208],
+        [-0.0833, -0.0833, 0.0833, 0.1667, 0.0833, -0.0833, -0.0833],
+        [-0.1250, -0.1250, 0.1250, 0.2500, 0.1250, -0.1250, -0.1250],
+        [-0.0833, -0.0833, 0.0833, 0.1667, 0.0833, -0.0833, -0.0833],
+        [-0.0208, -0.0208, 0.0208, 0.0417, 0.0208, -0.0208, -0.0208],
+        [0, 0, 0, 0, 0, 0, 0]
+    ], dtype=np.float32)
+
+    hpf_kernel = np.array([
+        [-0.0012, -0.0044, 0.0262, -0.0357, 0.0262, -0.0044, -0.0012],
+        [ 0.0170, -0.0625, 0.0291,  0.0541, 0.0291, -0.0625, -0.0170],
+        [-0.0287, -0.1027, 0.0016,  0.2298, 0.0016, -0.1027, -0.0287],
+        [-0.0003, -0.1456, 0.0331,  0.2317, 0.0331, -0.1456, -0.0003],
+        [-0.0287, -0.1027, 0.0016,  0.2298, 0.0016, -0.1027, -0.0287],
+        [ 0.0170, -0.0625, 0.0291,  0.0541, 0.0291, -0.0625, -0.0170],
+        [-0.0012, -0.0044, 0.0262, -0.0357, 0.0262, -0.0044, -0.0012],
+    ], dtype=np.float32)
+
+    lpf_kernel = np.array([
+        [0.00000067, 0.00002292, 0.00019117, 0.00038771, 0.00019117, 0.00002292, 0.00000067],
+        [0.00002292, 0.00078633, 0.00655965, 0.01330373, 0.00655965, 0.00078633, 0.00002292],
+        [0.00019117, 0.00655965, 0.05472157, 0.11098164, 0.05472157, 0.00655965, 0.00019117],
+        [0.00038771, 0.01330373, 0.11098164, 0.22508352, 0.11098164, 0.01330373, 0.00038771],
+        [0.00019117, 0.00655965, 0.05472157, 0.11098164, 0.05472157, 0.00655965, 0.00019117],
+        [0.00002292, 0.00078633, 0.00655965, 0.01330373, 0.00655965, 0.00078633, 0.00002292],
+        [0.00000067, 0.00002292, 0.00019117, 0.00038771, 0.00019117, 0.00002292, 0.00000067],
+    ], dtype=np.float32)
+
+    if (raw.get_color_space() == "YCrCb"):
+        ret_img = RawImageInfo()
+        ret_img.create_image('after yuv sharpen', raw)
+        ret_img.set_color_space("YCrCb")
+        raw_data = raw.get_raw_data()
+        Y = raw_data[:,:,0]
+        # 步骤1
+        media = cv2.medianBlur(Y, 3)
+        Xm = sp * media + (1 - sp) * Y
+        del media
+        # 步骤2 由于高通水平垂直边缘检测器以及水平垂直方向上的高通滤波器都是一样的，我这里就简化成一个
+        edge = signal.convolve2d(Xm, edge_kernel, boundary='symm',mode='same')
+        Xw = edge * sharpen_strength
+        alpha = edge * sharpen_weight
+        Y_HPF = signal.convolve2d(Xm, hpf_kernel, boundary='symm',mode='same')
+        Xedge = Y_HPF * Xw
+        Y_LPF = signal.convolve2d(Xm, lpf_kernel, boundary='symm',mode='same')
+        ret_img.data[:,:,0] = alpha * Xedge + (1 - alpha) * Y_LPF
+        ret_img.data[:,:,1:] = raw_data[:,:,1:]
+        return ret_img
+    else:
+        params.set_error_str("YUV sharpen need YCrCb data")
         return None
 
 

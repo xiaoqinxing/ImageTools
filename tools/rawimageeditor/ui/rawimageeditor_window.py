@@ -252,7 +252,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -532, 364, 743))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 743))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_14 = QGroupBox(self.scrollAreaWidgetContents)
@@ -821,7 +821,7 @@ class Ui_ImageEditor(object):
         ___qlistwidgetitem3 = self.pipeline.item(3)
         ___qlistwidgetitem3.setText(QCoreApplication.translate("ImageEditor", u"rolloff", None));
         ___qlistwidgetitem4 = self.pipeline.item(4)
-        ___qlistwidgetitem4.setText(QCoreApplication.translate("ImageEditor", u"ABF", None));
+        ___qlistwidgetitem4.setText(QCoreApplication.translate("ImageEditor", u"bayer denoise", None));
         ___qlistwidgetitem5 = self.pipeline.item(5)
         ___qlistwidgetitem5.setText(QCoreApplication.translate("ImageEditor", u"demosaic", None));
         ___qlistwidgetitem6 = self.pipeline.item(6)
@@ -835,9 +835,9 @@ class Ui_ImageEditor(object):
         ___qlistwidgetitem10 = self.pipeline.item(10)
         ___qlistwidgetitem10.setText(QCoreApplication.translate("ImageEditor", u"CSC", None));
         ___qlistwidgetitem11 = self.pipeline.item(11)
-        ___qlistwidgetitem11.setText(QCoreApplication.translate("ImageEditor", u"wavelet denoise", None));
+        ___qlistwidgetitem11.setText(QCoreApplication.translate("ImageEditor", u"yuv denoise", None));
         ___qlistwidgetitem12 = self.pipeline.item(12)
-        ___qlistwidgetitem12.setText(QCoreApplication.translate("ImageEditor", u"adaptive spatial filter", None));
+        ___qlistwidgetitem12.setText(QCoreApplication.translate("ImageEditor", u"yuv sharpen", None));
         self.pipeline.setSortingEnabled(__sortingEnabled)
 
         self.reload.setText(QCoreApplication.translate("ImageEditor", u"\u7b97\u6cd5\u70ed\u66f4\u65b0", None))

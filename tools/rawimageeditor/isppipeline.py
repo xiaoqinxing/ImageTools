@@ -1,6 +1,5 @@
 from tools.rawimageeditor.RawImageParams import RawImageParams
 from tools.rawimageeditor.RawImageInfo import RawImageInfo
-from components.customwidget import critical
 import tools.rawimageeditor.ispfunction as ispfunc
 from imp import reload
 import time
@@ -194,7 +193,7 @@ class ISPProc(QThread):
                     self.img_list.append(ret_img)
                     self.mutex.release()
                 else:
-                    critical(params.get_error_str())
+                    self.errorCB.emit(params.get_error_str())
                     break
                 self.processRateCB.emit(i / length * 100)
                 i += 1
