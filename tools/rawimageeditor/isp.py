@@ -452,8 +452,9 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
     # sharpen_strength = params.sharpen.sharpen_strength
     # sharpen_weight = params.sharpen.sharpen_weight
     sp = 0
-    sharpen_strength = 0.05
-    sharpen_weight = 0.05
+    sharpen_strength = 2
+    sharpen_weight = 0.8
+    # np.interp(raw_data, linear_table, gamma_table)
     edge_kernel = np.array([
         [0, 0, 0, 0, 0, 0, 0],
         [-0.0208, -0.0208, 0.0208, 0.0417, 0.0208, -0.0208, -0.0208],
@@ -495,13 +496,13 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
         Xm = sp * media + (1 - sp) * Y
         del media
         # 步骤2 由于高通水平垂直边缘检测器以及水平垂直方向上的高通滤波器都是一样的，我这里就简化成一个
-        edge = signal.convolve2d(Xm, edge_kernel, boundary='symm',mode='same')
-        Xw = edge * sharpen_strength
-        alpha = edge * sharpen_weight
-        Y_HPF = signal.convolve2d(Xm, hpf_kernel, boundary='symm',mode='same')
-        Xedge = Y_HPF * Xw
+        # edge = signal.convolve2d(Xm, edge_kernel, boundary='symm',mode='same')
+        # Xw = edge * sharpen_strength
+        # alpha = edge * sharpen_weight
+        Xedge = signal.convolve2d(Xm, hpf_kernel, boundary='symm',mode='same')
+        Y_HPF = (Xedge * sharpen_strength + Xm)
         Y_LPF = signal.convolve2d(Xm, lpf_kernel, boundary='symm',mode='same')
-        ret_img.data[:,:,0] = alpha * Xedge + (1 - alpha) * Y_LPF
+        ret_img.data[:,:,0] = sharpen_weight * Y_HPF + (1 - sharpen_weight) * Y_LPF
         ret_img.data[:,:,1:] = raw_data[:,:,1:]
         return ret_img
     else:
