@@ -527,9 +527,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-600</y>
+              <y>-618</y>
               <width>364</width>
-              <height>811</height>
+              <height>829</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
@@ -1179,6 +1179,53 @@
                 <string>yuv sharpen</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_16">
+                <item row="3" column="1">
+                 <widget class="QSlider" name="clip_range">
+                  <property name="maximum">
+                   <number>128</number>
+                  </property>
+                  <property name="value">
+                   <number>64</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QLabel" name="label_34">
+                  <property name="text">
+                   <string>降噪阈值</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QSlider" name="sharpen_strength">
+                  <property name="maximum">
+                   <number>10</number>
+                  </property>
+                  <property name="value">
+                   <number>5</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_35">
+                  <property name="text">
+                   <string>锐化钳位阈值</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_33">
+                  <property name="text">
+                   <string>锐化强度</string>
+                  </property>
+                 </widget>
+                </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_32">
                   <property name="text">
@@ -1186,47 +1233,23 @@
                   </property>
                  </widget>
                 </item>
+                <item row="4" column="1">
+                 <widget class="QSlider" name="denoise_threshold">
+                  <property name="maximum">
+                   <number>250</number>
+                  </property>
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
                 <item row="1" column="1">
-                 <widget class="QSlider" name="horizontalSlider_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="label_31">
-                  <property name="text">
-                   <string>边缘检测范围</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QSlider" name="horizontalSlider">
+                 <widget class="QSlider" name="medianblur_strength">
                   <property name="maximum">
                    <number>100</number>
-                  </property>
-                  <property name="value">
-                   <number>50</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_33">
-                  <property name="text">
-                   <string>整体强度</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QSlider" name="horizontalSlider_3">
-                  <property name="maximum">
-                   <number>100</number>
-                  </property>
-                  <property name="value">
-                   <number>50</number>
                   </property>
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -1370,6 +1393,10 @@
   <tabstop>contrast</tabstop>
   <tabstop>hue</tabstop>
   <tabstop>saturation</tabstop>
+  <tabstop>medianblur_strength</tabstop>
+  <tabstop>sharpen_strength</tabstop>
+  <tabstop>clip_range</tabstop>
+  <tabstop>denoise_threshold</tabstop>
  </tabstops>
  <resources>
   <include location="../../../components/resource.qrc"/>

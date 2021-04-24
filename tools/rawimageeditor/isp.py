@@ -444,17 +444,15 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
     1. 先进行一个3x3的中值滤波得到图Xm，sp是中值滤波的强度 𝑋𝑚 = sp ∙ media(X) + (1 − sp) ∙ X
     2. 利用垂直和水平两个边缘检测滤波器对图Xm进行边缘检测，输出的图像作用在LUT权重表1(weight table)上得到一个锐化强度表Xw，强度可以大于1，
     作用在LUT权重表2(sharpening weight)得到一个锐化权重α,范围为[0,1]
-    3. 对图Xm进行7x7的锐化，与锐化强度表Xw相乘，仅增强图像的边缘，得到锐化后的图像Xedge，然后对Xedge进行反差的限制
-    4. 对图Xm进行7x7的平滑滤波得到图像基础层Xsmooth
+    3. 对图Xm进行7x7的高通滤波，与锐化强度表Xw相乘，仅增强图像的边缘，得到锐化后的图像Xedge，然后对Xedge进行反差的限制
+    4. 对图Xm进行7x7的低通滤波得到图像基础层Xsmooth
     5. 对Xedge乘以锐化权重α, 对Xsmooth乘以(1-α) , 两者相加得到最后的Xout. 公式为Y = α ⋅ Y_HPF + (1−α) ⋅ Y_LPF
     """
-    # sp = params.sharpen.medianblur_strength
-    # sharpen_strength = params.sharpen.sharpen_strength
-    # sharpen_weight = params.sharpen.sharpen_weight
-    sp = 0
-    sharpen_strength = 2
-    sharpen_weight = 0.8
-    # np.interp(raw_data, linear_table, gamma_table)
+    sp = params.sharpen.medianblur_strength/100
+    sharpen_strength = params.sharpen.sharpen_strength
+    denoise_threshold = params.sharpen.denoise_threshold
+    clip_range = params.sharpen.clip_range
+
     edge_kernel = np.array([
         [0, 0, 0, 0, 0, 0, 0],
         [-0.0208, -0.0208, 0.0208, 0.0417, 0.0208, -0.0208, -0.0208],
@@ -491,18 +489,31 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
         ret_img.set_color_space("YCrCb")
         raw_data = raw.get_raw_data()
         Y = raw_data[:,:,0]
-        # 步骤1
+        # 步骤1 进行一定权重的3x3的中值滤波
         media = cv2.medianBlur(Y, 3)
         Xm = sp * media + (1 - sp) * Y
         del media
-        # 步骤2 由于高通水平垂直边缘检测器以及水平垂直方向上的高通滤波器都是一样的，我这里就简化成一个
-        # edge = signal.convolve2d(Xm, edge_kernel, boundary='symm',mode='same')
-        # Xw = edge * sharpen_strength
-        # alpha = edge * sharpen_weight
+
+        # 步骤2.1 由于高通水平垂直边缘检测器以及水平垂直方向上的高通滤波器都是一样的，我这里就简化成一个
+        edge = np.abs(signal.convolve2d(Xm, edge_kernel, boundary='symm',mode='same'))
+
+        # 步骤2.2 高通是自定义锐化权重LUT表，为了简化我就用一个denoise_threshold
+        # 将锐化和降噪的区间区分开来，LUT曲线采用sigmod函数:1/(1+exp(-x))
+        alpha = 1/(1 + np.exp(-0.1 * (edge-denoise_threshold)))
+
+        # 步骤2.3 高通是自定义锐化强度LUT表，为了简化我利用alpha权重表进行一个比例的缩放，得到锐化强度Xw
+        Xw = sharpen_strength * alpha
+        
+        # 步骤3 对图Xm进行7x7的高通滤波，与锐化强度表Xw相乘，尽量仅增强图像的边缘，得到锐化后的图像Xedge，然后对Xedge进行反差的限制
         Xedge = signal.convolve2d(Xm, hpf_kernel, boundary='symm',mode='same')
-        Y_HPF = (Xedge * sharpen_strength + Xm)
+        after_clip = np.clip(Xedge * Xw, -clip_range, clip_range)
+        Y_HPF = (after_clip + Xm)
+
+        # 步骤4 对图Xm进行7x7的低通滤波得到图像基础层Xsmooth
         Y_LPF = signal.convolve2d(Xm, lpf_kernel, boundary='symm',mode='same')
-        ret_img.data[:,:,0] = sharpen_weight * Y_HPF + (1 - sharpen_weight) * Y_LPF
+        
+        # 步骤5 对Xedge乘以锐化权重α, 对Xsmooth乘以(1-α) , 两者相加得到最后的Xout. 公式为Y = α ⋅ Y_HPF + (1−α) ⋅ Y_LPF
+        ret_img.data[:,:,0] = alpha * Y_HPF + (1 - alpha) * Y_LPF
         ret_img.data[:,:,1:] = raw_data[:,:,1:]
         return ret_img
     else:

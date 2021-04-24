@@ -430,6 +430,60 @@ class RolloffParams():
     
     def get(self, ui:Ui_ImageEditor):
         return self.need_flush
+
+class SharpenParams():
+    need_flush = False
+    name = 'yuv sharpen'
+    medianblur_strength = 0
+    sharpen_strength = 5
+    denoise_threshold = 50
+    clip_range = 64
+    # TODO 滑动条右侧增加数值label显示
+
+    def set_medianblur_strength(self, value):
+        """
+        设置yuv 3x3中值滤波的强度
+        """
+        if(value != self.medianblur_strength):
+            self.medianblur_strength = value
+            self.need_flush = True
+    
+    def set_sharpen_strength(self, value):
+        """
+        设置yuv 锐化强度
+        """
+        if(value != self.sharpen_strength):
+            self.sharpen_strength = value
+            self.need_flush = True
+    
+    def set_denoise_threshold(self, value):
+        """
+        设置yuv 锐化权重
+        """
+        if(value != self.denoise_threshold):
+            self.denoise_threshold = value
+            self.need_flush = True
+    
+    def set_clip_range(self, value):
+        """
+        设置yuv 钳位阈值
+        """
+        if(value != self.clip_range):
+            self.clip_range = value
+            self.need_flush = True
+    
+    def set(self, ui:Ui_ImageEditor):
+        ui.medianblur_strength.setValue(self.medianblur_strength)
+        ui.sharpen_strength.setValue(self.sharpen_strength)
+        ui.denoise_threshold.setValue(self.denoise_threshold)
+        ui.clip_range.setValue(self.clip_range)
+    
+    def get(self, ui:Ui_ImageEditor):
+        self.set_medianblur_strength(ui.medianblur_strength.value())
+        self.set_sharpen_strength(ui.sharpen_strength.value())
+        self.set_denoise_threshold(ui.denoise_threshold.value())
+        self.set_clip_range(ui.clip_range.value())
+        return self.need_flush
     
 # =============================================================
 # class RawImageParams:
@@ -445,47 +499,48 @@ class RawImageParams():
         # 自动刷新pipeline的参数，防止设置参数没有生效
         self.need_flush = False
         self.need_flush_isp = []
-        self.rawformat = FormatParams()
-        self.demosaic = DemosaicParams()
-        self.ltm = LTMParams()
-        self.awb = AWBParams()
-        self.blc = BLCParams()
-        self.gamma = GammaParams()
-        self.ccm = CCMParams()
-        self.csc = CscParams()
-        self.bpc = BPCParams()
+        # params需要一一对应
+        self.params = [
+            FormatParams(),
+            DemosaicParams(),
+            LTMParams(),
+            AWBParams(),
+            BLCParams(),
+            GammaParams(),
+            CCMParams(),
+            CscParams(),
+            BPCParams(),
+            SharpenParams()
+        ]
+        [
+            self.rawformat,
+            self.demosaic,
+            self.ltm,
+            self.awb, 
+            self.blc,
+            self.gamma,
+            self.ccm,
+            self.csc,
+            self.bpc, 
+            self.sharpen
+        ] = self.params
+
         self.rolloff = RolloffParams(self.rawformat, self.blc)
 
     def set_img_params_ui(self, ui:Ui_ImageEditor):
         """
         设置参数界面的显示
         """
-        self.rawformat.set(ui)
-        self.demosaic.set(ui)
-        self.ltm.set(ui)
-        self.awb.set(ui)
-        self.blc.set(ui)
-        self.gamma.set(ui)
-        self.ccm.set(ui)
-        self.csc.set(ui)
-        self.bpc.set(ui)
-        self.rolloff.set(ui)
+        for param in self.params:
+            param.set(ui)
 
     def get_img_params(self, ui:Ui_ImageEditor):
         """
         func: 获取界面参数
         """
         self.need_flush_isp = []
-        self.get_params(self.rawformat, ui)
-        self.get_params(self.demosaic, ui)
-        self.get_params(self.ltm, ui)
-        self.get_params(self.awb, ui)
-        self.get_params(self.blc, ui)
-        self.get_params(self.gamma, ui)
-        self.get_params(self.ccm, ui)
-        self.get_params(self.csc, ui)
-        self.get_params(self.bpc, ui)
-        self.get_params(self.rolloff, ui)
+        for param in self.params:
+            self.get_params(param, ui)
         if(len(self.need_flush_isp) > 0):
             self.need_flush = True
 

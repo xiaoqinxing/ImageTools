@@ -252,7 +252,7 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 743))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -618, 364, 829))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.groupBox_14 = QGroupBox(self.scrollAreaWidgetContents)
@@ -682,6 +682,59 @@ class Ui_ImageEditor(object):
 
         self.groupBox_15 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_15.setObjectName(u"groupBox_15")
+        self.gridLayout_16 = QGridLayout(self.groupBox_15)
+        self.gridLayout_16.setObjectName(u"gridLayout_16")
+        self.clip_range = QSlider(self.groupBox_15)
+        self.clip_range.setObjectName(u"clip_range")
+        self.clip_range.setMaximum(128)
+        self.clip_range.setValue(64)
+        self.clip_range.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_16.addWidget(self.clip_range, 3, 1, 1, 1)
+
+        self.label_34 = QLabel(self.groupBox_15)
+        self.label_34.setObjectName(u"label_34")
+
+        self.gridLayout_16.addWidget(self.label_34, 4, 0, 1, 1)
+
+        self.sharpen_strength = QSlider(self.groupBox_15)
+        self.sharpen_strength.setObjectName(u"sharpen_strength")
+        self.sharpen_strength.setMaximum(10)
+        self.sharpen_strength.setValue(5)
+        self.sharpen_strength.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_16.addWidget(self.sharpen_strength, 2, 1, 1, 1)
+
+        self.label_35 = QLabel(self.groupBox_15)
+        self.label_35.setObjectName(u"label_35")
+
+        self.gridLayout_16.addWidget(self.label_35, 3, 0, 1, 1)
+
+        self.label_33 = QLabel(self.groupBox_15)
+        self.label_33.setObjectName(u"label_33")
+
+        self.gridLayout_16.addWidget(self.label_33, 2, 0, 1, 1)
+
+        self.label_32 = QLabel(self.groupBox_15)
+        self.label_32.setObjectName(u"label_32")
+
+        self.gridLayout_16.addWidget(self.label_32, 1, 0, 1, 1)
+
+        self.denoise_threshold = QSlider(self.groupBox_15)
+        self.denoise_threshold.setObjectName(u"denoise_threshold")
+        self.denoise_threshold.setMaximum(250)
+        self.denoise_threshold.setValue(50)
+        self.denoise_threshold.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_16.addWidget(self.denoise_threshold, 4, 1, 1, 1)
+
+        self.medianblur_strength = QSlider(self.groupBox_15)
+        self.medianblur_strength.setObjectName(u"medianblur_strength")
+        self.medianblur_strength.setMaximum(100)
+        self.medianblur_strength.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_16.addWidget(self.medianblur_strength, 1, 1, 1, 1)
+
 
         self.gridLayout_7.addWidget(self.groupBox_15, 11, 0, 1, 1)
 
@@ -772,6 +825,10 @@ class Ui_ImageEditor(object):
         QWidget.setTabOrder(self.luma, self.contrast)
         QWidget.setTabOrder(self.contrast, self.hue)
         QWidget.setTabOrder(self.hue, self.saturation)
+        QWidget.setTabOrder(self.saturation, self.medianblur_strength)
+        QWidget.setTabOrder(self.medianblur_strength, self.sharpen_strength)
+        QWidget.setTabOrder(self.sharpen_strength, self.clip_range)
+        QWidget.setTabOrder(self.clip_range, self.denoise_threshold)
 
         self.retranslateUi(ImageEditor)
 
@@ -842,7 +899,7 @@ class Ui_ImageEditor(object):
 
         self.reload.setText(QCoreApplication.translate("ImageEditor", u"\u7b97\u6cd5\u70ed\u66f4\u65b0", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ImageEditor", u"ISP\u53c2\u6570", None))
-        self.groupBox_14.setTitle(QCoreApplication.translate("ImageEditor", u"wavelet denoise", None))
+        self.groupBox_14.setTitle(QCoreApplication.translate("ImageEditor", u"yuv denoise", None))
         self.groupBox_12.setTitle(QCoreApplication.translate("ImageEditor", u"LTM", None))
         self.label_14.setText(QCoreApplication.translate("ImageEditor", u"\u6697\u533a\u63d0\u5347    ", None))
         self.label_15.setText(QCoreApplication.translate("ImageEditor", u"\u4eae\u533a\u6291\u5236", None))
@@ -851,7 +908,7 @@ class Ui_ImageEditor(object):
         self.label_3.setText(QCoreApplication.translate("ImageEditor", u"GB", None))
         self.label.setText(QCoreApplication.translate("ImageEditor", u"R", None))
         self.label_4.setText(QCoreApplication.translate("ImageEditor", u"B", None))
-        self.groupBox_7.setTitle(QCoreApplication.translate("ImageEditor", u"ABF", None))
+        self.groupBox_7.setTitle(QCoreApplication.translate("ImageEditor", u"bayer denoise", None))
         self.groupBox_13.setTitle(QCoreApplication.translate("ImageEditor", u"CSC", None))
         self.label_16.setText(QCoreApplication.translate("ImageEditor", u"\u4eae\u5ea6        ", None))
         self.label_18.setText(QCoreApplication.translate("ImageEditor", u"\u8272\u8c03      ", None))
@@ -887,7 +944,11 @@ class Ui_ImageEditor(object):
         self.demosaic_type.setItemText(1, QCoreApplication.translate("ImageEditor", u"Malvar2004", None))
         self.demosaic_type.setItemText(2, QCoreApplication.translate("ImageEditor", u"Menon2007", None))
 
-        self.groupBox_15.setTitle(QCoreApplication.translate("ImageEditor", u"adaptive spatial filter", None))
+        self.groupBox_15.setTitle(QCoreApplication.translate("ImageEditor", u"yuv sharpen", None))
+        self.label_34.setText(QCoreApplication.translate("ImageEditor", u"\u964d\u566a\u9608\u503c", None))
+        self.label_35.setText(QCoreApplication.translate("ImageEditor", u"\u9510\u5316\u94b3\u4f4d\u9608\u503c", None))
+        self.label_33.setText(QCoreApplication.translate("ImageEditor", u"\u9510\u5316\u5f3a\u5ea6", None))
+        self.label_32.setText(QCoreApplication.translate("ImageEditor", u"3x3\u4e2d\u503c\u6ee4\u6ce2\u5f3a\u5ea6", None))
         self.groupBox_6.setTitle(QCoreApplication.translate("ImageEditor", u"bad pixel correction", None))
         self.label_21.setText(QCoreApplication.translate("ImageEditor", u"\u68c0\u6d4b\u533a\u57df     ", None))
         self.photo_title.setTitle(QCoreApplication.translate("ImageEditor", u"\u56fe\u7247\u9884\u89c8", None))
