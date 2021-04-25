@@ -24,24 +24,16 @@ class FieldDepthWindow(SubWindow):
         self.set_ui_params()
 
         self.plot_fig = MatplotlibLayout(self.ui.plotview)
-        self.plot_figure()
         self.tableWidget = ParamsTable(self.ui.plotview)
+        self.finished_plot_cb()
 
     def init_params_range(self):
-        self.ui.apeture_min_range.setValue(self.params.aperture/2)
-        self.ui.apeture_max_range.setValue(self.params.aperture*2)
-        self.ui.distance_min_range.setValue(self.params.focus_distance/2000)
-        self.ui.distance_max_range.setValue(self.params.focus_distance/500)
-        self.ui.focus_min_range.setValue(self.params.focus_length/2)
-        self.ui.focus_max_range.setValue(self.params.focus_length*2)
-        self.params.aperture_range[0] = float(self.ui.apeture_min_range.text())
-        self.params.aperture_range[1] = float(self.ui.apeture_max_range.text())
-        self.params.focus_distance_range[0] = float(
-            self.ui.distance_min_range.text())*1000
-        self.params.focus_distance_range[1] = float(
-            self.ui.distance_max_range.text())*1000
-        self.params.focus_range[0] = float(self.ui.focus_min_range.text())
-        self.params.focus_range[1] = float(self.ui.focus_max_range.text())
+        self.params.aperture_range[0] = self.params.aperture/2
+        self.params.aperture_range[1] = self.params.aperture*2
+        self.params.focus_distance_range[0] = self.params.focus_distance/2
+        self.params.focus_distance_range[1] = self.params.focus_distance*2
+        self.params.focus_range[0] = self.params.focus_length/2
+        self.params.focus_range[1] = self.params.focus_length*2
 
     def plot_figure(self):
         self.plot_fig.clean()

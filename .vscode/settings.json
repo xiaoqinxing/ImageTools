@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\qinxing\\AppData\\Local\\Programs\\Python\\Python38\\python.exe",
+    "python.pythonPath": "C:\\Users\\qinxing\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
     // 默认对Python文件进行静态检查
     "python.linting.enabled": true,
 

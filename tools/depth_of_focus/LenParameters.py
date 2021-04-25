@@ -12,15 +12,14 @@ class LenParameters(object):
         @confusion_circle_diam: 弥散圈直径(单位mm)
         @cmos_size: sensor尺寸(单位mm)
         '''
-        self.focus_length = 0
-        self.aperture = 0
-        self.focus_distance = 0
-        self.effective_focus_length = 0
+        self.focus_length = 50
+        self.aperture = 1.4
+        self.focus_distance = 2000
         self.focus_distance_range = [0, 0]
         self.aperture_range = [0, 0]
         self.focus_range = [0, 0]
-        self.confusion_circle_diam = 0
-        self.cmos_size = 0
+        self.confusion_circle_diam = 0.04
+        self.cmos_size = 3.0
 
     def show(self):
         '''
@@ -30,7 +29,6 @@ class LenParameters(object):
         # print('实际焦距: ' + str(self.focus_length) + ' mm')
         # print('光圈: F/' + str(self.aperture))
         # print('对焦距离: ' + str(self.focus_distance) + ' mm')
-        # print('有效焦距: ' + str(self.effective_focus_length) + ' mm')
         # print('弥散圈直径: ' + str(self.confusion_circle_diam) + ' mm')
         # print('=========================================')
         return
