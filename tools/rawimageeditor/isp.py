@@ -399,43 +399,64 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
 def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
     """
     func: 小波降噪
+    我理解的高通滤波器原理：
+    1. 先进行4层小波变换
+    2. 每层都经过一个双边低通滤波滤波器，得到Xb, 与原图X相减，得到噪声信息X-Xb
+    3. 对噪声信息进行软阈值处理Xn
+    4. 原图X与噪声信号Xn相减，得到每层的输出
+    5. 进行小波逆变换，还原图像
+    其中的234步骤，封装到了denoise_one_level函数中
     """
     w = 'sym4' # 定义小波基的类型
-    l = 3 # 变换层次为3
-    threshold = [0.01, 0.02, 0.04]
-    color_denoise_threhold = 25
+    l = 2 # 简化变换层次为2
+    noise_threshold = [0.01, 0.02, 0.04]
+    denoise_strength = [50, 50, 50]
+    color_denoise_strength = 50
     if (raw.get_color_space() == "YCrCb"):
         ret_img = RawImageInfo()
         ret_img.create_image('after wavelet denoise', raw)
         ret_img.set_color_space("YCrCb")
         raw_data = raw.get_raw_data()
         Y = raw_data[:,:,0]
-        coeffs = pywt.wavedec2(data=Y, wavelet=w, level=l) # 对图像进行小波分解
-
-        list_coeffs = []
-        for i in range(1, len(coeffs)):
-            list_coeffs_ = list(coeffs[i])
-            list_coeffs.append(list_coeffs_)
-
+        # 亮度降噪
+        # 对图像进行小波分解
+        coeffs = pywt.wavedec2(data=Y, wavelet=w, level=l) 
+        
+        # 将中高频图像保存到list中
+        list_coeffs = [[0] * 3 for i in range(l)]
+        # 将中高频的图像进行降噪
         for r1 in range(len(list_coeffs)):
             for r2 in range(len(list_coeffs[r1])):
-                # 对噪声滤波(软阈值)
-                list_coeffs[r1][r2] = pywt.threshold(list_coeffs[r1][r2], threshold[r1]*np.max(list_coeffs[r1][r2])) 
+                list_coeffs[r1][r2] = denoise_one_level(coeffs[r1+1][r2], denoise_strength[r1+1], noise_threshold[r1+1])
 
-        rec_coeffs = [] # 重构系数
-        rec_coeffs.append(coeffs[0]) # 将原图像的低尺度系数保留进来
+        rec_coeffs = []
+        # 对低频图像进行降噪
+        rec_coeffs.append(denoise_one_level(coeffs[0], denoise_strength[0], noise_threshold[0]))
 
+        # 转换成tuple
         for j in range(len(list_coeffs)):
             rec_coeffs_ = tuple(list_coeffs[j])
             rec_coeffs.append(rec_coeffs_)
 
+        # 小波逆变换
         ret_img.data[:,:,0] = pywt.waverec2(rec_coeffs, w)
-        ret_img.data[:,:,1] = cv2.bilateralFilter(raw_data[:,:,1], color_denoise_threhold, color_denoise_threhold*2, color_denoise_threhold/2)
-        ret_img.data[:,:,2] = cv2.bilateralFilter(raw_data[:,:,2], color_denoise_threhold, color_denoise_threhold*2, color_denoise_threhold/2)
+
+        # 色度降噪
+        ret_img.data[:,:,1] = cv2.bilateralFilter(raw_data[:,:,1], 7, color_denoise_strength, color_denoise_strength)
+        ret_img.data[:,:,2] = cv2.bilateralFilter(raw_data[:,:,2], 7, color_denoise_strength, color_denoise_strength)
         return ret_img
     else:
         params.set_error_str("YUV denoise need YCrCb data")
         return None
+
+def denoise_one_level(src, strength, noise_threshold):
+    """
+    对每层小波变换的图像进行降噪
+    """
+    Xb = cv2.bilateralFilter(src, 5, strength, strength)
+    noise = src - Xb
+    Xn = pywt.threshold(noise, noise_threshold)
+    return (src - Xn)
 
 def sharpen(raw: RawImageInfo, params: RawImageParams):
     """
@@ -800,72 +821,6 @@ class bayer_denoising:
         return self.name
 
 
-# =============================================================
-# class: nonlinearity
-#   apply gamma or degamma
-# =============================================================
-class nonlinearity:
-    def __init__(self, data, name="nonlinearity"):
-        self.data = np.float32(data)
-        self.name = name
-
-    def luma_adjustment(self, multiplier, clip_range=[0, 65535]):
-        # The multiplier is applied only on luma channel
-        # by a multipler in log10 scale:
-        #   multipler 10 means multiplied by 1.
-        #   multipler 100 means multiplied by 2. as such
-
-        print("----------------------------------------------------")
-        print("Running brightening...")
-
-        return np.clip(np.log10(multiplier) * self.data, clip_range[0], clip_range[1])
-
-    def by_value(self, value, clip_range):
-
-        print("----------------------------------------------------")
-        print("Running nonlinearity by value...")
-
-        # clip within the range
-        data = np.clip(self.data, clip_range[0], clip_range[1])
-        # make 0 to 1
-        data = data / clip_range[1]
-        # apply nonlinearity
-        return np.clip(clip_range[1] * (data**value), clip_range[0], clip_range[1])
-
-    def by_table(self, table, nonlinearity_type="gamma", clip_range=[0, 65535]):
-
-        print("----------------------------------------------------")
-        print("Running nonlinearity by table...")
-
-        gamma_table = np.loadtxt(table)
-        gamma_table = clip_range[1] * gamma_table / np.max(gamma_table)
-        linear_table = np.linspace(
-            clip_range[0], clip_range[1], np.size(gamma_table))
-
-        # linear interpolation, query is the self.data
-        if (nonlinearity_type == "gamma"):
-            # mapping is from linear_table to gamma_table
-            return np.clip(np.interp(self.data, linear_table, gamma_table), clip_range[0], clip_range[1])
-        elif (nonlinearity_type == "degamma"):
-            # mapping is from gamma_table to linear_table
-            return np.clip(np.interp(self.data, gamma_table, linear_table), clip_range[0], clip_range[1])
-
-    def by_equation(self, a, b, clip_range):
-
-        print("----------------------------------------------------")
-        print("Running nonlinearity by equation...")
-
-        # clip within the range
-        data = np.clip(self.data, clip_range[0], clip_range[1])
-        # make 0 to 1
-        data = data / clip_range[1]
-
-        # apply nonlinearity
-        return np.clip(clip_range[1] * (a * np.exp(b * data) + data + a * data - a * np.exp(b) * data - a), clip_range[0], clip_range[1])
-
-    def __str__(self):
-        return self.name
-
 
 # =============================================================
 # class: tone_mapping
@@ -955,104 +910,6 @@ class tone_mapping:
         rgb_out = utility.color_conversion(ycc_out).ycc2rgb("bt601")
 
         return np.clip(rgb_out, clip_range[0], clip_range[1])
-
-
-# =============================================================
-# class: sharpening
-#   sharpens the image
-# =============================================================
-class sharpening:
-    def __init__(self, data, name="sharpening"):
-        self.data = np.float32(data)
-        self.name = name
-
-    def unsharp_masking(self, gaussian_kernel_size=[5, 5], gaussian_sigma=2.0,
-                        slope=1.5, tau_threshold=0.05, gamma_speed=4., clip_range=[0, 65535]):
-        # Objective: sharpen image
-        # Input:
-        #   gaussian_kernel_size:   dimension of the gaussian blur filter kernel
-        #
-        #   gaussian_sigma:         spread of the gaussian blur filter kernel
-        #                           bigger sigma more sharpening
-        #
-        #   slope:                  controls the boost.
-        #                           the amount of sharpening, higher slope
-        #                           means more aggresssive sharpening
-        #
-        #   tau_threshold:          controls the amount of coring.
-        #                           threshold value till which the image is
-        #                           not sharpened. The lower the value of
-        #                           tau_threshold the more frequencies
-        #                           goes through the sharpening process
-        #
-        #   gamma_speed:            controls the speed of convergence to the slope
-        #                           smaller value gives a little bit more
-        #                           sharpened image, this may be a fine tuner
-
-        print("----------------------------------------------------")
-        print("Running sharpening by unsharp masking...")
-
-        # create gaussian kernel
-        gaussian_kernel = utility.create_filter().gaussian(
-            gaussian_kernel_size, gaussian_sigma)
-
-        # convolove the image with the gaussian kernel
-        # first input is the image
-        # second input is the kernel
-        # output shape will be the same as the first input
-        # boundary will be padded by using symmetrical method while convolving
-        if np.ndim(self.data > 2):
-            image_blur = np.empty(np.shape(self.data), dtype=np.float32)
-            for i in range(0, np.shape(self.data)[2]):
-                image_blur[:, :, i] = signal.convolve2d(
-                    self.data[:, :, i], gaussian_kernel, mode="same", boundary="symm")
-        else:
-            image_blur = signal.convolove2d(
-                self.data, gaussian_kernel, mode="same", boundary="symm")
-
-        # the high frequency component image
-        image_high_pass = self.data - image_blur
-
-        # soft coring (see in utility)
-        # basically pass the high pass image via a slightly nonlinear function
-        tau_threshold = tau_threshold * clip_range[1]
-
-        # add the soft cored high pass image to the original and clip
-        # within range and return
-        return np.clip(self.data + utility.special_function(
-            image_high_pass).soft_coring(
-            slope, tau_threshold, gamma_speed), clip_range[0], clip_range[1])
-
-    def __str__(self):
-        return self.name
-
-
-# =============================================================
-# class: noise_reduction
-#   reduce noise of the nonlinear image (after gamma)
-# =============================================================
-class noise_reduction:
-    def __init__(self, data, clip_range=[0, 65535], name="noise reduction"):
-        self.data = np.float32(data)
-        self.clip_range = clip_range
-        self.name = name
-
-    def sigma_filter(self, neighborhood_size=7, sigma=[6, 6, 6]):
-
-        print("----------------------------------------------------")
-        print("Running noise reduction by sigma filter...")
-
-        if np.ndim(self.data > 2):  # if rgb image
-            output = np.empty(np.shape(self.data), dtype=np.float32)
-            for i in range(0, np.shape(self.data)[2]):
-                output[:, :, i] = utility.helpers(
-                    self.data[:, :, i]).sigma_filter_helper(neighborhood_size, sigma[i])
-            return np.clip(output, self.clip_range[0], self.clip_range[1])
-        else:  # gray image
-            return np.clip(utility.helpers(self.data).sigma_filter_helper(neighborhood_size, sigma), self.clip_range[0], self.clip_range[1])
-
-    def __str__(self):
-        return self.name
 
 
 # =============================================================
