@@ -527,9 +527,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-618</y>
+              <y>-722</y>
               <width>364</width>
-              <height>829</height>
+              <height>933</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
@@ -538,6 +538,120 @@
                <property name="title">
                 <string>yuv denoise</string>
                </property>
+               <layout class="QGridLayout" name="gridLayout_17">
+                <item row="3" column="2">
+                 <widget class="QSlider" name="noise_threshold_m">
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="2">
+                 <widget class="QSlider" name="noise_threshold_h">
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_36">
+                  <property name="text">
+                   <string>中频</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QSlider" name="denoise_strength_l">
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QSlider" name="denoise_strength_m">
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="1">
+                 <widget class="QSlider" name="denoise_strength_h">
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLabel" name="label_38">
+                  <property name="text">
+                   <string>降噪强度</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QLabel" name="label_39">
+                  <property name="text">
+                   <string>噪声阈值</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QSlider" name="noise_threshold_l">
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QLabel" name="label_37">
+                  <property name="text">
+                   <string>高频</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_31">
+                  <property name="text">
+                   <string>低频</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="0">
+                 <widget class="QLabel" name="label_40">
+                  <property name="text">
+                   <string>色度降噪强度</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="1" colspan="2">
+                 <widget class="QSlider" name="color_denoise_strength">
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item row="8" column="0">

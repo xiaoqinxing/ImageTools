@@ -484,6 +484,53 @@ class SharpenParams():
         self.set_denoise_threshold(ui.denoise_threshold.value())
         self.set_clip_range(ui.clip_range.value())
         return self.need_flush
+
+
+class DenoiseParams():
+    need_flush = False
+    name = 'yuv denoise'
+    noise_threshold = [50, 50, 50]
+    denoise_strength = [50, 50, 50]
+    color_denoise_strength = 50
+
+    def set_noise_threshold(self, value):
+        """
+        设置yuv 降噪阈值
+        """
+        if(value != self.noise_threshold):
+            self.noise_threshold = value
+            self.need_flush = True
+    
+    def set_denoise_strength(self, value):
+        """
+        设置yuv 降噪强度
+        """
+        if(value != self.denoise_strength):
+            self.denoise_strength = value
+            self.need_flush = True
+    
+    def set_color_denoise_strength(self, value):
+        """
+        设置yuv 色度降噪强度
+        """
+        if(value != self.color_denoise_strength):
+            self.color_denoise_strength = value
+            self.need_flush = True
+    
+    def set(self, ui:Ui_ImageEditor):
+        ui.noise_threshold_l.setValue(self.noise_threshold[0])
+        ui.noise_threshold_m.setValue(self.noise_threshold[1])
+        ui.noise_threshold_h.setValue(self.noise_threshold[2])
+        ui.denoise_strength_l.setValue(self.denoise_strength[0])
+        ui.denoise_strength_m.setValue(self.denoise_strength[1])
+        ui.denoise_strength_h.setValue(self.denoise_strength[2])
+        ui.color_denoise_strength.setValue(self.color_denoise_strength)
+    
+    def get(self, ui:Ui_ImageEditor):
+        self.set_noise_threshold([ui.noise_threshold_l.value(), ui.noise_threshold_m.value(), ui.noise_threshold_h.value()])
+        self.set_denoise_strength([ui.denoise_strength_l.value(), ui.denoise_strength_m.value(), ui.denoise_strength_h.value()])
+        self.set_color_denoise_strength(ui.color_denoise_strength.value())
+        return self.need_flush
     
 # =============================================================
 # class RawImageParams:
@@ -510,7 +557,8 @@ class RawImageParams():
             CCMParams(),
             CscParams(),
             BPCParams(),
-            SharpenParams()
+            SharpenParams(),
+            DenoiseParams()
         ]
         [
             self.rawformat,
@@ -522,7 +570,8 @@ class RawImageParams():
             self.ccm,
             self.csc,
             self.bpc, 
-            self.sharpen
+            self.sharpen,
+            self.denoise
         ] = self.params
 
         self.rolloff = RolloffParams(self.rawformat, self.blc)

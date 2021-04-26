@@ -409,9 +409,9 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
     """
     w = 'sym4' # 定义小波基的类型
     l = 2 # 简化变换层次为2
-    noise_threshold = [0.01, 0.02, 0.04]
-    denoise_strength = [50, 50, 50]
-    color_denoise_strength = 50
+    noise_threshold = params.denoise.noise_threshold
+    denoise_strength = params.denoise.denoise_strength
+    color_denoise_strength = params.denoise.color_denoise_strength
     if (raw.get_color_space() == "YCrCb"):
         ret_img = RawImageInfo()
         ret_img.create_image('after wavelet denoise', raw)
@@ -427,11 +427,11 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
         # 将中高频的图像进行降噪
         for r1 in range(len(list_coeffs)):
             for r2 in range(len(list_coeffs[r1])):
-                list_coeffs[r1][r2] = denoise_one_level(coeffs[r1+1][r2], denoise_strength[r1+1], noise_threshold[r1+1])
+                list_coeffs[r1][r2] = denoise_one_level(coeffs[r1+1][r2], denoise_strength[r1+1], noise_threshold[r1+1]/2000)
 
         rec_coeffs = []
         # 对低频图像进行降噪
-        rec_coeffs.append(denoise_one_level(coeffs[0], denoise_strength[0], noise_threshold[0]))
+        rec_coeffs.append(denoise_one_level(coeffs[0], denoise_strength[0], noise_threshold[0]/2000))
 
         # 转换成tuple
         for j in range(len(list_coeffs)):
