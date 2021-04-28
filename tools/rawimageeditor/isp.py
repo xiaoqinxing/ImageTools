@@ -412,6 +412,7 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
     noise_threshold = params.denoise.noise_threshold
     denoise_strength = params.denoise.denoise_strength
     color_denoise_strength = params.denoise.color_denoise_strength
+    # TODO 需要留意下小波降噪的软阈值处理，阈值为多少比较合适
     if (raw.get_color_space() == "YCrCb"):
         ret_img = RawImageInfo()
         ret_img.create_image('after wavelet denoise', raw)
@@ -451,7 +452,7 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
 
 def denoise_one_level(src, strength, noise_threshold):
     """
-    对每层小波变换的图像进行降噪
+    func: 对每层小波变换的图像进行降噪
     """
     Xb = cv2.bilateralFilter(src, 5, strength, strength)
     noise = src - Xb
@@ -516,7 +517,7 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
         del media
 
         # 步骤2.1 由于高通水平垂直边缘检测器以及水平垂直方向上的高通滤波器都是一样的，我这里就简化成一个
-        edge = np.abs(signal.convolve2d(Xm, edge_kernel, boundary='symm',mode='same'))
+        edge = np.abs(cv2.filter2D(Xm, -1, edge_kernel))
 
         # 步骤2.2 高通是自定义锐化权重LUT表，为了简化我就用一个denoise_threshold
         # 将锐化和降噪的区间区分开来，LUT曲线采用sigmod函数:1/(1+exp(-x))
@@ -526,12 +527,12 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
         Xw = sharpen_strength * alpha
         
         # 步骤3 对图Xm进行7x7的高通滤波，与锐化强度表Xw相乘，尽量仅增强图像的边缘，得到锐化后的图像Xedge，然后对Xedge进行反差的限制
-        Xedge = signal.convolve2d(Xm, hpf_kernel, boundary='symm',mode='same')
+        Xedge = cv2.filter2D(Xm, -1, hpf_kernel)
         after_clip = np.clip(Xedge * Xw, -clip_range, clip_range)
         Y_HPF = (after_clip + Xm)
 
         # 步骤4 对图Xm进行7x7的低通滤波得到图像基础层Xsmooth
-        Y_LPF = signal.convolve2d(Xm, lpf_kernel, boundary='symm',mode='same')
+        Y_LPF = cv2.filter2D(Xm, -1, lpf_kernel)
         
         # 步骤5 对Xedge乘以锐化权重α, 对Xsmooth乘以(1-α) , 两者相加得到最后的Xout. 公式为Y = α ⋅ Y_HPF + (1−α) ⋅ Y_LPF
         ret_img.data[:,:,0] = alpha * Y_HPF + (1 - alpha) * Y_LPF

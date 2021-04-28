@@ -24,7 +24,6 @@ class RawImageInfo():
         # 默认以14位进行处理
         self.__bit_depth = 14
         self.max_data = 4095
-        self.__size = [0, 0]
         # 后续的ISP算法处理基本仅支持float类型，int类型不予以支持，但是保留了接口
         self.dtype = np.float32
 
@@ -41,7 +40,6 @@ class RawImageInfo():
 
         if (self.data is not None):
             self.name = filename.split('/')[-1]
-            self.__size = np.shape(self.data)
             self.data = self.data.astype(self.dtype)
             self.__raw_bit_depth = bit_depth
             if(np.issubdtype(self.dtype, np.integer)):
@@ -64,7 +62,6 @@ class RawImageInfo():
 
         if (self.data is not None):
             self.name = params.rawformat.filename.split('/')[-1]
-            self.__size = np.shape(self.data)
             self.data = self.data.astype(self.dtype)
             self.__raw_bit_depth = params.rawformat.bit_depth
             if(np.issubdtype(self.dtype, np.integer)):
@@ -87,7 +84,6 @@ class RawImageInfo():
             self.data = np.zeros(shape, dtype=raw.dtype)
         self.dtype = raw.dtype
         self.name = name
-        self.__size = shape
         self.__raw_bit_depth = raw.get_raw_bit_depth()
         self.__bit_depth = raw.get_bit_depth()
         if(np.issubdtype(self.dtype, np.integer)):
@@ -132,21 +128,18 @@ class RawImageInfo():
     def get_name(self):
         return self.name
 
-    def set_size(self, size):
-        self.__size = size
-
     def get_size(self):
-        return self.__size
+        return self.data.shape
 
     def get_width(self):
-        return self.__size[1]
+        return self.data.shape[1]
 
     def get_height(self):
-        return self.__size[0]
+        return self.data.shape[0]
 
     def get_depth(self):
         if np.ndim(self.data) > 2:
-            return self.__size[2]
+            return self.data.shape[2]
         else:
             return 0
 
@@ -318,7 +311,7 @@ class RawImageInfo():
         brief: x,y为float型，输出坐标(x,y)的值
         """
 
-        width, height = self.__size[0], self.__size[1]
+        width, height = self.data.shape[0], self.data.shape[1]
 
         x0 = np.floor(x).astype(int)
         x1 = x0 + 1
@@ -366,7 +359,7 @@ class RawImageInfo():
         """
         pattern = self.__bayer_pattern
 
-        channels = dict((channel, np.zeros(self.__size, dtype=bool))
+        channels = dict((channel, np.zeros(self.data.shape, dtype=bool))
                         for channel in 'rgb')
         for channel, (y, x) in zip(pattern, [(0, 0), (0, 1), (1, 0), (1, 1)]):
             channels[channel][y::2, x::2] = True
