@@ -492,6 +492,7 @@ class DenoiseParams():
     noise_threshold = [50, 50, 50]
     denoise_strength = [50, 50, 50]
     color_denoise_strength = 50
+    noise_weight = [50, 50, 50]
 
     def set_noise_threshold(self, value):
         """
@@ -517,6 +518,14 @@ class DenoiseParams():
             self.color_denoise_strength = value
             self.need_flush = True
     
+    def set_noise_weight(self, value):
+        """
+        设置yuv 降噪权重
+        """
+        if(value != self.noise_weight):
+            self.noise_weight = value
+            self.need_flush = True
+    
     def set(self, ui:Ui_ImageEditor):
         ui.noise_threshold_l.setValue(self.noise_threshold[0])
         ui.noise_threshold_m.setValue(self.noise_threshold[1])
@@ -524,11 +533,18 @@ class DenoiseParams():
         ui.denoise_strength_l.setValue(self.denoise_strength[0])
         ui.denoise_strength_m.setValue(self.denoise_strength[1])
         ui.denoise_strength_h.setValue(self.denoise_strength[2])
+        ui.noise_weight_l.setValue(self.noise_weight[0])
+        ui.noise_weight_m.setValue(self.noise_weight[1])
+        ui.noise_weight_h.setValue(self.noise_weight[2])
         ui.color_denoise_strength.setValue(self.color_denoise_strength)
     
-    def get(self, ui:Ui_ImageEditor):
-        self.set_noise_threshold([ui.noise_threshold_l.value(), ui.noise_threshold_m.value(), ui.noise_threshold_h.value()])
-        self.set_denoise_strength([ui.denoise_strength_l.value(), ui.denoise_strength_m.value(), ui.denoise_strength_h.value()])
+    def get(self, ui: Ui_ImageEditor):
+        self.set_noise_threshold([ui.noise_threshold_l.value(
+        ), ui.noise_threshold_m.value(), ui.noise_threshold_h.value()])
+        self.set_denoise_strength([ui.denoise_strength_l.value(
+        ), ui.denoise_strength_m.value(), ui.denoise_strength_h.value()])
+        self.set_noise_weight([ui.noise_weight_l.value(
+        ), ui.noise_weight_m.value(), ui.noise_weight_h.value()])
         self.set_color_denoise_strength(ui.color_denoise_strength.value())
         return self.need_flush
     

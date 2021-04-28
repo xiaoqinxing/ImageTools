@@ -400,39 +400,46 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
     """
     func: 小波降噪
     我理解的高通滤波器原理：
-    1. 先进行4层小波变换
-    2. 每层都经过一个双边低通滤波滤波器，得到Xb, 与原图X相减，得到噪声信息X-Xb
-    3. 对噪声信息进行软阈值处理Xn
-    4. 原图X与噪声信号Xn相减，得到每层的输出
-    5. 进行小波逆变换，还原图像
-    其中的234步骤，封装到了denoise_one_level函数中
+        1. 先进行3层小波变换，分别是低频、中频、高频
+        2. 每层都经过一个双边低通滤波滤波器，得到Xb, 与原图X相减，得到噪声信息X-Xb
+        3. 对噪声信息进行软阈值处理Xn: 先对Xn乘以一个降噪权重，然后限制阈值
+        4. 原图X与噪声信号Xn相减，得到每层的输出
+        5. 进行小波逆变换，还原图像
+        其中的234步骤，封装到了denoise_one_level函数中
+    参数：
+    @denoise_strength：降噪强度，值越大，双边滤波的强度越强
+    @noise_threshold：降噪阈值，值越大，噪声范围越大
+    @noise_weight：降噪权重，值越大，降噪越强，值为0的时候，就不进行降噪
+    @color_denoise_strength: 色度降噪强度，值越大，色度降噪越强
     """
     w = 'sym4' # 定义小波基的类型
     l = 2 # 简化变换层次为2
     noise_threshold = params.denoise.noise_threshold
     denoise_strength = params.denoise.denoise_strength
     color_denoise_strength = params.denoise.color_denoise_strength
-    # TODO 需要留意下小波降噪的软阈值处理，阈值为多少比较合适
+    noise_weight = params.denoise.noise_weight
     if (raw.get_color_space() == "YCrCb"):
         ret_img = RawImageInfo()
         ret_img.create_image('after wavelet denoise', raw)
         ret_img.set_color_space("YCrCb")
         raw_data = raw.get_raw_data()
-        Y = raw_data[:,:,0]
+        Y = raw_data[:, :, 0]
         # 亮度降噪
         # 对图像进行小波分解
-        coeffs = pywt.wavedec2(data=Y, wavelet=w, level=l) 
-        
+        coeffs = pywt.wavedec2(data=Y, wavelet=w, level=l)
+
         # 将中高频图像保存到list中
         list_coeffs = [[0] * 3 for i in range(l)]
         # 将中高频的图像进行降噪
         for r1 in range(len(list_coeffs)):
             for r2 in range(len(list_coeffs[r1])):
-                list_coeffs[r1][r2] = denoise_one_level(coeffs[r1+1][r2], denoise_strength[r1+1], noise_threshold[r1+1]/2000)
+                list_coeffs[r1][r2] = denoise_one_level(
+                    coeffs[r1+1][r2], denoise_strength[r1+1], noise_threshold[r1+1], noise_weight[0]/100)
 
         rec_coeffs = []
         # 对低频图像进行降噪
-        rec_coeffs.append(denoise_one_level(coeffs[0], denoise_strength[0], noise_threshold[0]/2000))
+        rec_coeffs.append(denoise_one_level(
+            coeffs[0], denoise_strength[0], noise_threshold[0], noise_weight[0]/100))
 
         # 转换成tuple
         for j in range(len(list_coeffs)):
@@ -440,23 +447,32 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
             rec_coeffs.append(rec_coeffs_)
 
         # 小波逆变换
-        ret_img.data[:,:,0] = pywt.waverec2(rec_coeffs, w)
+        ret_img.data[:, :, 0] = pywt.waverec2(rec_coeffs, w)
 
         # 色度降噪
-        ret_img.data[:,:,1] = cv2.bilateralFilter(raw_data[:,:,1], 7, color_denoise_strength, color_denoise_strength)
-        ret_img.data[:,:,2] = cv2.bilateralFilter(raw_data[:,:,2], 7, color_denoise_strength, color_denoise_strength)
+        ret_img.data[:, :, 1] = cv2.bilateralFilter(
+            raw_data[:, :, 1], 7, color_denoise_strength, color_denoise_strength)
+        ret_img.data[:, :, 2] = cv2.bilateralFilter(
+            raw_data[:, :, 2], 7, color_denoise_strength, color_denoise_strength)
         return ret_img
     else:
         params.set_error_str("YUV denoise need YCrCb data")
         return None
 
-def denoise_one_level(src, strength, noise_threshold):
+def denoise_one_level(src, strength, noise_threshold, noise_weight):
     """
-    func: 对每层小波变换的图像进行降噪
+    func: 对每层小波变换的图像进行双边滤波降噪和软阈值处理
+    原理图：
+        - 降噪：https://image.qinxing.xyz/20210428232539.png
+        - 软阈值处理：https://image.qinxing.xyz/20210428232408.png
+    详细原理：
+    1. 每层小波变换后的图像先经过一个双边低通滤波滤波器，得到Xb, 与原图X相减，得到噪声信息X-Xb
+    3. 对噪声信息进行软阈值处理Xn: 先对Xn乘以一个降噪权重[0,1], 值越大降噪越强，然后限制阈值
+    4. 原图X与噪声信号Xn相减，得到每层的输出
     """
     Xb = cv2.bilateralFilter(src, 5, strength, strength)
     noise = src - Xb
-    Xn = pywt.threshold(noise, noise_threshold)
+    Xn = np.clip(noise * noise_weight, -noise_threshold, noise_threshold)
     return (src - Xn)
 
 def sharpen(raw: RawImageInfo, params: RawImageParams):
