@@ -1,5 +1,5 @@
 pyside2
-matplotlib<=3.2
+matplotlib
 numpy
 opencv-python
 scipy

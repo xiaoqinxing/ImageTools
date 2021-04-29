@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ImageTools"
-#define MyAppVersion "1.3"
+#define MyAppVersion "1.4"
 #define MyAppPublisher "liqinxing, Inc."
 #define MyAppURL "https://www.qinxing.xyz/"
 #define MyAppExeName "ImageTools.exe"
@@ -24,7 +24,7 @@ DisableProgramGroupPage=yes
 ;PrivilegesRequired=lowest
 OutputDir=.\Output
 OutputBaseFilename=ImageTools
-SetupIconFile=.\ui\resource\main.ico
+SetupIconFile=.\components\resource\main.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
