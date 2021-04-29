@@ -5,7 +5,7 @@ from PySide2.QtCore import QDir
 class HelpDoc(QWebEngineView):
 
     def __init__(self, name='HelpDoc', parent=None):
-        super().__init__()
+        super().__init__(parent=parent)
         self.parent = parent
         self.name = name
         self.setWindowTitle('帮助手册')
@@ -17,9 +17,9 @@ class HelpDoc(QWebEngineView):
         :param event: close()触发的事件
         :return: None
         """
-        self.name = None
         try:
             self.parent.sub_windows.remove(self)
         except Exception:
-            print('{}不支持记忆存储'.format(self.name))
+            print('{}窗口关闭错误'.format(self.name))
+        self.name = None
         event.accept()
