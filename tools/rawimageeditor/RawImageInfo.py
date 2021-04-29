@@ -295,7 +295,7 @@ class RawImageInfo():
             data[:, :, 2] = np.right_shift(self.data[:, :, 2], right_shift_num)
         else:
             ratio = 256/(self.max_data + 1)
-            data = np.int8(ratio * self.data)
+            data = np.uint8(ratio * self.data)
         return data
     
     def convert_to_gray(self):
