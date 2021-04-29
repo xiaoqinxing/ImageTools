@@ -341,23 +341,6 @@
              </item>
              <item>
               <property name="text">
-               <string>bayer denoise</string>
-              </property>
-              <property name="background">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>85</red>
-                 <green>255</green>
-                 <blue>127</blue>
-                </color>
-               </brush>
-              </property>
-              <property name="checkState">
-               <enum>Unchecked</enum>
-              </property>
-             </item>
-             <item>
-              <property name="text">
                <string>demosaic</string>
               </property>
               <property name="background">
@@ -527,7 +510,7 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-667</y>
+              <y>0</y>
               <width>364</width>
               <height>933</height>
              </rect>

@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 from scipy.ndimage.filters import convolve, convolve1d
 from tools.rawimageeditor.RawImageParams import RawImageParams
 from tools.rawimageeditor.RawImageInfo import RawImageInfo
@@ -53,9 +54,9 @@ def demosaicing_CFA_Bayer_bilinear(raw: RawImageInfo, output):
          [2, 4, 2],
          [1, 2, 1]]) * 0.25
 
-    output[:, :, 2] = convolve(CFA * R_m, H_RB)
-    output[:, :, 1] = convolve(CFA * G_m, H_G)
-    output[:, :, 0] = convolve(CFA * B_m, H_RB)
+    output[:, :, 2] = cv2.filter2D(CFA * R_m, -1, H_RB)
+    output[:, :, 1] = cv2.filter2D(CFA * G_m, -1, H_G)
+    output[:, :, 0] = cv2.filter2D(CFA * B_m, -1, H_RB)
 
     del R_m, G_m, B_m, H_RB, H_G
     return
@@ -105,11 +106,11 @@ def demosaicing_CFA_Bayer_Malvar2004(raw: RawImageInfo, output):
 
     del G_m
 
-    G = np.where(np.logical_or(R_m == 1, B_m == 1), convolve(CFA, GR_GB), G)
+    G = np.where(np.logical_or(R_m == 1, B_m == 1), cv2.filter2D(CFA, -1, GR_GB), G)
 
-    RBg_RBBR = convolve(CFA, Rg_RB_Bg_BR)
-    RBg_BRRB = convolve(CFA, Rg_BR_Bg_RB)
-    RBgr_BBRR = convolve(CFA, Rb_BB_Br_RR)
+    RBg_RBBR = cv2.filter2D(CFA, -1, Rg_RB_Bg_BR)
+    RBg_BRRB = cv2.filter2D(CFA, -1, Rg_BR_Bg_RB)
+    RBgr_BBRR = cv2.filter2D(CFA, -1, Rb_BB_Br_RR)
 
     del GR_GB, Rg_RB_Bg_BR, Rg_BR_Bg_RB, Rb_BB_Br_RR
 
