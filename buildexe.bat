@@ -2,6 +2,7 @@ DEL /q .\build\*
 DEL /q .\dist\*
 RD /S /Q .\build
 RD /S /Q .\dist
+pip install pyinstaller
 start cmd /c "pyinstaller -w ./ImageTools.py --noconfirm && copy .\Readme.html .\dist\ImageTools\ && compil32 /cc ./ImageTools.iss"
 start cmd /c "pyinstaller -w --noconfirm ./subapps/PQtools2Code.py && compil32 /cc ./subapps/PQtools2Code.iss"
 start cmd /c "pyinstaller -w --noconfirm ./subapps/ShakeTestTool.py && compil32 /cc ./subapps/ShakeTestTool.iss"
