@@ -86,6 +86,7 @@ class RawImageInfo():
         self.name = name
         self.__raw_bit_depth = raw.get_raw_bit_depth()
         self.__bit_depth = raw.get_bit_depth()
+        self.__bayer_pattern = raw.get_bayer_pattern()
         if(np.issubdtype(self.dtype, np.integer)):
             self.max_data = (1 << self.__bit_depth) - 1
         else:

@@ -43,7 +43,6 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
         ret_img = RawImageInfo()
         # create new data so that original raw data do not change
         ret_img.create_image('after black level', raw)
-        ret_img.set_bayer_pattern(bayer_pattern)
         # list[i:j:2] 数组从取i 到 j 但加入了步长 这里步长为2
         # list[::2 ] 就是取奇数位，list[1::2]就是取偶数位
         # 防止减黑电平减多了，超出阈值变成一个特别大的数
