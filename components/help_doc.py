@@ -6,4 +6,4 @@ class HelpDoc(SubWindow):
 
     def __init__(self, name='HelpDoc', parent=None):
         super().__init__(name, parent, Ui_HelpWindow())
-        self.ui.textBrowser.setSource("Readme.md")
+        self.ui.textBrowser.setSource("Readme.html")
