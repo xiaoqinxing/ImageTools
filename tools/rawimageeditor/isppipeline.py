@@ -96,8 +96,9 @@ class IspPipeline():
                         # 需要把新老pipeline进行对比
                         index_ret = self.compare_pipeline()
                         if(index_ret != -1):
-                            self.remove_img_node_tail(index_ret)
-                            return self.pipeline[index_ret:]
+                            min_index = min(index_ret, index)
+                            self.remove_img_node_tail(min_index)
+                            return self.pipeline[min_index:]
                         else:
                             return self.pipeline[index:]
                     else:
