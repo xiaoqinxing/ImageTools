@@ -3,6 +3,8 @@ from components.ui.mainwindow import Ui_MainWindow
 import pickle
 import os
 
+CACHE_FILEPATH = './config'
+
 class MainWindow(QMainWindow):
     """对QMainWindow类重写，实现一些功能"""
 
@@ -13,6 +15,7 @@ class MainWindow(QMainWindow):
         self.sub_windows_list = list()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.need_clear_cache = False
         if os.path.exists(self.filename):
             with open(self.filename, "rb") as fp:
                 self.sub_windows_list = pickle.load(fp)
@@ -29,15 +32,23 @@ class MainWindow(QMainWindow):
                                      QMessageBox.Yes | QMessageBox.No,
                                      QMessageBox.No)
         if reply == QMessageBox.Yes:
-            if not os.path.exists("./config"):
-                os.mkdir("./config")
-            sub_windows_list = list()
-            while len(self.sub_windows) > 0:
-                if (self.sub_windows[0].name is not None):
-                    sub_windows_list.append(self.sub_windows[0].name)
-                    self.sub_windows[0].close()
-            with open(self.filename, "wb") as fp:
-                pickle.dump(sub_windows_list, fp)
+            if self.need_clear_cache == False:
+                if not os.path.exists(CACHE_FILEPATH):
+                    os.mkdir(CACHE_FILEPATH)
+                sub_windows_list = list()
+                while len(self.sub_windows) > 0:
+                    if (self.sub_windows[0].name is not None):
+                        sub_windows_list.append(self.sub_windows[0].name)
+                        self.sub_windows[0].close()
+                with open(self.filename, "wb") as fp:
+                    pickle.dump(sub_windows_list, fp)
+            else:
+                # 清楚缓存
+                if os.path.exists(CACHE_FILEPATH):
+                    for files in os.listdir(CACHE_FILEPATH):
+                        filepath = os.path.join(CACHE_FILEPATH, files)
+                        if os.path.isfile(filepath):
+                            os.remove(filepath)
             event.accept()
         else:
             event.ignore()
@@ -82,8 +93,8 @@ class SubWindow(QMainWindow):
         :param event: close()触发的事件
         :return: None
         """
-        if not os.path.exists("./config"):
-            os.mkdir("./config")
+        if not os.path.exists(CACHE_FILEPATH):
+            os.mkdir(CACHE_FILEPATH)
         self.name = None
         with open(self.filename, "wb") as fp:
             pickle.dump(self.__saved_params, fp)

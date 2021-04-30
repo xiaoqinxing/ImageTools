@@ -2,6 +2,7 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtCore import Qt
 import sys
 from components.window import MainWindow
+from components.customwidget import info
 from tools.depth_of_focus.depth_of_focus import FieldDepthWindow
 from tools.shake_test.shake_test import ShakeTestTool
 from tools.imageeditor.imageeditor import ImageEditor
@@ -35,6 +36,7 @@ class ImageTools(MainWindow):
             self.add_raw_image_editor_window)
         self.ui.video_compare.triggered.connect(self.add_video_compare_window)
         self.ui.pqtools2code.triggered.connect(self.add_pqtools2code_window)
+        self.ui.clearcache.triggered.connect(self.clear_cache)
 
     def load_saved_windows(self):
         for name in self.sub_windows_list:
@@ -66,6 +68,10 @@ class ImageTools(MainWindow):
 
     def add_pqtools2code_window(self):
         self.add_sub_window("PQtoolsToCode")
+    
+    def clear_cache(self):
+        self.need_clear_cache = True
+        info('缓存删除成功！\r\n请重启软件', self)
 
 
 if __name__ == "__main__":

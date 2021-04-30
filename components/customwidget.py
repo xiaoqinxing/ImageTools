@@ -221,3 +221,9 @@ def critical(string: str, parent=None):
         QMessageBox.critical(
             parent, '警告', string, QMessageBox.Yes, QMessageBox.Yes)
     return
+
+def info(string: str, parent=None):
+    if(string is not None):
+        QMessageBox.information(
+            parent, '提示', string, QMessageBox.Yes, QMessageBox.Yes)
+    return

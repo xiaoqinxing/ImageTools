@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'mainwindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.1
+## Created by: Qt User Interface Compiler version 5.15.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -40,6 +40,8 @@ class Ui_MainWindow(object):
         self.af_calc_tool.setObjectName(u"af_calc_tool")
         self.userguide = QAction(MainWindow)
         self.userguide.setObjectName(u"userguide")
+        self.clearcache = QAction(MainWindow)
+        self.clearcache.setObjectName(u"clearcache")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -79,6 +81,7 @@ class Ui_MainWindow(object):
         self.menuISP.addAction(self.pqtools2code)
         self.menuISP.addAction(self.field_depth_tool)
         self.menu.addAction(self.userguide)
+        self.menu.addAction(self.clearcache)
 
         self.retranslateUi(MainWindow)
 
@@ -96,8 +99,9 @@ class Ui_MainWindow(object):
         self.field_depth_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u8ba1\u7b97\u5668", None))
         self.af_calc_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u66f2\u7ebf\u8ba1\u7b97\u5de5\u5177", None))
         self.userguide.setText(QCoreApplication.translate("MainWindow", u"\u7528\u6237\u624b\u518c", None))
+        self.clearcache.setText(QCoreApplication.translate("MainWindow", u"\u6e05\u7406\u7f13\u5b58", None))
         self.menu_2.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
         self.menuISP.setTitle(QCoreApplication.translate("MainWindow", u"ISP", None))
-        self.menu.setTitle(QCoreApplication.translate("MainWindow", u"\u5e2e\u52a9", None))
+        self.menu.setTitle(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
     # retranslateUi
 
