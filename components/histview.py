@@ -4,6 +4,7 @@ from components.customwidget import MatplotlibWidget
 import numpy as np
 import cv2
 
+
 class HistView(QDialog):
     def __init__(self, parent):
         """
@@ -29,69 +30,69 @@ class HistView(QDialog):
         self.g_hist_visible = 2
         self.b_hist_visible = 2
         self.y_hist_visible = 2
-    
+        self.enable = True
+
     def update_rect_data(self, img, rect):
         """
         func: 更新方框内的图像统计信息
         """
-        self.calcHist(img, rect)
+        (rect, image) = self.update_rect(img, rect)
+        self.calcHist(image)
         self.hist_show()
-        self.stats_show(self.calcStatics(img, rect))
+        self.stats_show(self.calcStatics(image, rect))
 
     def closeEvent(self, event):
         """
         func: 关闭窗口的时候，把鼠标还原
         """
         self.parent.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.enable = False
         return super().closeEvent(event)
-    
-    def calcStatics(self, img, rect):
-        x1, y1, x2, y2 = rect
-        i1 = max(x1, 0)
-        i2 = min(x2, img.shape[1])
-        j1 = max(y1, 0)
-        j2 = min(img.shape[0], y2)
-        if (i2 > i1 and j2 > j1):
-            image = img[j1:j2, i1:i2]
-            (average_rgb, stddv_rgb) = cv2.meanStdDev(image)
-            snr_rgb = average_rgb/stddv_rgb
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
-            (average_yuv, stddv_yuv) = cv2.meanStdDev(image)
-            snr_yuv = average_yuv/stddv_yuv
-            rgb_ratio = [0.0, 0.0]
-            awb_gain = [0.0, 0.0, 0.0]
-            rgb_ratio[0] = average_rgb[2]/average_rgb[1]
-            rgb_ratio[1] = average_rgb[0]/average_rgb[1]
-            awb_gain[0] = 1/rgb_ratio[0]
-            awb_gain[1] = 1
-            awb_gain[2] = 1/rgb_ratio[1]
-            enable_rect = [i1, j1, i2-i1, j2-j1]
-            return (average_rgb, snr_rgb, average_yuv, snr_yuv, rgb_ratio, awb_gain, enable_rect)
 
-    def calcHist(self, img, rect):
-        x1, y1, x2, y2 = rect
-        # height, width, depth = img.shape
+    def update_rect(self, img, rect):
+        [x1, y1, x2, y2] = rect
         i1 = max(x1, 0)
         i2 = min(x2, img.shape[1])
         j1 = max(y1, 0)
         j2 = min(img.shape[0], y2)
         if (i2 > i1 and j2 > j1):
-            image = img[j1:j2, i1:i2]
-            chans = cv2.split(image)
-            self.b_hist = (cv2.calcHist([chans[0]], [0], None, [
-                256], [0, 256]))
-            self.g_hist = (cv2.calcHist([chans[1]], [0], None, [
-                256], [0, 256]))
-            self.r_hist = (cv2.calcHist([chans[2]], [0], None, [
-                256], [0, 256]))
-            # 转为灰度图，然后算亮度直方图
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            self.y_hist = (cv2.calcHist([image], [0], None, [
-                256], [0, 256]))
-            self.r_hist.reshape(1, 256)
-            self.g_hist.reshape(1, 256)
-            self.b_hist.reshape(1, 256)
-            self.y_hist.reshape(1, 256)
+            img = img[j1:j2, i1:i2][:, :, :3]
+            rect = [j1, i1, j2, i2]
+        return (rect, img)
+
+    def calcStatics(self, img, rect):
+        [j1, i1, j2, i2] = rect
+        (average_rgb, stddv_rgb) = cv2.meanStdDev(img)
+        snr_rgb = average_rgb/stddv_rgb
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+        (average_yuv, stddv_yuv) = cv2.meanStdDev(img)
+        snr_yuv = average_yuv/stddv_yuv
+        rgb_ratio = [0.0, 0.0]
+        awb_gain = [0.0, 0.0, 0.0]
+        rgb_ratio[0] = average_rgb[2]/average_rgb[1]
+        rgb_ratio[1] = average_rgb[0]/average_rgb[1]
+        awb_gain[0] = 1/rgb_ratio[0]
+        awb_gain[1] = 1
+        awb_gain[2] = 1/rgb_ratio[1]
+        enable_rect = [i1, j1, i2-i1, j2-j1]
+        return (average_rgb, snr_rgb, average_yuv, snr_yuv, rgb_ratio, awb_gain, enable_rect)
+
+    def calcHist(self, img):
+        chans = cv2.split(img)
+        self.b_hist = (cv2.calcHist([chans[0]], [0], None, [
+            256], [0, 256]))
+        self.g_hist = (cv2.calcHist([chans[1]], [0], None, [
+            256], [0, 256]))
+        self.r_hist = (cv2.calcHist([chans[2]], [0], None, [
+            256], [0, 256]))
+        # 转为灰度图，然后算亮度直方图
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        self.y_hist = (cv2.calcHist([img], [0], None, [
+            256], [0, 256]))
+        self.r_hist.reshape(1, 256)
+        self.g_hist.reshape(1, 256)
+        self.b_hist.reshape(1, 256)
+        self.y_hist.reshape(1, 256)
 
     def on_r_hist_enable(self, type):
         self.r_hist_visible = type

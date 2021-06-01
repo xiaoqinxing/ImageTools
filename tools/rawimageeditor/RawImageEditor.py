@@ -24,9 +24,9 @@ class RawImageEditor(SubWindow):
         self.img = RawImageInfo()
         self.point_data = np.array([0])
         self.scale_ratio = 100
-        self.histShow = None
         self.show_img = None
         self.select_awb = False
+        self.histView = None
 
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.graphicsView.addWidget(self.imageview, 0, 1, 3, 1)
@@ -42,7 +42,8 @@ class RawImageEditor(SubWindow):
         self.imageview.rubberBandChanged.connect(self.update_awb_from_raw)
         self.ui.save_image.clicked.connect(self.save_now_image)
         self.ui.reload.clicked.connect(self.img_pipeline.reload_isp)
-        self.ui.inputflatphoto.clicked.connect(self.img_params.rolloff.set_flatphoto)
+        self.ui.inputflatphoto.clicked.connect(
+            self.img_params.rolloff.set_flatphoto)
         # ISP 处理线程回调
         self.img_pipeline.ispProcthread.doneCB.connect(self.update_img)
         self.img_pipeline.ispProcthread.processRateCB.connect(
@@ -50,7 +51,7 @@ class RawImageEditor(SubWindow):
         self.img_pipeline.ispProcthread.costTimeCB.connect(
             self.update_time_bar)
         self.img_pipeline.ispProcthread.errorCB.connect(self.error_report)
-    
+
     def error_report(self, value):
         """
         func: 报告ISP算法错误
@@ -86,7 +87,8 @@ class RawImageEditor(SubWindow):
             self.update_pipeline()
             self.img = self.img_pipeline.get_image(-1)
             self.displayImage(self.img)
-            self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
+            self.rect = [0, 0, self.img_params.rawformat.width,
+                         self.img_params.rawformat.height]
 
     def displayImage(self, img):
         """
@@ -97,9 +99,11 @@ class RawImageEditor(SubWindow):
         self.show_img = img.get_showimage()
         if(self.show_img is not None):
             showimg = QImage(self.show_img, self.show_img.shape[1],
-                          self.show_img.shape[0], QImage.Format_BGR888)
+                             self.show_img.shape[0], QImage.Format_BGR888)
             self.scene.addPixmap(QPixmap(showimg))
             self.ui.photo_title.setTitle(img.get_name())
+            if(self.hist_window is not None and self.hist_window.enable is True):
+                self.hist_window.update_rect_data(self.show_img, self.rect)
 
     def select_awb_from_raw(self):
         """
@@ -171,7 +175,8 @@ class RawImageEditor(SubWindow):
             self.ui.filename.repaint()
             self.update_pipeline()
             self.img = self.img_pipeline.get_image(-1)
-            self.rect = [0, 0, self.img_params.rawformat.width, self.img_params.rawformat.height]
+            self.rect = [0, 0, self.img_params.rawformat.width,
+                         self.img_params.rawformat.height]
 
     def save_now_image(self):
         """
@@ -202,7 +207,7 @@ class RawImageEditor(SubWindow):
         if(self.img.get_raw_data() is not None):
             self.scale_ratio = int(ratio * 100)
             self.set_img_info_show()
-    
+
     def set_img_info_show(self):
         """
         func: 显示像素点的值以及缩放比例
@@ -217,7 +222,7 @@ class RawImageEditor(SubWindow):
             else:
                 self.info_bar.setText(
                     "x:{},y:{} : Y:{} Cr:{} Cb:{} 缩放比例:{}%".format(self.x, self.y, self.point_data[0], self.point_data[1], self.point_data[2], self.scale_ratio))
-    
+
     def openHistView(self):
         self.histView = HistView(self.imageview)
         rect = [0, 0, self.show_img.shape[1], self.show_img.shape[0]]

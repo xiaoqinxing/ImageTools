@@ -40,22 +40,30 @@ class ImageEditor(SubWindow):
         self.img = ImageEffect()
         self.filepath = './'
         self.imgfilename = ''
+        self.hist_window = None
 
     def displayImage(self, img):
         self.scene.clear()
         if img is not None:
+            # numpy转qimage的标准流程
             if len(img.shape) == 2:
+                bytes_per_line = img.shape[1]
                 qimg = QImage(img, img, img.shape[1],
                               img.shape[0], QImage.Format_Grayscale8)
             elif img.shape[2] == 3:
+                bytes_per_line = 3 * img.shape[1]
                 qimg = QImage(img, img.shape[1],
-                              img.shape[0], QImage.Format_BGR888)
+                              img.shape[0], bytes_per_line, QImage.Format_BGR888)
             elif img.shape[2] == 4:
+                bytes_per_line = 4 * img.shape[1]
                 qimg = QImage(img, img.shape[1],
-                              img.shape[0], QImage.Format_RGBA8888)
+                              img.shape[0], bytes_per_line, QImage.Format_RGBA8888)
             else:
                 critical("图片格式不能解析")
-            self.scene.addPixmap(QPixmap(qimg))
+            self.scene.addPixmap(QPixmap.fromImage(qimg))
+            if(self.hist_window is not None and self.hist_window.enable is True):
+                self.hist_window.update_rect_data(
+                    self.img.nowImage, self.rect)
 
     def find_next_photo(self, path, nextIndex):
         ret = ''
