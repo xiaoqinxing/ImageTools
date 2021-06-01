@@ -56,6 +56,27 @@ def black_level_correction(raw: RawImageInfo, params: RawImageParams):
         return None
 
 
+def apply_digital_gain(raw: RawImageInfo, params: RawImageParams):
+    """
+    function: apply_digital_gain
+    brief: apply digital gain
+    input: raw:RawImageInfo() params:RawImageParams()
+    """
+    # get params
+    gain = params.gain.digital_gain
+
+    raw_data = raw.get_raw_data()
+    ret_img = RawImageInfo()
+    ret_img.create_image('after digital gain', raw, init_value=False)
+    # ensure input color space and process
+    if(raw.get_color_space() == "raw" or raw.get_color_space() == "RGB"):
+        ret_img.data = raw_data * gain
+        ret_img.clip_range()
+        return ret_img
+    else:
+        params.set_error_str("white balance correction need RAW data")
+        return None
+
 def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
     """
     function: channel_gain_white_balance

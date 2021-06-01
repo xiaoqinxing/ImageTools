@@ -548,6 +548,28 @@ class DenoiseParams():
         self.set_color_denoise_strength(ui.color_denoise_strength.value())
         return self.need_flush
     
+class DigitalGainParams():
+    """
+    数字增益
+    """
+    need_flush = False
+    name = 'digital gain'
+    digital_gain = 1.0
+
+    def set(self, ui:Ui_ImageEditor):
+        ui.digital_gain.setValue(self.get_digital_gain())
+    
+    def get(self, ui:Ui_ImageEditor):
+        self.set_digital_gain(ui.digital_gain.value())
+        return self.need_flush
+
+    def set_digital_gain(self, gain):
+        if(gain != self.digital_gain):
+            self.digital_gain = gain
+            self.need_flush = True
+
+    def get_digital_gain(self):
+        return self.digital_gain
 # =============================================================
 # class RawImageParams:
 
@@ -569,6 +591,7 @@ class RawImageParams():
             LTMParams(),
             AWBParams(),
             BLCParams(),
+            DigitalGainParams(),
             GammaParams(),
             CCMParams(),
             CscParams(),
@@ -582,6 +605,7 @@ class RawImageParams():
             self.ltm,
             self.awb, 
             self.blc,
+            self.gain,
             self.gamma,
             self.ccm,
             self.csc,

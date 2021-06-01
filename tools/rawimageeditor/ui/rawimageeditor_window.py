@@ -180,16 +180,16 @@ class Ui_ImageEditor(object):
         __qlistwidgetitem3 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem3.setCheckState(Qt.Unchecked);
         __qlistwidgetitem3.setBackground(brush);
-        brush1 = QBrush(QColor(255, 255, 255, 255))
-        brush1.setStyle(Qt.SolidPattern)
         __qlistwidgetitem4 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem4.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem4.setBackground(brush1);
-        brush2 = QBrush(QColor(255, 255, 127, 255))
-        brush2.setStyle(Qt.SolidPattern)
+        __qlistwidgetitem4.setBackground(brush);
+        brush1 = QBrush(QColor(255, 255, 255, 255))
+        brush1.setStyle(Qt.SolidPattern)
         __qlistwidgetitem5 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem5.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem5.setBackground(brush2);
+        __qlistwidgetitem5.setBackground(brush1);
+        brush2 = QBrush(QColor(255, 255, 127, 255))
+        brush2.setStyle(Qt.SolidPattern)
         __qlistwidgetitem6 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem6.setCheckState(Qt.Unchecked);
         __qlistwidgetitem6.setBackground(brush2);
@@ -201,15 +201,18 @@ class Ui_ImageEditor(object):
         __qlistwidgetitem8.setBackground(brush2);
         __qlistwidgetitem9 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem9.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem9.setBackground(brush1);
-        brush3 = QBrush(QColor(170, 255, 255, 255))
-        brush3.setStyle(Qt.SolidPattern)
+        __qlistwidgetitem9.setBackground(brush2);
         __qlistwidgetitem10 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem10.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem10.setBackground(brush3);
+        __qlistwidgetitem10.setBackground(brush1);
+        brush3 = QBrush(QColor(170, 255, 255, 255))
+        brush3.setStyle(Qt.SolidPattern)
         __qlistwidgetitem11 = QListWidgetItem(self.pipeline)
         __qlistwidgetitem11.setCheckState(Qt.Unchecked);
         __qlistwidgetitem11.setBackground(brush3);
+        __qlistwidgetitem12 = QListWidgetItem(self.pipeline)
+        __qlistwidgetitem12.setCheckState(Qt.Unchecked);
+        __qlistwidgetitem12.setBackground(brush3);
         self.pipeline.setObjectName(u"pipeline")
         font = QFont()
         font.setPointSize(12)
@@ -249,294 +252,114 @@ class Ui_ImageEditor(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 933))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 364, 990))
         self.gridLayout_7 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
-        self.groupBox_14 = QGroupBox(self.scrollAreaWidgetContents)
-        self.groupBox_14.setObjectName(u"groupBox_14")
-        self.gridLayout_17 = QGridLayout(self.groupBox_14)
-        self.gridLayout_17.setObjectName(u"gridLayout_17")
-        self.label_37 = QLabel(self.groupBox_14)
-        self.label_37.setObjectName(u"label_37")
+        self.groupBox_9 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_9.setObjectName(u"groupBox_9")
+        self.gridLayout_8 = QGridLayout(self.groupBox_9)
+        self.gridLayout_8.setObjectName(u"gridLayout_8")
+        self.awb_r = QDoubleSpinBox(self.groupBox_9)
+        self.awb_r.setObjectName(u"awb_r")
+        self.awb_r.setDecimals(3)
+        self.awb_r.setValue(1.000000000000000)
 
-        self.gridLayout_17.addWidget(self.label_37, 4, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.awb_r, 0, 2, 1, 1)
 
-        self.denoise_strength_m = QSlider(self.groupBox_14)
-        self.denoise_strength_m.setObjectName(u"denoise_strength_m")
-        self.denoise_strength_m.setValue(50)
-        self.denoise_strength_m.setOrientation(Qt.Horizontal)
+        self.awb_g = QDoubleSpinBox(self.groupBox_9)
+        self.awb_g.setObjectName(u"awb_g")
+        self.awb_g.setDecimals(3)
+        self.awb_g.setValue(1.000000000000000)
 
-        self.gridLayout_17.addWidget(self.denoise_strength_m, 3, 1, 1, 1)
+        self.gridLayout_8.addWidget(self.awb_g, 0, 4, 1, 1)
 
-        self.label_40 = QLabel(self.groupBox_14)
-        self.label_40.setObjectName(u"label_40")
+        self.label_12 = QLabel(self.groupBox_9)
+        self.label_12.setObjectName(u"label_12")
 
-        self.gridLayout_17.addWidget(self.label_40, 5, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.label_12, 0, 5, 1, 1)
 
-        self.label_36 = QLabel(self.groupBox_14)
-        self.label_36.setObjectName(u"label_36")
+        self.label_5 = QLabel(self.groupBox_9)
+        self.label_5.setObjectName(u"label_5")
 
-        self.gridLayout_17.addWidget(self.label_36, 3, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.label_5, 0, 1, 1, 1)
 
-        self.denoise_strength_h = QSlider(self.groupBox_14)
-        self.denoise_strength_h.setObjectName(u"denoise_strength_h")
-        self.denoise_strength_h.setValue(50)
-        self.denoise_strength_h.setOrientation(Qt.Horizontal)
+        self.awb_b = QDoubleSpinBox(self.groupBox_9)
+        self.awb_b.setObjectName(u"awb_b")
+        self.awb_b.setDecimals(3)
+        self.awb_b.setValue(1.000000000000000)
 
-        self.gridLayout_17.addWidget(self.denoise_strength_h, 4, 1, 1, 1)
+        self.gridLayout_8.addWidget(self.awb_b, 0, 6, 1, 1)
 
-        self.noise_threshold_l = QSlider(self.groupBox_14)
-        self.noise_threshold_l.setObjectName(u"noise_threshold_l")
-        self.noise_threshold_l.setValue(50)
-        self.noise_threshold_l.setOrientation(Qt.Horizontal)
+        self.label_11 = QLabel(self.groupBox_9)
+        self.label_11.setObjectName(u"label_11")
 
-        self.gridLayout_17.addWidget(self.noise_threshold_l, 2, 2, 1, 1)
+        self.gridLayout_8.addWidget(self.label_11, 0, 3, 1, 1)
 
-        self.denoise_strength_l = QSlider(self.groupBox_14)
-        self.denoise_strength_l.setObjectName(u"denoise_strength_l")
-        self.denoise_strength_l.setValue(50)
-        self.denoise_strength_l.setOrientation(Qt.Horizontal)
+        self.select_from_raw = QPushButton(self.groupBox_9)
+        self.select_from_raw.setObjectName(u"select_from_raw")
 
-        self.gridLayout_17.addWidget(self.denoise_strength_l, 2, 1, 1, 1)
+        self.gridLayout_8.addWidget(self.select_from_raw, 0, 7, 1, 1)
 
-        self.noise_threshold_m = QSlider(self.groupBox_14)
-        self.noise_threshold_m.setObjectName(u"noise_threshold_m")
-        self.noise_threshold_m.setValue(50)
-        self.noise_threshold_m.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_17.addWidget(self.noise_threshold_m, 3, 2, 1, 1)
+        self.gridLayout_7.addWidget(self.groupBox_9, 6, 0, 1, 1)
 
-        self.label_31 = QLabel(self.groupBox_14)
-        self.label_31.setObjectName(u"label_31")
+        self.groupBox_15 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_15.setObjectName(u"groupBox_15")
+        self.gridLayout_16 = QGridLayout(self.groupBox_15)
+        self.gridLayout_16.setObjectName(u"gridLayout_16")
+        self.clip_range = QSlider(self.groupBox_15)
+        self.clip_range.setObjectName(u"clip_range")
+        self.clip_range.setMaximum(128)
+        self.clip_range.setValue(64)
+        self.clip_range.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_17.addWidget(self.label_31, 2, 0, 1, 1)
+        self.gridLayout_16.addWidget(self.clip_range, 3, 1, 1, 1)
 
-        self.label_38 = QLabel(self.groupBox_14)
-        self.label_38.setObjectName(u"label_38")
+        self.label_34 = QLabel(self.groupBox_15)
+        self.label_34.setObjectName(u"label_34")
 
-        self.gridLayout_17.addWidget(self.label_38, 1, 1, 1, 1)
+        self.gridLayout_16.addWidget(self.label_34, 4, 0, 1, 1)
 
-        self.label_39 = QLabel(self.groupBox_14)
-        self.label_39.setObjectName(u"label_39")
+        self.sharpen_strength = QSlider(self.groupBox_15)
+        self.sharpen_strength.setObjectName(u"sharpen_strength")
+        self.sharpen_strength.setMaximum(10)
+        self.sharpen_strength.setValue(5)
+        self.sharpen_strength.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_17.addWidget(self.label_39, 1, 2, 1, 1)
+        self.gridLayout_16.addWidget(self.sharpen_strength, 2, 1, 1, 1)
 
-        self.noise_threshold_h = QSlider(self.groupBox_14)
-        self.noise_threshold_h.setObjectName(u"noise_threshold_h")
-        self.noise_threshold_h.setValue(50)
-        self.noise_threshold_h.setOrientation(Qt.Horizontal)
+        self.label_35 = QLabel(self.groupBox_15)
+        self.label_35.setObjectName(u"label_35")
 
-        self.gridLayout_17.addWidget(self.noise_threshold_h, 4, 2, 1, 1)
+        self.gridLayout_16.addWidget(self.label_35, 3, 0, 1, 1)
 
-        self.label_41 = QLabel(self.groupBox_14)
-        self.label_41.setObjectName(u"label_41")
+        self.label_33 = QLabel(self.groupBox_15)
+        self.label_33.setObjectName(u"label_33")
 
-        self.gridLayout_17.addWidget(self.label_41, 1, 3, 1, 1)
+        self.gridLayout_16.addWidget(self.label_33, 2, 0, 1, 1)
 
-        self.noise_weight_l = QSlider(self.groupBox_14)
-        self.noise_weight_l.setObjectName(u"noise_weight_l")
-        self.noise_weight_l.setMaximum(100)
-        self.noise_weight_l.setValue(50)
-        self.noise_weight_l.setOrientation(Qt.Horizontal)
+        self.label_32 = QLabel(self.groupBox_15)
+        self.label_32.setObjectName(u"label_32")
 
-        self.gridLayout_17.addWidget(self.noise_weight_l, 2, 3, 1, 1)
+        self.gridLayout_16.addWidget(self.label_32, 1, 0, 1, 1)
 
-        self.noise_weight_m = QSlider(self.groupBox_14)
-        self.noise_weight_m.setObjectName(u"noise_weight_m")
-        self.noise_weight_m.setMaximum(100)
-        self.noise_weight_m.setValue(50)
-        self.noise_weight_m.setOrientation(Qt.Horizontal)
+        self.denoise_threshold = QSlider(self.groupBox_15)
+        self.denoise_threshold.setObjectName(u"denoise_threshold")
+        self.denoise_threshold.setMaximum(250)
+        self.denoise_threshold.setValue(50)
+        self.denoise_threshold.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_17.addWidget(self.noise_weight_m, 3, 3, 1, 1)
+        self.gridLayout_16.addWidget(self.denoise_threshold, 4, 1, 1, 1)
 
-        self.noise_weight_h = QSlider(self.groupBox_14)
-        self.noise_weight_h.setObjectName(u"noise_weight_h")
-        self.noise_weight_h.setMaximum(100)
-        self.noise_weight_h.setValue(50)
-        self.noise_weight_h.setOrientation(Qt.Horizontal)
+        self.medianblur_strength = QSlider(self.groupBox_15)
+        self.medianblur_strength.setObjectName(u"medianblur_strength")
+        self.medianblur_strength.setMaximum(100)
+        self.medianblur_strength.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_17.addWidget(self.noise_weight_h, 4, 3, 1, 1)
+        self.gridLayout_16.addWidget(self.medianblur_strength, 1, 1, 1, 1)
 
-        self.color_denoise_strength = QSlider(self.groupBox_14)
-        self.color_denoise_strength.setObjectName(u"color_denoise_strength")
-        self.color_denoise_strength.setValue(50)
-        self.color_denoise_strength.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_17.addWidget(self.color_denoise_strength, 5, 1, 1, 3)
-
-
-        self.gridLayout_7.addWidget(self.groupBox_14, 10, 0, 1, 1)
-
-        self.groupBox_12 = QGroupBox(self.scrollAreaWidgetContents)
-        self.groupBox_12.setObjectName(u"groupBox_12")
-        self.gridLayout_11 = QGridLayout(self.groupBox_12)
-        self.gridLayout_11.setObjectName(u"gridLayout_11")
-        self.dark_boost = QSlider(self.groupBox_12)
-        self.dark_boost.setObjectName(u"dark_boost")
-        self.dark_boost.setMaximum(300)
-        self.dark_boost.setSingleStep(10)
-        self.dark_boost.setPageStep(50)
-        self.dark_boost.setValue(100)
-        self.dark_boost.setOrientation(Qt.Horizontal)
-
-        self.gridLayout_11.addWidget(self.dark_boost, 0, 1, 1, 1)
-
-        self.label_14 = QLabel(self.groupBox_12)
-        self.label_14.setObjectName(u"label_14")
-
-        self.gridLayout_11.addWidget(self.label_14, 0, 0, 1, 1)
-
-        self.label_15 = QLabel(self.groupBox_12)
-        self.label_15.setObjectName(u"label_15")
-
-        self.gridLayout_11.addWidget(self.label_15, 1, 0, 1, 1)
-
-        self.bright_suppress = QSlider(self.groupBox_12)
-        self.bright_suppress.setObjectName(u"bright_suppress")
-        self.bright_suppress.setMaximum(300)
-        self.bright_suppress.setSingleStep(10)
-        self.bright_suppress.setPageStep(50)
-        self.bright_suppress.setValue(100)
-        self.bright_suppress.setOrientation(Qt.Horizontal)
-
-        self.gridLayout_11.addWidget(self.bright_suppress, 1, 1, 1, 1)
-
-
-        self.gridLayout_7.addWidget(self.groupBox_12, 8, 0, 1, 1)
-
-        self.groupBox_4 = QGroupBox(self.scrollAreaWidgetContents)
-        self.groupBox_4.setObjectName(u"groupBox_4")
-        self.gridLayout_3 = QGridLayout(self.groupBox_4)
-        self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.label_2 = QLabel(self.groupBox_4)
-        self.label_2.setObjectName(u"label_2")
-
-        self.gridLayout_3.addWidget(self.label_2, 0, 3, 1, 1)
-
-        self.label_3 = QLabel(self.groupBox_4)
-        self.label_3.setObjectName(u"label_3")
-
-        self.gridLayout_3.addWidget(self.label_3, 0, 5, 1, 1)
-
-        self.blc_b = QSpinBox(self.groupBox_4)
-        self.blc_b.setObjectName(u"blc_b")
-        self.blc_b.setMaximum(10000)
-
-        self.gridLayout_3.addWidget(self.blc_b, 0, 8, 1, 1)
-
-        self.blc_gb = QSpinBox(self.groupBox_4)
-        self.blc_gb.setObjectName(u"blc_gb")
-        self.blc_gb.setMaximum(1000)
-
-        self.gridLayout_3.addWidget(self.blc_gb, 0, 6, 1, 1)
-
-        self.blc_gr = QSpinBox(self.groupBox_4)
-        self.blc_gr.setObjectName(u"blc_gr")
-        self.blc_gr.setMaximum(10000)
-
-        self.gridLayout_3.addWidget(self.blc_gr, 0, 4, 1, 1)
-
-        self.label = QLabel(self.groupBox_4)
-        self.label.setObjectName(u"label")
-
-        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
-
-        self.label_4 = QLabel(self.groupBox_4)
-        self.label_4.setObjectName(u"label_4")
-
-        self.gridLayout_3.addWidget(self.label_4, 0, 7, 1, 1)
-
-        self.blc_r = QSpinBox(self.groupBox_4)
-        self.blc_r.setObjectName(u"blc_r")
-        self.blc_r.setMaximum(10000)
-
-        self.gridLayout_3.addWidget(self.blc_r, 0, 2, 1, 1)
-
-
-        self.gridLayout_7.addWidget(self.groupBox_4, 0, 0, 1, 1)
-
-        self.groupBox_7 = QGroupBox(self.scrollAreaWidgetContents)
-        self.groupBox_7.setObjectName(u"groupBox_7")
-
-        self.gridLayout_7.addWidget(self.groupBox_7, 3, 0, 1, 1)
-
-        self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)
-        self.groupBox_13.setObjectName(u"groupBox_13")
-        self.gridLayout_13 = QGridLayout(self.groupBox_13)
-        self.gridLayout_13.setObjectName(u"gridLayout_13")
-        self.saturation = QSlider(self.groupBox_13)
-        self.saturation.setObjectName(u"saturation")
-        self.saturation.setMaximum(100)
-        self.saturation.setValue(50)
-        self.saturation.setOrientation(Qt.Horizontal)
-
-        self.gridLayout_13.addWidget(self.saturation, 5, 1, 1, 1)
-
-        self.hue = QSlider(self.groupBox_13)
-        self.hue.setObjectName(u"hue")
-        self.hue.setMaximum(100)
-        self.hue.setValue(50)
-        self.hue.setOrientation(Qt.Horizontal)
-
-        self.gridLayout_13.addWidget(self.hue, 4, 1, 1, 1)
-
-        self.label_16 = QLabel(self.groupBox_13)
-        self.label_16.setObjectName(u"label_16")
-
-        self.gridLayout_13.addWidget(self.label_16, 2, 0, 1, 1)
-
-        self.label_18 = QLabel(self.groupBox_13)
-        self.label_18.setObjectName(u"label_18")
-
-        self.gridLayout_13.addWidget(self.label_18, 4, 0, 1, 1)
-
-        self.limitrange = QCheckBox(self.groupBox_13)
-        self.limitrange.setObjectName(u"limitrange")
-
-        self.gridLayout_13.addWidget(self.limitrange, 0, 0, 1, 2)
-
-        self.luma = QSlider(self.groupBox_13)
-        self.luma.setObjectName(u"luma")
-        self.luma.setMaximum(100)
-        self.luma.setValue(50)
-        self.luma.setOrientation(Qt.Horizontal)
-
-        self.gridLayout_13.addWidget(self.luma, 2, 1, 1, 1)
-
-        self.label_17 = QLabel(self.groupBox_13)
-        self.label_17.setObjectName(u"label_17")
-
-        self.gridLayout_13.addWidget(self.label_17, 3, 0, 1, 1)
-
-        self.contrast = QSlider(self.groupBox_13)
-        self.contrast.setObjectName(u"contrast")
-        self.contrast.setMaximum(100)
-        self.contrast.setValue(50)
-        self.contrast.setOrientation(Qt.Horizontal)
-
-        self.gridLayout_13.addWidget(self.contrast, 3, 1, 1, 1)
-
-        self.label_19 = QLabel(self.groupBox_13)
-        self.label_19.setObjectName(u"label_19")
-
-        self.gridLayout_13.addWidget(self.label_19, 5, 0, 1, 1)
-
-        self.color_space = QComboBox(self.groupBox_13)
-        self.color_space.addItem("")
-        self.color_space.addItem("")
-        self.color_space.addItem("")
-        self.color_space.setObjectName(u"color_space")
-        self.color_space.setLayoutDirection(Qt.LeftToRight)
-
-        self.gridLayout_13.addWidget(self.color_space, 1, 1, 1, 1)
-
-        self.label_20 = QLabel(self.groupBox_13)
-        self.label_20.setObjectName(u"label_20")
-
-        self.gridLayout_13.addWidget(self.label_20, 1, 0, 1, 1)
-
-
-        self.gridLayout_7.addWidget(self.groupBox_13, 9, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.groupBox_15, 12, 0, 1, 1)
 
         self.groupBox_11 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_11.setObjectName(u"groupBox_11")
@@ -554,7 +377,22 @@ class Ui_ImageEditor(object):
         self.gridLayout_9.addWidget(self.gamma_ratio, 0, 1, 1, 1)
 
 
-        self.gridLayout_7.addWidget(self.groupBox_11, 7, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.groupBox_11, 8, 0, 1, 1)
+
+        self.groupBox_8 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_8.setObjectName(u"groupBox_8")
+        self.gridLayout_10 = QGridLayout(self.groupBox_8)
+        self.gridLayout_10.setObjectName(u"gridLayout_10")
+        self.demosaic_type = QComboBox(self.groupBox_8)
+        self.demosaic_type.addItem("")
+        self.demosaic_type.addItem("")
+        self.demosaic_type.addItem("")
+        self.demosaic_type.setObjectName(u"demosaic_type")
+
+        self.gridLayout_10.addWidget(self.demosaic_type, 0, 0, 1, 1)
+
+
+        self.gridLayout_7.addWidget(self.groupBox_8, 5, 0, 1, 1)
 
         self.groupBox_10 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_10.setObjectName(u"groupBox_10")
@@ -710,7 +548,7 @@ class Ui_ImageEditor(object):
         self.gridLayout_12.addLayout(self.verticalLayout_3, 1, 4, 1, 1)
 
 
-        self.gridLayout_7.addWidget(self.groupBox_10, 6, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.groupBox_10, 7, 0, 1, 1)
 
         self.groupBox_5 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_5.setObjectName(u"groupBox_5")
@@ -722,128 +560,164 @@ class Ui_ImageEditor(object):
         self.gridLayout_14.addWidget(self.inputflatphoto, 0, 0, 1, 1)
 
 
-        self.gridLayout_7.addWidget(self.groupBox_5, 2, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.groupBox_5, 3, 0, 1, 1)
 
-        self.groupBox_9 = QGroupBox(self.scrollAreaWidgetContents)
-        self.groupBox_9.setObjectName(u"groupBox_9")
-        self.gridLayout_8 = QGridLayout(self.groupBox_9)
-        self.gridLayout_8.setObjectName(u"gridLayout_8")
-        self.awb_r = QDoubleSpinBox(self.groupBox_9)
-        self.awb_r.setObjectName(u"awb_r")
-        self.awb_r.setDecimals(3)
-        self.awb_r.setValue(1.000000000000000)
+        self.groupBox_14 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_14.setObjectName(u"groupBox_14")
+        self.gridLayout_17 = QGridLayout(self.groupBox_14)
+        self.gridLayout_17.setObjectName(u"gridLayout_17")
+        self.label_37 = QLabel(self.groupBox_14)
+        self.label_37.setObjectName(u"label_37")
 
-        self.gridLayout_8.addWidget(self.awb_r, 0, 2, 1, 1)
+        self.gridLayout_17.addWidget(self.label_37, 4, 0, 1, 1)
 
-        self.awb_g = QDoubleSpinBox(self.groupBox_9)
-        self.awb_g.setObjectName(u"awb_g")
-        self.awb_g.setDecimals(3)
-        self.awb_g.setValue(1.000000000000000)
+        self.denoise_strength_m = QSlider(self.groupBox_14)
+        self.denoise_strength_m.setObjectName(u"denoise_strength_m")
+        self.denoise_strength_m.setValue(50)
+        self.denoise_strength_m.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_8.addWidget(self.awb_g, 0, 4, 1, 1)
+        self.gridLayout_17.addWidget(self.denoise_strength_m, 3, 1, 1, 1)
 
-        self.label_12 = QLabel(self.groupBox_9)
-        self.label_12.setObjectName(u"label_12")
+        self.label_40 = QLabel(self.groupBox_14)
+        self.label_40.setObjectName(u"label_40")
 
-        self.gridLayout_8.addWidget(self.label_12, 0, 5, 1, 1)
+        self.gridLayout_17.addWidget(self.label_40, 5, 0, 1, 1)
 
-        self.label_5 = QLabel(self.groupBox_9)
-        self.label_5.setObjectName(u"label_5")
+        self.label_36 = QLabel(self.groupBox_14)
+        self.label_36.setObjectName(u"label_36")
 
-        self.gridLayout_8.addWidget(self.label_5, 0, 1, 1, 1)
+        self.gridLayout_17.addWidget(self.label_36, 3, 0, 1, 1)
 
-        self.awb_b = QDoubleSpinBox(self.groupBox_9)
-        self.awb_b.setObjectName(u"awb_b")
-        self.awb_b.setDecimals(3)
-        self.awb_b.setValue(1.000000000000000)
+        self.denoise_strength_h = QSlider(self.groupBox_14)
+        self.denoise_strength_h.setObjectName(u"denoise_strength_h")
+        self.denoise_strength_h.setValue(50)
+        self.denoise_strength_h.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_8.addWidget(self.awb_b, 0, 6, 1, 1)
+        self.gridLayout_17.addWidget(self.denoise_strength_h, 4, 1, 1, 1)
 
-        self.label_11 = QLabel(self.groupBox_9)
-        self.label_11.setObjectName(u"label_11")
+        self.noise_threshold_l = QSlider(self.groupBox_14)
+        self.noise_threshold_l.setObjectName(u"noise_threshold_l")
+        self.noise_threshold_l.setValue(50)
+        self.noise_threshold_l.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_8.addWidget(self.label_11, 0, 3, 1, 1)
+        self.gridLayout_17.addWidget(self.noise_threshold_l, 2, 2, 1, 1)
 
-        self.select_from_raw = QPushButton(self.groupBox_9)
-        self.select_from_raw.setObjectName(u"select_from_raw")
+        self.denoise_strength_l = QSlider(self.groupBox_14)
+        self.denoise_strength_l.setObjectName(u"denoise_strength_l")
+        self.denoise_strength_l.setValue(50)
+        self.denoise_strength_l.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_8.addWidget(self.select_from_raw, 0, 7, 1, 1)
+        self.gridLayout_17.addWidget(self.denoise_strength_l, 2, 1, 1, 1)
 
+        self.noise_threshold_m = QSlider(self.groupBox_14)
+        self.noise_threshold_m.setObjectName(u"noise_threshold_m")
+        self.noise_threshold_m.setValue(50)
+        self.noise_threshold_m.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_7.addWidget(self.groupBox_9, 5, 0, 1, 1)
+        self.gridLayout_17.addWidget(self.noise_threshold_m, 3, 2, 1, 1)
 
-        self.groupBox_8 = QGroupBox(self.scrollAreaWidgetContents)
-        self.groupBox_8.setObjectName(u"groupBox_8")
-        self.gridLayout_10 = QGridLayout(self.groupBox_8)
-        self.gridLayout_10.setObjectName(u"gridLayout_10")
-        self.demosaic_type = QComboBox(self.groupBox_8)
-        self.demosaic_type.addItem("")
-        self.demosaic_type.addItem("")
-        self.demosaic_type.addItem("")
-        self.demosaic_type.setObjectName(u"demosaic_type")
+        self.label_31 = QLabel(self.groupBox_14)
+        self.label_31.setObjectName(u"label_31")
 
-        self.gridLayout_10.addWidget(self.demosaic_type, 0, 0, 1, 1)
+        self.gridLayout_17.addWidget(self.label_31, 2, 0, 1, 1)
 
+        self.label_38 = QLabel(self.groupBox_14)
+        self.label_38.setObjectName(u"label_38")
 
-        self.gridLayout_7.addWidget(self.groupBox_8, 4, 0, 1, 1)
+        self.gridLayout_17.addWidget(self.label_38, 1, 1, 1, 1)
 
-        self.groupBox_15 = QGroupBox(self.scrollAreaWidgetContents)
-        self.groupBox_15.setObjectName(u"groupBox_15")
-        self.gridLayout_16 = QGridLayout(self.groupBox_15)
-        self.gridLayout_16.setObjectName(u"gridLayout_16")
-        self.clip_range = QSlider(self.groupBox_15)
-        self.clip_range.setObjectName(u"clip_range")
-        self.clip_range.setMaximum(128)
-        self.clip_range.setValue(64)
-        self.clip_range.setOrientation(Qt.Horizontal)
+        self.label_39 = QLabel(self.groupBox_14)
+        self.label_39.setObjectName(u"label_39")
 
-        self.gridLayout_16.addWidget(self.clip_range, 3, 1, 1, 1)
+        self.gridLayout_17.addWidget(self.label_39, 1, 2, 1, 1)
 
-        self.label_34 = QLabel(self.groupBox_15)
-        self.label_34.setObjectName(u"label_34")
+        self.noise_threshold_h = QSlider(self.groupBox_14)
+        self.noise_threshold_h.setObjectName(u"noise_threshold_h")
+        self.noise_threshold_h.setValue(50)
+        self.noise_threshold_h.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_16.addWidget(self.label_34, 4, 0, 1, 1)
+        self.gridLayout_17.addWidget(self.noise_threshold_h, 4, 2, 1, 1)
 
-        self.sharpen_strength = QSlider(self.groupBox_15)
-        self.sharpen_strength.setObjectName(u"sharpen_strength")
-        self.sharpen_strength.setMaximum(10)
-        self.sharpen_strength.setValue(5)
-        self.sharpen_strength.setOrientation(Qt.Horizontal)
+        self.label_41 = QLabel(self.groupBox_14)
+        self.label_41.setObjectName(u"label_41")
 
-        self.gridLayout_16.addWidget(self.sharpen_strength, 2, 1, 1, 1)
+        self.gridLayout_17.addWidget(self.label_41, 1, 3, 1, 1)
 
-        self.label_35 = QLabel(self.groupBox_15)
-        self.label_35.setObjectName(u"label_35")
+        self.noise_weight_l = QSlider(self.groupBox_14)
+        self.noise_weight_l.setObjectName(u"noise_weight_l")
+        self.noise_weight_l.setMaximum(100)
+        self.noise_weight_l.setValue(50)
+        self.noise_weight_l.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_16.addWidget(self.label_35, 3, 0, 1, 1)
+        self.gridLayout_17.addWidget(self.noise_weight_l, 2, 3, 1, 1)
 
-        self.label_33 = QLabel(self.groupBox_15)
-        self.label_33.setObjectName(u"label_33")
+        self.noise_weight_m = QSlider(self.groupBox_14)
+        self.noise_weight_m.setObjectName(u"noise_weight_m")
+        self.noise_weight_m.setMaximum(100)
+        self.noise_weight_m.setValue(50)
+        self.noise_weight_m.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_16.addWidget(self.label_33, 2, 0, 1, 1)
+        self.gridLayout_17.addWidget(self.noise_weight_m, 3, 3, 1, 1)
 
-        self.label_32 = QLabel(self.groupBox_15)
-        self.label_32.setObjectName(u"label_32")
+        self.noise_weight_h = QSlider(self.groupBox_14)
+        self.noise_weight_h.setObjectName(u"noise_weight_h")
+        self.noise_weight_h.setMaximum(100)
+        self.noise_weight_h.setValue(50)
+        self.noise_weight_h.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_16.addWidget(self.label_32, 1, 0, 1, 1)
+        self.gridLayout_17.addWidget(self.noise_weight_h, 4, 3, 1, 1)
 
-        self.denoise_threshold = QSlider(self.groupBox_15)
-        self.denoise_threshold.setObjectName(u"denoise_threshold")
-        self.denoise_threshold.setMaximum(250)
-        self.denoise_threshold.setValue(50)
-        self.denoise_threshold.setOrientation(Qt.Horizontal)
+        self.color_denoise_strength = QSlider(self.groupBox_14)
+        self.color_denoise_strength.setObjectName(u"color_denoise_strength")
+        self.color_denoise_strength.setValue(50)
+        self.color_denoise_strength.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_16.addWidget(self.denoise_threshold, 4, 1, 1, 1)
-
-        self.medianblur_strength = QSlider(self.groupBox_15)
-        self.medianblur_strength.setObjectName(u"medianblur_strength")
-        self.medianblur_strength.setMaximum(100)
-        self.medianblur_strength.setOrientation(Qt.Horizontal)
-
-        self.gridLayout_16.addWidget(self.medianblur_strength, 1, 1, 1, 1)
+        self.gridLayout_17.addWidget(self.color_denoise_strength, 5, 1, 1, 3)
 
 
-        self.gridLayout_7.addWidget(self.groupBox_15, 11, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.groupBox_14, 11, 0, 1, 1)
+
+        self.groupBox_7 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_7.setObjectName(u"groupBox_7")
+
+        self.gridLayout_7.addWidget(self.groupBox_7, 4, 0, 1, 1)
+
+        self.groupBox_12 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_12.setObjectName(u"groupBox_12")
+        self.gridLayout_11 = QGridLayout(self.groupBox_12)
+        self.gridLayout_11.setObjectName(u"gridLayout_11")
+        self.dark_boost = QSlider(self.groupBox_12)
+        self.dark_boost.setObjectName(u"dark_boost")
+        self.dark_boost.setMaximum(300)
+        self.dark_boost.setSingleStep(10)
+        self.dark_boost.setPageStep(50)
+        self.dark_boost.setValue(100)
+        self.dark_boost.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_11.addWidget(self.dark_boost, 0, 1, 1, 1)
+
+        self.label_14 = QLabel(self.groupBox_12)
+        self.label_14.setObjectName(u"label_14")
+
+        self.gridLayout_11.addWidget(self.label_14, 0, 0, 1, 1)
+
+        self.label_15 = QLabel(self.groupBox_12)
+        self.label_15.setObjectName(u"label_15")
+
+        self.gridLayout_11.addWidget(self.label_15, 1, 0, 1, 1)
+
+        self.bright_suppress = QSlider(self.groupBox_12)
+        self.bright_suppress.setObjectName(u"bright_suppress")
+        self.bright_suppress.setMaximum(300)
+        self.bright_suppress.setSingleStep(10)
+        self.bright_suppress.setPageStep(50)
+        self.bright_suppress.setValue(100)
+        self.bright_suppress.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_11.addWidget(self.bright_suppress, 1, 1, 1, 1)
+
+
+        self.gridLayout_7.addWidget(self.groupBox_12, 9, 0, 1, 1)
 
         self.groupBox_6 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_6.setObjectName(u"groupBox_6")
@@ -862,7 +736,156 @@ class Ui_ImageEditor(object):
         self.gridLayout_15.addWidget(self.badpixelcorrection, 0, 1, 1, 1)
 
 
-        self.gridLayout_7.addWidget(self.groupBox_6, 1, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.groupBox_6, 2, 0, 1, 1)
+
+        self.groupBox_4 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        self.gridLayout_3 = QGridLayout(self.groupBox_4)
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.label_2 = QLabel(self.groupBox_4)
+        self.label_2.setObjectName(u"label_2")
+
+        self.gridLayout_3.addWidget(self.label_2, 0, 3, 1, 1)
+
+        self.label_3 = QLabel(self.groupBox_4)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayout_3.addWidget(self.label_3, 0, 5, 1, 1)
+
+        self.blc_b = QSpinBox(self.groupBox_4)
+        self.blc_b.setObjectName(u"blc_b")
+        self.blc_b.setMaximum(10000)
+
+        self.gridLayout_3.addWidget(self.blc_b, 0, 8, 1, 1)
+
+        self.blc_gb = QSpinBox(self.groupBox_4)
+        self.blc_gb.setObjectName(u"blc_gb")
+        self.blc_gb.setMaximum(1000)
+
+        self.gridLayout_3.addWidget(self.blc_gb, 0, 6, 1, 1)
+
+        self.blc_gr = QSpinBox(self.groupBox_4)
+        self.blc_gr.setObjectName(u"blc_gr")
+        self.blc_gr.setMaximum(10000)
+
+        self.gridLayout_3.addWidget(self.blc_gr, 0, 4, 1, 1)
+
+        self.label = QLabel(self.groupBox_4)
+        self.label.setObjectName(u"label")
+
+        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
+
+        self.label_4 = QLabel(self.groupBox_4)
+        self.label_4.setObjectName(u"label_4")
+
+        self.gridLayout_3.addWidget(self.label_4, 0, 7, 1, 1)
+
+        self.blc_r = QSpinBox(self.groupBox_4)
+        self.blc_r.setObjectName(u"blc_r")
+        self.blc_r.setMaximum(10000)
+
+        self.gridLayout_3.addWidget(self.blc_r, 0, 2, 1, 1)
+
+
+        self.gridLayout_7.addWidget(self.groupBox_4, 0, 0, 1, 1)
+
+        self.groupBox_13 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_13.setObjectName(u"groupBox_13")
+        self.gridLayout_13 = QGridLayout(self.groupBox_13)
+        self.gridLayout_13.setObjectName(u"gridLayout_13")
+        self.saturation = QSlider(self.groupBox_13)
+        self.saturation.setObjectName(u"saturation")
+        self.saturation.setMaximum(100)
+        self.saturation.setValue(50)
+        self.saturation.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_13.addWidget(self.saturation, 5, 1, 1, 1)
+
+        self.hue = QSlider(self.groupBox_13)
+        self.hue.setObjectName(u"hue")
+        self.hue.setMaximum(100)
+        self.hue.setValue(50)
+        self.hue.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_13.addWidget(self.hue, 4, 1, 1, 1)
+
+        self.label_16 = QLabel(self.groupBox_13)
+        self.label_16.setObjectName(u"label_16")
+
+        self.gridLayout_13.addWidget(self.label_16, 2, 0, 1, 1)
+
+        self.label_18 = QLabel(self.groupBox_13)
+        self.label_18.setObjectName(u"label_18")
+
+        self.gridLayout_13.addWidget(self.label_18, 4, 0, 1, 1)
+
+        self.limitrange = QCheckBox(self.groupBox_13)
+        self.limitrange.setObjectName(u"limitrange")
+
+        self.gridLayout_13.addWidget(self.limitrange, 0, 0, 1, 2)
+
+        self.luma = QSlider(self.groupBox_13)
+        self.luma.setObjectName(u"luma")
+        self.luma.setMaximum(100)
+        self.luma.setValue(50)
+        self.luma.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_13.addWidget(self.luma, 2, 1, 1, 1)
+
+        self.label_17 = QLabel(self.groupBox_13)
+        self.label_17.setObjectName(u"label_17")
+
+        self.gridLayout_13.addWidget(self.label_17, 3, 0, 1, 1)
+
+        self.contrast = QSlider(self.groupBox_13)
+        self.contrast.setObjectName(u"contrast")
+        self.contrast.setMaximum(100)
+        self.contrast.setValue(50)
+        self.contrast.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_13.addWidget(self.contrast, 3, 1, 1, 1)
+
+        self.label_19 = QLabel(self.groupBox_13)
+        self.label_19.setObjectName(u"label_19")
+
+        self.gridLayout_13.addWidget(self.label_19, 5, 0, 1, 1)
+
+        self.color_space = QComboBox(self.groupBox_13)
+        self.color_space.addItem("")
+        self.color_space.addItem("")
+        self.color_space.addItem("")
+        self.color_space.setObjectName(u"color_space")
+        self.color_space.setLayoutDirection(Qt.LeftToRight)
+
+        self.gridLayout_13.addWidget(self.color_space, 1, 1, 1, 1)
+
+        self.label_20 = QLabel(self.groupBox_13)
+        self.label_20.setObjectName(u"label_20")
+
+        self.gridLayout_13.addWidget(self.label_20, 1, 0, 1, 1)
+
+
+        self.gridLayout_7.addWidget(self.groupBox_13, 10, 0, 1, 1)
+
+        self.groupBox_16 = QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_16.setObjectName(u"groupBox_16")
+        self.gridLayout_18 = QGridLayout(self.groupBox_16)
+        self.gridLayout_18.setObjectName(u"gridLayout_18")
+        self.label_42 = QLabel(self.groupBox_16)
+        self.label_42.setObjectName(u"label_42")
+
+        self.gridLayout_18.addWidget(self.label_42, 0, 0, 1, 1)
+
+        self.digital_gain = QDoubleSpinBox(self.groupBox_16)
+        self.digital_gain.setObjectName(u"digital_gain")
+        self.digital_gain.setDecimals(3)
+        self.digital_gain.setSingleStep(0.200000000000000)
+        self.digital_gain.setValue(1.000000000000000)
+
+        self.gridLayout_18.addWidget(self.digital_gain, 0, 1, 1, 1)
+
+
+        self.gridLayout_7.addWidget(self.groupBox_16, 1, 0, 1, 1)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -907,7 +930,8 @@ class Ui_ImageEditor(object):
         QWidget.setTabOrder(self.blc_r, self.blc_gr)
         QWidget.setTabOrder(self.blc_gr, self.blc_gb)
         QWidget.setTabOrder(self.blc_gb, self.blc_b)
-        QWidget.setTabOrder(self.blc_b, self.badpixelcorrection)
+        QWidget.setTabOrder(self.blc_b, self.digital_gain)
+        QWidget.setTabOrder(self.digital_gain, self.badpixelcorrection)
         QWidget.setTabOrder(self.badpixelcorrection, self.inputflatphoto)
         QWidget.setTabOrder(self.inputflatphoto, self.demosaic_type)
         QWidget.setTabOrder(self.demosaic_type, self.awb_r)
@@ -932,7 +956,17 @@ class Ui_ImageEditor(object):
         QWidget.setTabOrder(self.luma, self.contrast)
         QWidget.setTabOrder(self.contrast, self.hue)
         QWidget.setTabOrder(self.hue, self.saturation)
-        QWidget.setTabOrder(self.saturation, self.medianblur_strength)
+        QWidget.setTabOrder(self.saturation, self.denoise_strength_l)
+        QWidget.setTabOrder(self.denoise_strength_l, self.noise_threshold_l)
+        QWidget.setTabOrder(self.noise_threshold_l, self.noise_weight_l)
+        QWidget.setTabOrder(self.noise_weight_l, self.denoise_strength_m)
+        QWidget.setTabOrder(self.denoise_strength_m, self.noise_threshold_m)
+        QWidget.setTabOrder(self.noise_threshold_m, self.noise_weight_m)
+        QWidget.setTabOrder(self.noise_weight_m, self.denoise_strength_h)
+        QWidget.setTabOrder(self.denoise_strength_h, self.noise_threshold_h)
+        QWidget.setTabOrder(self.noise_threshold_h, self.noise_weight_h)
+        QWidget.setTabOrder(self.noise_weight_h, self.color_denoise_strength)
+        QWidget.setTabOrder(self.color_denoise_strength, self.medianblur_strength)
         QWidget.setTabOrder(self.medianblur_strength, self.sharpen_strength)
         QWidget.setTabOrder(self.sharpen_strength, self.clip_range)
         QWidget.setTabOrder(self.clip_range, self.denoise_threshold)
@@ -981,59 +1015,48 @@ class Ui_ImageEditor(object):
         ___qlistwidgetitem1 = self.pipeline.item(1)
         ___qlistwidgetitem1.setText(QCoreApplication.translate("ImageEditor", u"black level", None));
         ___qlistwidgetitem2 = self.pipeline.item(2)
-        ___qlistwidgetitem2.setText(QCoreApplication.translate("ImageEditor", u"bad pixel correction", None));
+        ___qlistwidgetitem2.setText(QCoreApplication.translate("ImageEditor", u"digital gain", None));
         ___qlistwidgetitem3 = self.pipeline.item(3)
-        ___qlistwidgetitem3.setText(QCoreApplication.translate("ImageEditor", u"rolloff", None));
+        ___qlistwidgetitem3.setText(QCoreApplication.translate("ImageEditor", u"bad pixel correction", None));
         ___qlistwidgetitem4 = self.pipeline.item(4)
-        ___qlistwidgetitem4.setText(QCoreApplication.translate("ImageEditor", u"demosaic", None));
+        ___qlistwidgetitem4.setText(QCoreApplication.translate("ImageEditor", u"rolloff", None));
         ___qlistwidgetitem5 = self.pipeline.item(5)
-        ___qlistwidgetitem5.setText(QCoreApplication.translate("ImageEditor", u"awb", None));
+        ___qlistwidgetitem5.setText(QCoreApplication.translate("ImageEditor", u"demosaic", None));
         ___qlistwidgetitem6 = self.pipeline.item(6)
-        ___qlistwidgetitem6.setText(QCoreApplication.translate("ImageEditor", u"ccm", None));
+        ___qlistwidgetitem6.setText(QCoreApplication.translate("ImageEditor", u"awb", None));
         ___qlistwidgetitem7 = self.pipeline.item(7)
-        ___qlistwidgetitem7.setText(QCoreApplication.translate("ImageEditor", u"gamma", None));
+        ___qlistwidgetitem7.setText(QCoreApplication.translate("ImageEditor", u"ccm", None));
         ___qlistwidgetitem8 = self.pipeline.item(8)
-        ___qlistwidgetitem8.setText(QCoreApplication.translate("ImageEditor", u"LTM", None));
+        ___qlistwidgetitem8.setText(QCoreApplication.translate("ImageEditor", u"gamma", None));
         ___qlistwidgetitem9 = self.pipeline.item(9)
-        ___qlistwidgetitem9.setText(QCoreApplication.translate("ImageEditor", u"CSC", None));
+        ___qlistwidgetitem9.setText(QCoreApplication.translate("ImageEditor", u"LTM", None));
         ___qlistwidgetitem10 = self.pipeline.item(10)
-        ___qlistwidgetitem10.setText(QCoreApplication.translate("ImageEditor", u"yuv denoise", None));
+        ___qlistwidgetitem10.setText(QCoreApplication.translate("ImageEditor", u"CSC", None));
         ___qlistwidgetitem11 = self.pipeline.item(11)
-        ___qlistwidgetitem11.setText(QCoreApplication.translate("ImageEditor", u"yuv sharpen", None));
+        ___qlistwidgetitem11.setText(QCoreApplication.translate("ImageEditor", u"yuv denoise", None));
+        ___qlistwidgetitem12 = self.pipeline.item(12)
+        ___qlistwidgetitem12.setText(QCoreApplication.translate("ImageEditor", u"yuv sharpen", None));
         self.pipeline.setSortingEnabled(__sortingEnabled)
 
         self.reload.setText(QCoreApplication.translate("ImageEditor", u"\u7b97\u6cd5\u70ed\u66f4\u65b0", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ImageEditor", u"ISP\u53c2\u6570", None))
-        self.groupBox_14.setTitle(QCoreApplication.translate("ImageEditor", u"yuv denoise", None))
-        self.label_37.setText(QCoreApplication.translate("ImageEditor", u"\u9ad8\u9891", None))
-        self.label_40.setText(QCoreApplication.translate("ImageEditor", u"\u8272\u5ea6\u964d\u566a\u5f3a\u5ea6", None))
-        self.label_36.setText(QCoreApplication.translate("ImageEditor", u"\u4e2d\u9891", None))
-        self.label_31.setText(QCoreApplication.translate("ImageEditor", u"\u4f4e\u9891", None))
-        self.label_38.setText(QCoreApplication.translate("ImageEditor", u"\u964d\u566a\u5f3a\u5ea6", None))
-        self.label_39.setText(QCoreApplication.translate("ImageEditor", u"\u566a\u58f0\u9608\u503c", None))
-        self.label_41.setText(QCoreApplication.translate("ImageEditor", u"\u964d\u566a\u6743\u91cd", None))
-        self.groupBox_12.setTitle(QCoreApplication.translate("ImageEditor", u"LTM", None))
-        self.label_14.setText(QCoreApplication.translate("ImageEditor", u"\u6697\u533a\u63d0\u5347    ", None))
-        self.label_15.setText(QCoreApplication.translate("ImageEditor", u"\u4eae\u533a\u6291\u5236", None))
-        self.groupBox_4.setTitle(QCoreApplication.translate("ImageEditor", u"black level", None))
-        self.label_2.setText(QCoreApplication.translate("ImageEditor", u"GR", None))
-        self.label_3.setText(QCoreApplication.translate("ImageEditor", u"GB", None))
-        self.label.setText(QCoreApplication.translate("ImageEditor", u"R", None))
-        self.label_4.setText(QCoreApplication.translate("ImageEditor", u"B", None))
-        self.groupBox_7.setTitle(QCoreApplication.translate("ImageEditor", u"bayer denoise", None))
-        self.groupBox_13.setTitle(QCoreApplication.translate("ImageEditor", u"CSC", None))
-        self.label_16.setText(QCoreApplication.translate("ImageEditor", u"\u4eae\u5ea6        ", None))
-        self.label_18.setText(QCoreApplication.translate("ImageEditor", u"\u8272\u8c03      ", None))
-        self.limitrange.setText(QCoreApplication.translate("ImageEditor", u"\u662f\u5426\u9650\u5236YUV\u7684\u8f93\u51fa\u8303\u56f4\uff0cTV\u6807\u51c6\u9700:16-235,PC\u6807\u51c6:0-255", None))
-        self.label_17.setText(QCoreApplication.translate("ImageEditor", u"\u5bf9\u6bd4\u5ea6     ", None))
-        self.label_19.setText(QCoreApplication.translate("ImageEditor", u"\u9971\u548c\u5ea6    ", None))
-        self.color_space.setItemText(0, QCoreApplication.translate("ImageEditor", u"BT709", None))
-        self.color_space.setItemText(1, QCoreApplication.translate("ImageEditor", u"BT2020", None))
-        self.color_space.setItemText(2, QCoreApplication.translate("ImageEditor", u"BT601", None))
-
-        self.label_20.setText(QCoreApplication.translate("ImageEditor", u"\u8272\u57df\u6807\u51c6", None))
+        self.groupBox_9.setTitle(QCoreApplication.translate("ImageEditor", u"awb", None))
+        self.label_12.setText(QCoreApplication.translate("ImageEditor", u"B", None))
+        self.label_5.setText(QCoreApplication.translate("ImageEditor", u"R", None))
+        self.label_11.setText(QCoreApplication.translate("ImageEditor", u"G", None))
+        self.select_from_raw.setText(QCoreApplication.translate("ImageEditor", u"\u4eceraw\u56fe\u9009\u53d6", None))
+        self.groupBox_15.setTitle(QCoreApplication.translate("ImageEditor", u"yuv sharpen", None))
+        self.label_34.setText(QCoreApplication.translate("ImageEditor", u"\u964d\u566a\u9608\u503c", None))
+        self.label_35.setText(QCoreApplication.translate("ImageEditor", u"\u9510\u5316\u94b3\u4f4d\u9608\u503c", None))
+        self.label_33.setText(QCoreApplication.translate("ImageEditor", u"\u9510\u5316\u5f3a\u5ea6", None))
+        self.label_32.setText(QCoreApplication.translate("ImageEditor", u"3x3\u4e2d\u503c\u6ee4\u6ce2\u5f3a\u5ea6", None))
         self.groupBox_11.setTitle(QCoreApplication.translate("ImageEditor", u"gamma", None))
         self.label_13.setText(QCoreApplication.translate("ImageEditor", u"ratio", None))
+        self.groupBox_8.setTitle(QCoreApplication.translate("ImageEditor", u"demosaic", None))
+        self.demosaic_type.setItemText(0, QCoreApplication.translate("ImageEditor", u"\u53cc\u7ebf\u6027\u63d2\u503c", None))
+        self.demosaic_type.setItemText(1, QCoreApplication.translate("ImageEditor", u"Malvar2004", None))
+        self.demosaic_type.setItemText(2, QCoreApplication.translate("ImageEditor", u"Menon2007", None))
+
         self.groupBox_10.setTitle(QCoreApplication.translate("ImageEditor", u"ccm", None))
         self.label_22.setText(QCoreApplication.translate("ImageEditor", u"RR", None))
         self.label_23.setText(QCoreApplication.translate("ImageEditor", u"RG", None))
@@ -1046,23 +1069,38 @@ class Ui_ImageEditor(object):
         self.label_30.setText(QCoreApplication.translate("ImageEditor", u"BB", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("ImageEditor", u"rolloff", None))
         self.inputflatphoto.setText(QCoreApplication.translate("ImageEditor", u"\u5bfc\u5165\u5e73\u573a\u56fe\uff08\u5747\u5300\u5149\u7167\u7684\u56fe\u7247\uff09", None))
-        self.groupBox_9.setTitle(QCoreApplication.translate("ImageEditor", u"awb", None))
-        self.label_12.setText(QCoreApplication.translate("ImageEditor", u"B", None))
-        self.label_5.setText(QCoreApplication.translate("ImageEditor", u"R", None))
-        self.label_11.setText(QCoreApplication.translate("ImageEditor", u"G", None))
-        self.select_from_raw.setText(QCoreApplication.translate("ImageEditor", u"\u4eceraw\u56fe\u9009\u53d6", None))
-        self.groupBox_8.setTitle(QCoreApplication.translate("ImageEditor", u"demosaic", None))
-        self.demosaic_type.setItemText(0, QCoreApplication.translate("ImageEditor", u"\u53cc\u7ebf\u6027\u63d2\u503c", None))
-        self.demosaic_type.setItemText(1, QCoreApplication.translate("ImageEditor", u"Malvar2004", None))
-        self.demosaic_type.setItemText(2, QCoreApplication.translate("ImageEditor", u"Menon2007", None))
-
-        self.groupBox_15.setTitle(QCoreApplication.translate("ImageEditor", u"yuv sharpen", None))
-        self.label_34.setText(QCoreApplication.translate("ImageEditor", u"\u964d\u566a\u9608\u503c", None))
-        self.label_35.setText(QCoreApplication.translate("ImageEditor", u"\u9510\u5316\u94b3\u4f4d\u9608\u503c", None))
-        self.label_33.setText(QCoreApplication.translate("ImageEditor", u"\u9510\u5316\u5f3a\u5ea6", None))
-        self.label_32.setText(QCoreApplication.translate("ImageEditor", u"3x3\u4e2d\u503c\u6ee4\u6ce2\u5f3a\u5ea6", None))
+        self.groupBox_14.setTitle(QCoreApplication.translate("ImageEditor", u"yuv denoise", None))
+        self.label_37.setText(QCoreApplication.translate("ImageEditor", u"\u9ad8\u9891", None))
+        self.label_40.setText(QCoreApplication.translate("ImageEditor", u"\u8272\u5ea6\u964d\u566a\u5f3a\u5ea6", None))
+        self.label_36.setText(QCoreApplication.translate("ImageEditor", u"\u4e2d\u9891", None))
+        self.label_31.setText(QCoreApplication.translate("ImageEditor", u"\u4f4e\u9891", None))
+        self.label_38.setText(QCoreApplication.translate("ImageEditor", u"\u964d\u566a\u5f3a\u5ea6", None))
+        self.label_39.setText(QCoreApplication.translate("ImageEditor", u"\u566a\u58f0\u9608\u503c", None))
+        self.label_41.setText(QCoreApplication.translate("ImageEditor", u"\u964d\u566a\u6743\u91cd", None))
+        self.groupBox_7.setTitle(QCoreApplication.translate("ImageEditor", u"bayer denoise", None))
+        self.groupBox_12.setTitle(QCoreApplication.translate("ImageEditor", u"LTM", None))
+        self.label_14.setText(QCoreApplication.translate("ImageEditor", u"\u6697\u533a\u63d0\u5347    ", None))
+        self.label_15.setText(QCoreApplication.translate("ImageEditor", u"\u4eae\u533a\u6291\u5236", None))
         self.groupBox_6.setTitle(QCoreApplication.translate("ImageEditor", u"bad pixel correction", None))
         self.label_21.setText(QCoreApplication.translate("ImageEditor", u"\u68c0\u6d4b\u533a\u57df     ", None))
+        self.groupBox_4.setTitle(QCoreApplication.translate("ImageEditor", u"black level", None))
+        self.label_2.setText(QCoreApplication.translate("ImageEditor", u"GR", None))
+        self.label_3.setText(QCoreApplication.translate("ImageEditor", u"GB", None))
+        self.label.setText(QCoreApplication.translate("ImageEditor", u"R", None))
+        self.label_4.setText(QCoreApplication.translate("ImageEditor", u"B", None))
+        self.groupBox_13.setTitle(QCoreApplication.translate("ImageEditor", u"CSC", None))
+        self.label_16.setText(QCoreApplication.translate("ImageEditor", u"\u4eae\u5ea6        ", None))
+        self.label_18.setText(QCoreApplication.translate("ImageEditor", u"\u8272\u8c03      ", None))
+        self.limitrange.setText(QCoreApplication.translate("ImageEditor", u"\u662f\u5426\u9650\u5236YUV\u7684\u8f93\u51fa\u8303\u56f4\uff0cTV\u6807\u51c6\u9700:16-235,PC\u6807\u51c6:0-255", None))
+        self.label_17.setText(QCoreApplication.translate("ImageEditor", u"\u5bf9\u6bd4\u5ea6     ", None))
+        self.label_19.setText(QCoreApplication.translate("ImageEditor", u"\u9971\u548c\u5ea6    ", None))
+        self.color_space.setItemText(0, QCoreApplication.translate("ImageEditor", u"BT709", None))
+        self.color_space.setItemText(1, QCoreApplication.translate("ImageEditor", u"BT2020", None))
+        self.color_space.setItemText(2, QCoreApplication.translate("ImageEditor", u"BT601", None))
+
+        self.label_20.setText(QCoreApplication.translate("ImageEditor", u"\u8272\u57df\u6807\u51c6", None))
+        self.groupBox_16.setTitle(QCoreApplication.translate("ImageEditor", u"digital gain", None))
+        self.label_42.setText(QCoreApplication.translate("ImageEditor", u"\u6570\u5b57\u589e\u76ca(\u500d\uff09", None))
         self.photo_title.setTitle(QCoreApplication.translate("ImageEditor", u"\u56fe\u7247\u9884\u89c8", None))
     # retranslateUi
 

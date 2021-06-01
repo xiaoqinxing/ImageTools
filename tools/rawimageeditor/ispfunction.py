@@ -5,6 +5,7 @@ import tools.rawimageeditor.debayer as debayer
 pipeline_dict = {
     "original raw":                 isp.get_src_raw_data,
     "black level":                  isp.black_level_correction,
+    "digital gain":                 isp.apply_digital_gain,
     "blc":                          isp.black_level_correction,
     "rolloff":                      isp.rolloff_correction,
     "bad pixel correction":         isp.bad_pixel_correction,
