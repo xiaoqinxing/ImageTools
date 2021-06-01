@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'imageeditor_window.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.1
+## Created by: Qt User Interface Compiler version 5.15.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -67,28 +67,36 @@ class Ui_ImageEditor(object):
         self.actionshui.setObjectName(u"actionshui")
         self.watermark = QAction(ImageEditor)
         self.watermark.setObjectName(u"watermark")
+        self.nextphoto = QAction(ImageEditor)
+        self.nextphoto.setObjectName(u"nextphoto")
+        icon5 = QIcon()
+        icon5.addFile(u":/tool_icon/resource/down.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.nextphoto.setIcon(icon5)
+        self.prephoto = QAction(ImageEditor)
+        self.prephoto.setObjectName(u"prephoto")
+        icon6 = QIcon()
+        icon6.addFile(u":/tool_icon/resource/up.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.prephoto.setIcon(icon6)
         self.centralwidget = QWidget(ImageEditor)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.gridLayout = QGridLayout(self.centralwidget)
+        self.gridLayout_2 = QGridLayout(self.centralwidget)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.photo_title = QGroupBox(self.centralwidget)
+        self.photo_title.setObjectName(u"photo_title")
+        self.gridLayout_3 = QGridLayout(self.photo_title)
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.graphicsView = QGraphicsView(self.centralwidget)
-        self.graphicsView.setObjectName(u"graphicsView")
-        self.graphicsView.setMouseTracking(True)
-        self.graphicsView.setAcceptDrops(True)
-        self.graphicsView.setToolTipDuration(-1)
-        self.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.graphicsView.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.graphicsView.setDragMode(QGraphicsView.ScrollHandDrag)
-        self.graphicsView.setTransformationAnchor(QGraphicsView.AnchorViewCenter)
-        self.graphicsView.setResizeAnchor(QGraphicsView.AnchorViewCenter)
 
-        self.gridLayout.addWidget(self.graphicsView, 0, 1, 3, 1)
+        self.gridLayout_3.addLayout(self.gridLayout, 0, 0, 1, 1)
+
+
+        self.gridLayout_2.addWidget(self.photo_title, 0, 0, 1, 1)
 
         ImageEditor.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ImageEditor)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 22))
+        self.menubar.setGeometry(QRect(0, 0, 800, 23))
         self.menu_2 = QMenu(self.menubar)
         self.menu_2.setObjectName(u"menu_2")
         self.blur = QMenu(self.menu_2)
@@ -123,6 +131,8 @@ class Ui_ImageEditor(object):
         self.toolBar.addAction(self.saveimage)
         self.toolBar.addAction(self.compareimage)
         self.toolBar.addAction(self.actionstats)
+        self.toolBar.addAction(self.prephoto)
+        self.toolBar.addAction(self.nextphoto)
 
         self.retranslateUi(ImageEditor)
 
@@ -160,6 +170,9 @@ class Ui_ImageEditor(object):
         self.analysis_water.setText(QCoreApplication.translate("ImageEditor", u"\u89e3\u6790\u6c34\u5370", None))
         self.actionshui.setText(QCoreApplication.translate("ImageEditor", u"\u6c34\u5370\u5236\u4f5c", None))
         self.watermark.setText(QCoreApplication.translate("ImageEditor", u"\u6c34\u5370\u5236\u4f5c", None))
+        self.nextphoto.setText(QCoreApplication.translate("ImageEditor", u"\u4e0b\u4e00\u4e2a\u56fe\u7247", None))
+        self.prephoto.setText(QCoreApplication.translate("ImageEditor", u"\u4e0a\u4e00\u5f20\u56fe\u7247", None))
+        self.photo_title.setTitle("")
         self.menu_2.setTitle(QCoreApplication.translate("ImageEditor", u"\u56fe\u50cf\u5904\u7406", None))
         self.blur.setTitle(QCoreApplication.translate("ImageEditor", u"\u6ee4\u6ce2", None))
         self.menu_3.setTitle(QCoreApplication.translate("ImageEditor", u"\u5de5\u5177", None))

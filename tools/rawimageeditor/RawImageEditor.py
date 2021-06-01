@@ -102,8 +102,8 @@ class RawImageEditor(SubWindow):
                              self.show_img.shape[0], QImage.Format_BGR888)
             self.scene.addPixmap(QPixmap(showimg))
             self.ui.photo_title.setTitle(img.get_name())
-            if(self.hist_window is not None and self.hist_window.enable is True):
-                self.hist_window.update_rect_data(self.show_img, self.rect)
+            if(self.histView is not None and self.histView.enable is True):
+                self.histView.update_rect_data(self.show_img, self.rect)
 
     def select_awb_from_raw(self):
         """
