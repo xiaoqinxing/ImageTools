@@ -30,36 +30,17 @@
    <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging|QMainWindow::VerticalTabs</set>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1" rowspan="3">
-     <widget class="QGraphicsView" name="graphicsView">
-      <property name="mouseTracking">
-       <bool>true</bool>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="photo_title">
+      <property name="title">
+       <string/>
       </property>
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
-      <property name="toolTipDuration">
-       <number>-1</number>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAsNeeded</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAsNeeded</enum>
-      </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QAbstractScrollArea::AdjustToContents</enum>
-      </property>
-      <property name="dragMode">
-       <enum>QGraphicsView::ScrollHandDrag</enum>
-      </property>
-      <property name="transformationAnchor">
-       <enum>QGraphicsView::AnchorViewCenter</enum>
-      </property>
-      <property name="resizeAnchor">
-       <enum>QGraphicsView::AnchorViewCenter</enum>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout"/>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -70,7 +51,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_2">
@@ -128,6 +109,8 @@
    <addaction name="saveimage"/>
    <addaction name="compareimage"/>
    <addaction name="actionstats"/>
+   <addaction name="prephoto"/>
+   <addaction name="nextphoto"/>
   </widget>
   <action name="historgram">
    <property name="text">
@@ -231,6 +214,24 @@
   <action name="watermark">
    <property name="text">
     <string>水印制作</string>
+   </property>
+  </action>
+  <action name="nextphoto">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/down.png</normaloff>:/tool_icon/resource/down.png</iconset>
+   </property>
+   <property name="text">
+    <string>下一个图片</string>
+   </property>
+  </action>
+  <action name="prephoto">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/up.png</normaloff>:/tool_icon/resource/up.png</iconset>
+   </property>
+   <property name="text">
+    <string>上一张图片</string>
    </property>
   </action>
  </widget>

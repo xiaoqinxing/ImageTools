@@ -9,6 +9,9 @@ from tools.imageeditor.imageeffect import ImageEffect, BlurType, WaterMarkParams
 from tools.imageeditor.ui.watermarkview import Ui_WaterMarkView
 from components.histview import HistView
 import numpy as np
+from os import listdir
+from os.path import isfile, join, getmtime, dirname, basename
+
 
 class ImageEditor(SubWindow):
     def __init__(self, name='ImageEditor', parent=None):
@@ -29,38 +32,68 @@ class ImageEditor(SubWindow):
         self.ui.bilateralblur.triggered.connect(self.bilateralblur_image)
         # self.ui.historgram.triggered.connect(self.on_calc_hist)
         self.ui.actionstats.triggered.connect(self.on_calc_stats)
+        self.ui.nextphoto.triggered.connect(self.switch_next_photo)
+        self.ui.prephoto.triggered.connect(self.switch_pre_photo)
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
         self.ui.watermark.triggered.connect(self.open_watermark_win)
         self.scale_ratio = 100
         self.img = ImageEffect()
+        self.filepath = './'
+        self.imgfilename = ''
 
     def displayImage(self, img):
         self.scene.clear()
         if img is not None:
             if len(img.shape) == 2:
                 qimg = QImage(img, img, img.shape[1],
-                            img.shape[0], QImage.Format_Grayscale8)
+                              img.shape[0], QImage.Format_Grayscale8)
             elif img.shape[2] == 3:
                 qimg = QImage(img, img.shape[1],
-                            img.shape[0], QImage.Format_BGR888)
+                              img.shape[0], QImage.Format_BGR888)
             elif img.shape[2] == 4:
                 qimg = QImage(img, img.shape[1],
-                            img.shape[0], QImage.Format_BGR32)
+                              img.shape[0], QImage.Format_RGBA8888)
             else:
                 critical("图片格式不能解析")
             self.scene.addPixmap(QPixmap(qimg))
 
+    def find_next_photo(self, path, nextIndex):
+        ret = ''
+        filelist = [f for f in listdir(path) if isfile(
+            join(path, f)) and f.split('.')[-1] in ["jpg", "png", "bmp"]]
+        filelist = sorted(
+            filelist,  key=lambda x: getmtime(join(path, x)))
+        if(self.imgfilename in filelist):
+            index = filelist.index(self.imgfilename) + nextIndex
+            if(index >= len(filelist) - 1):
+                index = 0
+            elif(index < 0):
+                index = len(filelist) - 1
+            ret = join(path, filelist[index])
+        return ret
+
+    def switch_next_photo(self):
+        next_photo = self.find_next_photo(self.filepath, 1)
+        self.__init_img(next_photo)
+
+    def switch_pre_photo(self):
+        pre_photo = self.find_next_photo(self.filepath, -1)
+        self.__init_img(pre_photo)
+
     def on_open_img(self):
         imagepath = QFileDialog.getOpenFileName(
-            None, '打开图片', './', "Images (*.jpg *.png *.bmp)")
+            None, '打开图片', self.filepath, "Images (*.jpg *.png *.bmp)")
         self.__init_img(imagepath[0])
 
     def __init_img(self, filename):
         if (filename != ''):
             self.img.load_image(filename)
+            self.filepath = dirname(filename)
+            self.imgfilename = basename(filename)
             self.img.imageconvert(0)
             if (self.img.nowImage is not None):
                 self.displayImage(self.img.nowImage)
+                self.ui.photo_title.setTitle(self.imgfilename)
             else:
                 rely = QMessageBox.critical(
                     self, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
@@ -72,16 +105,22 @@ class ImageEditor(SubWindow):
             self.watermark_ui = Ui_WaterMarkView()
             self.watermark_ui.setupUi(self.watermark_win)
             self.watermark_win.show()
-            self.watermark_ui.open_watermark.clicked.connect(self.open_watermark_path)
-            self.watermark_ui.change_transparent.valueChanged.connect(self.set_watermark_params)
-            self.watermark_ui.change_watermark_size.valueChanged.connect(self.set_watermark_params)
-            self.watermark_ui.change_watermark_th.valueChanged.connect(self.set_watermark_params)
-            self.watermark_ui.change_watermark_type.currentIndexChanged.connect(self.set_watermark_params)
+            self.watermark_ui.open_watermark.clicked.connect(
+                self.open_watermark_path)
+            self.watermark_ui.change_transparent.valueChanged.connect(
+                self.set_watermark_params)
+            self.watermark_ui.change_watermark_size.valueChanged.connect(
+                self.set_watermark_params)
+            self.watermark_ui.change_watermark_th.valueChanged.connect(
+                self.set_watermark_params)
+            self.watermark_ui.change_watermark_type.currentIndexChanged.connect(
+                self.set_watermark_params)
             self.watermark_ui.generate.clicked.connect(self.generate_watermark)
-            self.watermark_ui.analysis.clicked.connect(self.analysis_space_watermark)
+            self.watermark_ui.analysis.clicked.connect(
+                self.analysis_space_watermark)
         else:
             critical('打开原图片失败，请先导入图片')
-    
+
     def open_watermark_path(self):
         watermarkpath = QFileDialog.getOpenFileName(
             None, '打开图片', './', "Images (*.jpg *.png *.bmp)")
@@ -92,7 +131,7 @@ class ImageEditor(SubWindow):
             self.set_watermark_params()
         else:
             critical('打开水印图片失败')
-    
+
     def get_watermark_parmas(self):
         watermark_params = WaterMarkParams()
         watermark_params.transparent = self.watermark_ui.change_transparent.value()
@@ -100,22 +139,22 @@ class ImageEditor(SubWindow):
         watermark_params.threshold = self.watermark_ui.change_watermark_th.value()
         watermark_params.watermark_type = self.watermark_ui.change_watermark_type.currentIndex()
         return watermark_params
-    
+
     def set_watermark_params(self):
         self.img.set_watermark_show(self.get_watermark_parmas())
         self.img.imageconvert(1)
         self.displayImage(self.img.dstImage)
-    
+
     def generate_watermark(self):
         self.img.imageconvert(1)
         self.img.generate_watermark(self.get_watermark_parmas())
         self.displayImage(self.img.dstImage)
-    
+
     def analysis_space_watermark(self):
         self.img.analysis_space_watermark()
         self.img.imageconvert(1)
         self.displayImage(self.img.dstImage)
-        
+
     def boxblur_image(self):
         if(self.img.is_load_image == True):
             self.img.blur(BlurType.BoxBlur)
@@ -190,6 +229,7 @@ class ImageEditor(SubWindow):
     def on_calc_stats(self):
         if(self.img.is_load_image == True):
             self.hist_window = HistView(self.imageview)
-            rect = [0, 0, self.img.nowImage.shape[1], self.img.nowImage.shape[0]]
+            rect = [0, 0, self.img.nowImage.shape[1],
+                    self.img.nowImage.shape[0]]
             self.hist_window.update_rect_data(self.img.nowImage, rect)
             self.hist_window.show()

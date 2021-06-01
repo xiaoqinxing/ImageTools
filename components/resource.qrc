@@ -13,5 +13,7 @@
     <file>resource/main.png</file>
     <file>resource/open.png</file>
     <file>resource/stats.png</file>
+    <file>resource/down.png</file>
+    <file>resource/up.png</file>
   </qresource>
 </RCC>
