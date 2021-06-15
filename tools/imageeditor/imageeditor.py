@@ -78,22 +78,23 @@ class ImageEditor(SubWindow):
             elif(index < 0):
                 index = len(filelist) - 1
             ret = join(path, filelist[index])
-        return ret
+            indexstr = "(" + str(index + 1) + "/" + str(len(filelist)) + ")"
+        return (ret, indexstr)
 
     def switch_next_photo(self):
-        next_photo = self.find_next_photo(self.filepath, 1)
-        self.__init_img(next_photo)
+        next_photo, indexstr = self.find_next_photo(self.filepath, 1)
+        self.__init_img(next_photo, indexstr)
 
     def switch_pre_photo(self):
-        pre_photo = self.find_next_photo(self.filepath, -1)
-        self.__init_img(pre_photo)
+        pre_photo, indexstr = self.find_next_photo(self.filepath, -1)
+        self.__init_img(pre_photo, indexstr)
 
     def on_open_img(self):
         imagepath = QFileDialog.getOpenFileName(
             None, '打开图片', self.filepath, "Images (*.jpg *.png *.bmp)")
         self.__init_img(imagepath[0])
 
-    def __init_img(self, filename):
+    def __init_img(self, filename, indexstr=''):
         if (filename != ''):
             self.img.load_image(filename)
             self.filepath = dirname(filename)
@@ -101,7 +102,7 @@ class ImageEditor(SubWindow):
             self.img.imageconvert(0)
             if (self.img.nowImage is not None):
                 self.displayImage(self.img.nowImage)
-                self.ui.photo_title.setTitle(self.imgfilename)
+                self.ui.photo_title.setTitle(indexstr + self.imgfilename)
             else:
                 rely = QMessageBox.critical(
                     self, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
