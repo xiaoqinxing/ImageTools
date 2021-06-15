@@ -73,7 +73,7 @@ class ImageEditor(SubWindow):
             filelist,  key=lambda x: getmtime(join(path, x)))
         if(self.imgfilename in filelist):
             index = filelist.index(self.imgfilename) + nextIndex
-            if(index >= len(filelist) - 1):
+            if(index > len(filelist) - 1):
                 index = 0
             elif(index < 0):
                 index = len(filelist) - 1
