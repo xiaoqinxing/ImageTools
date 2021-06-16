@@ -37,7 +37,7 @@ class ImageEffect(object):
     def load_image(self, filename):
         # 防止有中文
         # self.srcImage = cv2.imread(filename)
-        self.srcImage = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), -1)
+        self.srcImage = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), 1)
 
         # 根据不同的颜色通道，进行不同的颜色转换
         # if(self.depth == 3):
