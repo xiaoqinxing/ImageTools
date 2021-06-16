@@ -15,5 +15,6 @@
     <file>resource/stats.png</file>
     <file>resource/down.png</file>
     <file>resource/up.png</file>
+    <file>resource/delete.png</file>
   </qresource>
 </RCC>

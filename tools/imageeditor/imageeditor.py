@@ -9,7 +9,7 @@ from tools.imageeditor.imageeffect import ImageEffect, BlurType, WaterMarkParams
 from tools.imageeditor.ui.watermarkview import Ui_WaterMarkView
 from components.histview import HistView
 import numpy as np
-from os import listdir
+from os import listdir, remove
 from os.path import isfile, join, getmtime, dirname, basename
 
 
@@ -36,6 +36,7 @@ class ImageEditor(SubWindow):
         self.ui.prephoto.triggered.connect(self.switch_pre_photo)
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
         self.ui.watermark.triggered.connect(self.open_watermark_win)
+        self.ui.deletephoto.triggered.connect(self.delete_photo)
         self.scale_ratio = 100
         self.img = ImageEffect()
         self.filepath = './'
@@ -64,13 +65,23 @@ class ImageEditor(SubWindow):
             if(self.hist_window is not None and self.hist_window.enable is True):
                 self.hist_window.update_rect_data(
                     self.img.nowImage, self.rect)
+    
+    def delete_photo(self):
+        current_photo = join(self.filepath, self.imgfilename)
+        next_photo, index, files_nums = self.find_next_photo(self.filepath, 1)
+        indexstr = "({}/{})".format(index, files_nums - 1)
+        self.__init_img(next_photo, indexstr)
+        remove(current_photo)
+
 
     def find_next_photo(self, path, nextIndex):
         ret = ''
+        index = 0
         filelist = [f for f in listdir(path) if isfile(
             join(path, f)) and f.split('.')[-1] in ["jpg", "png", "bmp"]]
         filelist = sorted(
             filelist,  key=lambda x: getmtime(join(path, x)))
+        files_nums = len(filelist)
         if(self.imgfilename in filelist):
             index = filelist.index(self.imgfilename) + nextIndex
             if(index > len(filelist) - 1):
@@ -78,15 +89,16 @@ class ImageEditor(SubWindow):
             elif(index < 0):
                 index = len(filelist) - 1
             ret = join(path, filelist[index])
-            indexstr = "(" + str(index + 1) + "/" + str(len(filelist)) + ")"
-        return (ret, indexstr)
+        return (ret, index, files_nums)
 
     def switch_next_photo(self):
-        next_photo, indexstr = self.find_next_photo(self.filepath, 1)
+        next_photo, index, files_nums = self.find_next_photo(self.filepath, 1)
+        indexstr = "({}/{})".format(index + 1, files_nums)
         self.__init_img(next_photo, indexstr)
 
     def switch_pre_photo(self):
-        pre_photo, indexstr = self.find_next_photo(self.filepath, -1)
+        pre_photo, index, files_nums = self.find_next_photo(self.filepath, -1)
+        indexstr = "({}/{})".format(index + 1, files_nums)
         self.__init_img(pre_photo, indexstr)
 
     def on_open_img(self):
