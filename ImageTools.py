@@ -10,6 +10,7 @@ from components.help_doc import HelpDoc
 from tools.rawimageeditor.RawImageEditor import RawImageEditor
 from tools.video_compare.videocompare import VideoCompare
 from tools.pqtools_to_code.pqtools_to_code import PQtoolsToCode
+import components.logconfig as log
 
 
 class ImageTools(MainWindow):
@@ -68,7 +69,7 @@ class ImageTools(MainWindow):
 
     def add_pqtools2code_window(self):
         self.add_sub_window("PQtoolsToCode")
-    
+
     def clear_cache(self):
         self.need_clear_cache = True
         info('缓存删除成功！\r\n请重启软件', self)
@@ -78,6 +79,8 @@ if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     apps = QApplication([])
     apps.setStyle('Fusion')
+    log.clean_old_log()
+    log.init_log()
     appswindow = ImageTools()
     appswindow.show()
     appswindow.load_saved_windows()
