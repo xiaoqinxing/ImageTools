@@ -17,7 +17,8 @@ def init_log():
         filename=path + today_date + '.log',
         level=logging.DEBUG, filemode='a',
         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-        datefmt='%Y-%m-%d %H:%M'
+        datefmt='%Y-%m-%d %H:%M',
+        encoding='utf-8'
     )
     logging.info('logging module init is ok')
 

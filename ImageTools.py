@@ -10,6 +10,7 @@ from components.help_doc import HelpDoc
 from tools.rawimageeditor.RawImageEditor import RawImageEditor
 from tools.video_compare.videocompare import VideoCompare
 from tools.pqtools_to_code.pqtools_to_code import PQtoolsToCode
+from components.check_update import CheckUpdate
 import components.logconfig as log
 
 
@@ -38,6 +39,7 @@ class ImageTools(MainWindow):
         self.ui.video_compare.triggered.connect(self.add_video_compare_window)
         self.ui.pqtools2code.triggered.connect(self.add_pqtools2code_window)
         self.ui.clearcache.triggered.connect(self.clear_cache)
+        self.ui.checkupdate.triggered.connect(self.add_checkupdate_window)
 
     def load_saved_windows(self):
         for name in self.sub_windows_list:
@@ -69,6 +71,10 @@ class ImageTools(MainWindow):
 
     def add_pqtools2code_window(self):
         self.add_sub_window("PQtoolsToCode")
+
+    def add_checkupdate_window(self):
+        sub_win = CheckUpdate(parent=self)
+        sub_win.show()
 
     def clear_cache(self):
         self.need_clear_cache = True

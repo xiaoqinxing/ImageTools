@@ -42,6 +42,8 @@ class Ui_MainWindow(object):
         self.userguide.setObjectName(u"userguide")
         self.clearcache = QAction(MainWindow)
         self.clearcache.setObjectName(u"clearcache")
+        self.checkupdate = QAction(MainWindow)
+        self.checkupdate.setObjectName(u"checkupdate")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -82,6 +84,7 @@ class Ui_MainWindow(object):
         self.menuISP.addAction(self.field_depth_tool)
         self.menu.addAction(self.userguide)
         self.menu.addAction(self.clearcache)
+        self.menu.addAction(self.checkupdate)
 
         self.retranslateUi(MainWindow)
 
@@ -100,6 +103,7 @@ class Ui_MainWindow(object):
         self.af_calc_tool.setText(QCoreApplication.translate("MainWindow", u"\u955c\u5934\u66f2\u7ebf\u8ba1\u7b97\u5de5\u5177", None))
         self.userguide.setText(QCoreApplication.translate("MainWindow", u"\u7528\u6237\u624b\u518c", None))
         self.clearcache.setText(QCoreApplication.translate("MainWindow", u"\u6e05\u7406\u7f13\u5b58", None))
+        self.checkupdate.setText(QCoreApplication.translate("MainWindow", u"\u68c0\u67e5\u66f4\u65b0", None))
         self.menu_2.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
         self.menuISP.setTitle(QCoreApplication.translate("MainWindow", u"ISP", None))
         self.menu.setTitle(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))

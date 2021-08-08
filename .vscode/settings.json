@@ -14,5 +14,11 @@
 
     "python.linting.pylintArgs": [
         "--extension-pkg-whitelist=PySide2,cv2"
-    ]
+    ],
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }

@@ -83,6 +83,7 @@
     </property>
     <addaction name="userguide"/>
     <addaction name="clearcache"/>
+    <addaction name="checkupdate"/>
    </widget>
    <addaction name="menu_2"/>
    <addaction name="menuISP"/>
@@ -136,6 +137,11 @@
   <action name="clearcache">
    <property name="text">
     <string>清理缓存</string>
+   </property>
+  </action>
+  <action name="checkupdate">
+   <property name="text">
+    <string>检查更新</string>
    </property>
   </action>
  </widget>
