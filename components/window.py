@@ -5,6 +5,7 @@ import os
 
 CACHE_FILEPATH = './config'
 
+
 class MainWindow(QMainWindow):
     """对QMainWindow类重写，实现一些功能"""
 

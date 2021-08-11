@@ -5,3 +5,5 @@ opencv-python
 scipy
 numba
 PyWavelets
+logging
+requests

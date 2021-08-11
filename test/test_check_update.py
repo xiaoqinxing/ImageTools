@@ -36,4 +36,4 @@ TEST_DOWNLOAD_FILE = './test.exe'
 
 
 def test_download():
-    assert download_file(TEST_DOWNLOAD_LINK, TEST_DOWNLOAD_FILE) == True
+    assert download_file(TEST_DOWNLOAD_LINK) == True
