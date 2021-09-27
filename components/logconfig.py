@@ -16,7 +16,7 @@ def init_log():
     func: 初始化日志，只需要在主函数中初始化一次
     """
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
+    root_logger.setLevel(logging.INFO)
     handler = logging.FileHandler(
         LOGFILE_PATH + TODAY_DATE + '.log', 'a', 'utf-8')
     formatter = logging.Formatter(

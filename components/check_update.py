@@ -5,7 +5,7 @@ from PySide2.QtWidgets import QDialog
 from components.ui.check_update_win import Ui_CheckUpdate
 import requests
 import time
-from logging import info
+from logging import error, info
 from PySide2.QtCore import Signal, QThread
 from components.customwidget import critical
 from components.property import set_persist, get_persist, IS_NEED_AUTO_UPDATE
@@ -15,7 +15,6 @@ VERSION_FILE = 'https://imagetools.qinxing.xyz/version.md'
 
 CURRENT_VERSION_FILE = 'version.md'
 REMOTE_INSTALL_PACK = 'https://imagetools.qinxing.xyz/ImageTools.exe'
-# REMOTE_INSTALL_PACK = 'https://imagetools.qinxing.xyz/ChromeSetup.exe'
 DOWNLOAD_INSTALL_PACK = '.\\latest_installer\\installer.exe'
 
 
@@ -38,11 +37,16 @@ def get_latest_version_log():
     func: 获取最新的版本日志文件
     把日志转换成UTF-8格式
     """
-    res = requests.get(VERSION_FILE, timeout=2)
-    if res.status_code != 200:
+    try:
+        res = requests.get(VERSION_FILE, timeout=2)
+        if res.status_code != 200:
+            return ''
+        res.encoding = 'utf-8'
+        res.close()
+        return res.text
+    except Exception as e:
+        error(e)
         return ''
-    res.encoding = 'utf-8'
-    return res.text
 
 
 def get_current_version_log():
