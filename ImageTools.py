@@ -10,6 +10,7 @@ from components.help_doc import HelpDoc
 from tools.rawimageeditor.RawImageEditor import RawImageEditor
 from tools.video_compare.videocompare import VideoCompare
 from tools.pqtools_to_code.pqtools_to_code import PQtoolsToCode
+from tools.yuv_viewer.yuv_viewer import YUVViewer
 from components.check_update import CheckUpdate, simple_check_is_need_update
 import components.logconfig as log
 from logging import info
@@ -17,32 +18,35 @@ from components.property import get_persist, IS_NEED_AUTO_UPDATE
 
 
 class ImageTools(MainWindow):
-    subwindow_function = {
-        "FieldDepthWindow": FieldDepthWindow,
-        "ShakeTestTool": ShakeTestTool,
-        "ImageEditor": ImageEditor,
-        "RawImageEditor": RawImageEditor,
-        "VideoCompare": VideoCompare,
-        "HelpDoc": HelpDoc,
-        "PQtoolsToCode": PQtoolsToCode
-    }
-
     def __init__(self):
         super().__init__()
+        self.subwindow_function = {
+            "FieldDepthWindow": [self.ui.field_depth_tool, FieldDepthWindow],
+            "ShakeTestTool": [self.ui.shake_tool, ShakeTestTool],
+            "ImageEditor": [self.ui.imageeditor, ImageEditor],
+            "RawImageEditor": [self.ui.rawimageeditor, RawImageEditor],
+            "VideoCompare": [self.ui.video_compare, VideoCompare],
+            "HelpDoc": [self.ui.userguide, HelpDoc],
+            "PQtoolsToCode": [self.ui.pqtools2code, PQtoolsToCode],
+            "YUVViewer": [self.ui.yuv_viewer, YUVViewer],
+        }
         self.subwindows_ui = self.ui.mdiArea
         self.subwindows_ui.setStyleSheet("QTabBar::tab { height: 30px;}")
-        self.ui.field_depth_tool.triggered.connect(
-            self.add_field_depth_tool_window)
-        self.ui.shake_tool.triggered.connect(self.add_shake_tool_window)
-        self.ui.imageeditor.triggered.connect(self.add_image_editor_window)
-        self.ui.userguide.triggered.connect(self.add_userguide_window)
-        self.ui.rawimageeditor.triggered.connect(
-            self.add_raw_image_editor_window)
-        self.ui.video_compare.triggered.connect(self.add_video_compare_window)
-        self.ui.pqtools2code.triggered.connect(self.add_pqtools2code_window)
         self.ui.clearcache.triggered.connect(self.clear_cache)
         self.ui.checkupdate.triggered.connect(self.add_checkupdate_window)
+        for (key, value) in self.subwindow_function.items():
+            # 注意，这个lambda表达式必须要先赋值才能使用，否则connect的永远是最后的一个类
+            value[0].triggered.connect(
+                lambda win_name=key, win_object=value[1]: self.add_sub_window(win_name, win_object))
+
         info('ImageTools 工具初始化成功')
+
+    def add_sub_window(self, name, win_object):
+        sub_window = win_object(parent=self)
+        self.subwindows_ui.addSubWindow(sub_window)
+        self.sub_windows.append(sub_window)
+        sub_window.show()
+        info('打开{}工具 success'.format(name))
 
     def check_version(self):
         is_need_auto_update = get_persist(IS_NEED_AUTO_UPDATE, False)
@@ -56,41 +60,7 @@ class ImageTools(MainWindow):
 
     def load_saved_windows(self):
         for name in self.sub_windows_list:
-            self.add_sub_window(name)
-
-    def add_sub_window(self, sub_window_name):
-        sub_window = self.subwindow_function[sub_window_name](parent=self)
-        self.subwindows_ui.addSubWindow(sub_window)
-        self.sub_windows.append(sub_window)
-        sub_window.show()
-
-    def add_field_depth_tool_window(self):
-        self.add_sub_window("FieldDepthWindow")
-        info('打开镜头计算器工具 success')
-
-    def add_shake_tool_window(self):
-        self.add_sub_window("ShakeTestTool")
-        info('打开图像防抖测试工具 sucess')
-
-    def add_image_editor_window(self):
-        self.add_sub_window("ImageEditor")
-        info('打开图像查看工具 sucess')
-
-    def add_userguide_window(self):
-        self.add_sub_window("HelpDoc")
-        info('打开帮助工具 sucess')
-
-    def add_raw_image_editor_window(self):
-        self.add_sub_window("RawImageEditor")
-        info('打开RAW图编辑工具 sucess')
-
-    def add_video_compare_window(self):
-        self.add_sub_window("VideoCompare")
-        info('打开视频对比工具 sucess')
-
-    def add_pqtools2code_window(self):
-        self.add_sub_window("PQtoolsToCode")
-        info('打开pqtools转代码工具 sucess')
+            self.add_sub_window(name, self.subwindow_function[name][1])
 
     def add_checkupdate_window(self):
         sub_win = CheckUpdate(parent=self)
