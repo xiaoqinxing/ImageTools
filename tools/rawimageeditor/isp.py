@@ -9,6 +9,7 @@ from numba import jit
 import cv2
 import pywt
 
+
 def get_src_raw_data(raw: RawImageInfo, params: RawImageParams):
     width = params.rawformat.width
     height = params.rawformat.height
@@ -22,6 +23,7 @@ def get_src_raw_data(raw: RawImageInfo, params: RawImageParams):
     else:
         params.set_error_str("图片格式不正确")
         return None
+
 
 def black_level_correction(raw: RawImageInfo, params: RawImageParams):
     """
@@ -77,6 +79,7 @@ def apply_digital_gain(raw: RawImageInfo, params: RawImageParams):
         params.set_error_str("white balance correction need RAW data")
         return None
 
+
 def channel_gain_white_balance(raw: RawImageInfo, params: RawImageParams):
     """
     function: channel_gain_white_balance
@@ -121,7 +124,8 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
     """
     neighborhood_size = params.bpc.get_size_for_bad_pixel_correction()
     if ((neighborhood_size % 2) == 0):
-        params.set_error_str("neighborhood_size shoud be odd number, recommended value 3")
+        params.set_error_str(
+            "neighborhood_size shoud be odd number, recommended value 3")
         return None
 
     raw_data = raw.get_raw_data()
@@ -140,8 +144,8 @@ def bad_pixel_correction(raw: RawImageInfo, params: RawImageParams):
             width, height = img.shape[1], img.shape[0]
             # pad pixels at the borders, 扩充边缘
             img = np.pad(img,
-                        (no_of_pixel_pad, no_of_pixel_pad),
-                        'reflect')  # reflect would not repeat the border value
+                         (no_of_pixel_pad, no_of_pixel_pad),
+                         'reflect')  # reflect would not repeat the border value
 
             raw_channel_data.append(bad_pixel_correction_subfunc(
                 img, no_of_pixel_pad, width, height))
@@ -186,13 +190,14 @@ def bad_pixel_correction_subfunc(img, no_of_pixel_pad, width, height):
     # Put the corrected image to the dictionary
     return img[no_of_pixel_pad: height + no_of_pixel_pad, no_of_pixel_pad: width + no_of_pixel_pad]
 
+
 def rolloff_correction(raw: RawImageInfo, params: RawImageParams):
     """
     function: 暗影矫正 rolloff
     input: raw:RawImageInfo() params:RawImageParams() 仅输入支持bayer
 
     获取平场图后的处理：先对raw图的每个通道先减去黑电平，然后进行中值滤波，防止坏点的影响，
-                      然后把画面的最大值作为矫正后的目标值，其他的像素点需要得到与之的比值。
+                        然后把画面的最大值作为矫正后的目标值，其他的像素点需要得到与之的比值。
     获得到的每个通道的比值，与色温相关，需要处理好与awb的关系，否则容易引起震荡。
     """
     rolloff_ratio = params.rolloff.flatphoto
@@ -207,6 +212,7 @@ def rolloff_correction(raw: RawImageInfo, params: RawImageParams):
     else:
         params.set_error_str("gamma correction need RAW or RGB data")
         return None
+
 
 def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     """
@@ -228,12 +234,14 @@ def gamma_correction(raw: RawImageInfo, params: RawImageParams):
     if (raw.get_color_space() == "raw"):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw)
-        ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, 1/gamma_ratio)
+        ret_img.data = raw.max_data * \
+            np.power(raw_data/raw.max_data, 1/gamma_ratio)
         return ret_img
     elif (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
         ret_img.create_image('after gamma correction', raw)
-        ret_img.data = raw.max_data * np.power(raw_data/raw.max_data, 1/gamma_ratio)
+        ret_img.data = raw.max_data * \
+            np.power(raw_data/raw.max_data, 1/gamma_ratio)
         return ret_img
     else:
         params.set_error_str("gamma correction need RAW or RGB data")
@@ -260,6 +268,7 @@ def gamma_proc_rgb(src, dst, gamma_table):
             for k in range(3):
                 dst[i, j, k] = gamma_table[src[i, j, k]]
 
+
 def ltm_correction(raw: RawImageInfo, params: RawImageParams):
     """
     function: ltm correction 局部对比度增强
@@ -279,13 +288,14 @@ def ltm_correction(raw: RawImageInfo, params: RawImageParams):
         gray_image = raw.convert_to_gray()
 
         # 双边滤波的保边特性，这样可以减少处理后的halo瑕疵
-        mask = cv2.GaussianBlur(gray_image, (5,5), 1.5)
+        mask = cv2.GaussianBlur(gray_image, (5, 5), 1.5)
 
         # 归一化
         mask = mask/raw.max_data
 
         # 亮区和暗区用不同的LUT曲线
-        mask = np.where(mask < 0.5, 1 - dark_boost * (mask - 0.5) * (mask - 0.5), 1 + bright_suppress * (mask - 0.5) * (mask - 0.5))
+        mask = np.where(mask < 0.5, 1 - dark_boost * (mask - 0.5) *
+                        (mask - 0.5), 1 + bright_suppress * (mask - 0.5) * (mask - 0.5))
         alpha = np.empty(raw_data.shape, dtype=np.float32)
         alpha[:, :, 0] = mask
         alpha[:, :, 1] = mask
@@ -297,6 +307,7 @@ def ltm_correction(raw: RawImageInfo, params: RawImageParams):
     else:
         params.set_error_str("ltm correction need RGB data")
         return None
+
 
 def color_correction(raw: RawImageInfo, params: RawImageParams):
     """
@@ -326,11 +337,12 @@ def color_correction(raw: RawImageInfo, params: RawImageParams):
         params.set_error_str("color correction need RGB data")
         return None
 
+
 def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
     """
     function: CSC色彩空间转换 从BGR色彩空间转换成YUV 并可以调节对比度亮度等属性
     input: raw:RawImageInfo() params:RawImageParams()
-    
+
     原理:
     模拟海思的算法
     对比度调整:
@@ -360,7 +372,7 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
     raw_data = raw.get_raw_data()
     luma = (params.csc.luma - 50) / 50 * 32
     contrast = params.csc.contrast / 50
-    hue = (params.csc.hue - 50 ) / 50
+    hue = (params.csc.hue - 50) / 50
     satu = params.csc.satu / 50
     ratio = (raw.max_data + 1) / 256
 
@@ -384,38 +396,42 @@ def color_space_conversion(raw: RawImageInfo, params: RawImageParams):
 
     if (raw.get_color_space() == "RGB"):
         ret_img = RawImageInfo()
-        ret_img.create_image('after color space conversion(CSC)', raw, init_value=False)
+        ret_img.create_image(
+            'after color space conversion(CSC)', raw, init_value=False)
         blackin = -128 * ratio
         blackout = (luma + 128) * ratio
 
         if(params.csc.limitrange == 2):
-            csc_ratio = np.array([219/255, 224/255, 224/255]).reshape((3,1))
+            csc_ratio = np.array([219/255, 224/255, 224/255]).reshape((3, 1))
         else:
             csc_ratio = 1
 
         # 色调和饱和度调整矩阵
         adjust_matrix = np.array([
             [1., 0., 0.],
-            [0., satu * math.cos(hue * math.pi), -satu * math.sin(hue * math.pi)],
-            [0., satu * math.sin(hue * math.pi), satu * math.cos(hue * math.pi)]
+            [0., satu * math.cos(hue * math.pi), -satu *
+             math.sin(hue * math.pi)],
+            [0., satu * math.sin(hue * math.pi), satu *
+             math.cos(hue * math.pi)]
         ])
 
         ret_img.data = raw_data + blackin
         B, G, R = cv2.split(ret_img.data)
 
         matrix = np.dot(adjust_matrix, csc * csc_ratio * contrast)
-        
+
         # 由于加减RGB=128时，CrCb的值都为0，可以进行化简
-        Y  = matrix[0][0] * R + matrix[0][1] * G + matrix[0][2] * B + blackout
+        Y = matrix[0][0] * R + matrix[0][1] * G + matrix[0][2] * B + blackout
         Cr = matrix[1][0] * R + matrix[1][1] * G + matrix[1][2] * B
         Cb = matrix[2][0] * R + matrix[2][1] * G + matrix[2][2] * B
-        ret_img.data = cv2.merge([Y,Cr,Cb])
+        ret_img.data = cv2.merge([Y, Cr, Cb])
         ret_img.set_color_space("YCrCb")
         ret_img.clip_range()
         return ret_img
     else:
         params.set_error_str("color correction need RGB data")
         return None
+
 
 def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
     """
@@ -433,8 +449,8 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
     @noise_weight：降噪权重，值越大，降噪越强，值为0的时候，就不进行降噪
     @color_denoise_strength: 色度降噪强度，值越大，色度降噪越强
     """
-    w = 'sym4' # 定义小波基的类型
-    l = 2 # 简化变换层次为2
+    w = 'sym4'  # 定义小波基的类型
+    l = 2  # 简化变换层次为2
     noise_threshold = params.denoise.noise_threshold
     denoise_strength = params.denoise.denoise_strength
     color_denoise_strength = params.denoise.color_denoise_strength
@@ -480,6 +496,7 @@ def wavelet_denoise(raw: RawImageInfo, params: RawImageParams):
         params.set_error_str("YUV denoise need YCrCb data")
         return None
 
+
 def denoise_one_level(src, strength, noise_threshold, noise_weight):
     """
     func: 对每层小波变换的图像进行双边滤波降噪和软阈值处理
@@ -495,6 +512,7 @@ def denoise_one_level(src, strength, noise_threshold, noise_weight):
     noise = src - Xb
     Xn = np.clip(noise * noise_weight, -noise_threshold, noise_threshold)
     return (src - Xn)
+
 
 def sharpen(raw: RawImageInfo, params: RawImageParams):
     """
@@ -524,22 +542,29 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
 
     hpf_kernel = np.array([
         [-0.0012, -0.0044, 0.0262, -0.0357, 0.0262, -0.0044, -0.0012],
-        [ 0.0170, -0.0625, 0.0291,  0.0541, 0.0291, -0.0625, -0.0170],
+        [0.0170, -0.0625, 0.0291,  0.0541, 0.0291, -0.0625, -0.0170],
         [-0.0287, -0.1027, 0.0016,  0.2298, 0.0016, -0.1027, -0.0287],
         [-0.0003, -0.1456, 0.0331,  0.2317, 0.0331, -0.1456, -0.0003],
         [-0.0287, -0.1027, 0.0016,  0.2298, 0.0016, -0.1027, -0.0287],
-        [ 0.0170, -0.0625, 0.0291,  0.0541, 0.0291, -0.0625, -0.0170],
+        [0.0170, -0.0625, 0.0291,  0.0541, 0.0291, -0.0625, -0.0170],
         [-0.0012, -0.0044, 0.0262, -0.0357, 0.0262, -0.0044, -0.0012],
     ], dtype=np.float32)
 
     lpf_kernel = np.array([
-        [0.00000067, 0.00002292, 0.00019117, 0.00038771, 0.00019117, 0.00002292, 0.00000067],
-        [0.00002292, 0.00078633, 0.00655965, 0.01330373, 0.00655965, 0.00078633, 0.00002292],
-        [0.00019117, 0.00655965, 0.05472157, 0.11098164, 0.05472157, 0.00655965, 0.00019117],
-        [0.00038771, 0.01330373, 0.11098164, 0.22508352, 0.11098164, 0.01330373, 0.00038771],
-        [0.00019117, 0.00655965, 0.05472157, 0.11098164, 0.05472157, 0.00655965, 0.00019117],
-        [0.00002292, 0.00078633, 0.00655965, 0.01330373, 0.00655965, 0.00078633, 0.00002292],
-        [0.00000067, 0.00002292, 0.00019117, 0.00038771, 0.00019117, 0.00002292, 0.00000067],
+        [0.00000067, 0.00002292, 0.00019117, 0.00038771,
+            0.00019117, 0.00002292, 0.00000067],
+        [0.00002292, 0.00078633, 0.00655965, 0.01330373,
+            0.00655965, 0.00078633, 0.00002292],
+        [0.00019117, 0.00655965, 0.05472157, 0.11098164,
+            0.05472157, 0.00655965, 0.00019117],
+        [0.00038771, 0.01330373, 0.11098164, 0.22508352,
+            0.11098164, 0.01330373, 0.00038771],
+        [0.00019117, 0.00655965, 0.05472157, 0.11098164,
+            0.05472157, 0.00655965, 0.00019117],
+        [0.00002292, 0.00078633, 0.00655965, 0.01330373,
+            0.00655965, 0.00078633, 0.00002292],
+        [0.00000067, 0.00002292, 0.00019117, 0.00038771,
+            0.00019117, 0.00002292, 0.00000067],
     ], dtype=np.float32)
 
     if (raw.get_color_space() == "YCrCb"):
@@ -547,7 +572,7 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
         ret_img.create_image('after yuv sharpen', raw)
         ret_img.set_color_space("YCrCb")
         raw_data = raw.get_raw_data()
-        Y = raw_data[:,:,0]
+        Y = raw_data[:, :, 0]
         # 步骤1 进行一定权重的3x3的中值滤波
         media = cv2.medianBlur(Y, 3)
         Xm = sp * media + (1 - sp) * Y
@@ -562,7 +587,7 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
 
         # 步骤2.3 高通是自定义锐化强度LUT表，为了简化我利用alpha权重表进行一个比例的缩放，得到锐化强度Xw
         Xw = sharpen_strength * alpha
-        
+
         # 步骤3 对图Xm进行7x7的高通滤波，与锐化强度表Xw相乘，尽量仅增强图像的边缘，得到锐化后的图像Xedge，然后对Xedge进行反差的限制
         Xedge = cv2.filter2D(Xm, -1, hpf_kernel)
         after_clip = np.clip(Xedge * Xw, -clip_range, clip_range)
@@ -570,10 +595,10 @@ def sharpen(raw: RawImageInfo, params: RawImageParams):
 
         # 步骤4 对图Xm进行7x7的低通滤波得到图像基础层Xsmooth
         Y_LPF = cv2.filter2D(Xm, -1, lpf_kernel)
-        
+
         # 步骤5 对Xedge乘以锐化权重α, 对Xsmooth乘以(1-α) , 两者相加得到最后的Xout. 公式为Y = α ⋅ Y_HPF + (1−α) ⋅ Y_LPF
-        ret_img.data[:,:,0] = alpha * Y_HPF + (1 - alpha) * Y_LPF
-        ret_img.data[:,:,1:] = raw_data[:,:,1:]
+        ret_img.data[:, :, 0] = alpha * Y_HPF + (1 - alpha) * Y_LPF
+        ret_img.data[:, :, 1:] = raw_data[:, :, 1:]
         return ret_img
     else:
         params.set_error_str("YUV sharpen need YCrCb data")
@@ -857,7 +882,6 @@ class bayer_denoising:
 
     def __str__(self):
         return self.name
-
 
 
 # =============================================================

@@ -1,16 +1,12 @@
-import cv2
-from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog, QDialog
-from PySide2.QtGui import QPixmap, QImage
-from PySide2.QtCore import Slot
-from tools.imageeditor.ui.imageeditor_window import Ui_ImageEditor
-from components.customwidget import ImageView, MatplotlibWidget, critical
+from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
+from components.customwidget import ImageView, sceneDisplayImage, critical
 from components.window import SubWindow
-from tools.imageeditor.imageeffect import ImageEffect, BlurType, WaterMarkParams
-from tools.imageeditor.ui.watermarkview import Ui_WaterMarkView
 from components.histview import HistView
-import numpy as np
 from os import listdir, remove
 from os.path import isfile, join, getmtime, dirname, basename
+from .ui.imageeditor_window import Ui_ImageEditor
+from .imageeffect import ImageEffect, BlurType, WaterMarkParams
+from .ui.watermarkview import Ui_WaterMarkView
 
 
 class ImageEditor(SubWindow):
@@ -44,35 +40,16 @@ class ImageEditor(SubWindow):
         self.hist_window = None
 
     def displayImage(self, img):
-        self.scene.clear()
-        if img is not None:
-            # numpy转qimage的标准流程
-            if len(img.shape) == 2:
-                bytes_per_line = img.shape[1]
-                qimg = QImage(img, img, img.shape[1],
-                              img.shape[0], QImage.Format_Grayscale8)
-            elif img.shape[2] == 3:
-                bytes_per_line = 3 * img.shape[1]
-                qimg = QImage(img, img.shape[1],
-                              img.shape[0], bytes_per_line, QImage.Format_BGR888)
-            elif img.shape[2] == 4:
-                bytes_per_line = 4 * img.shape[1]
-                qimg = QImage(img, img.shape[1],
-                              img.shape[0], bytes_per_line, QImage.Format_RGBA8888)
-            else:
-                critical("图片格式不能解析")
-            self.scene.addPixmap(QPixmap.fromImage(qimg))
+        if sceneDisplayImage(self.scene, img) is True:
             if(self.hist_window is not None and self.hist_window.enable is True):
-                self.hist_window.update_rect_data(
-                    self.img.nowImage, self.rect)
-    
+                self.hist_window.update_rect_data(self.img.nowImage, self.rect)
+
     def delete_photo(self):
         current_photo = join(self.filepath, self.imgfilename)
         next_photo, index, files_nums = self.find_next_photo(self.filepath, 1)
         indexstr = "({}/{})".format(index, files_nums - 1)
         self.__init_img(next_photo, indexstr)
         remove(current_photo)
-
 
     def find_next_photo(self, path, nextIndex):
         ret = ''
@@ -116,8 +93,7 @@ class ImageEditor(SubWindow):
                 self.displayImage(self.img.nowImage)
                 self.ui.photo_title.setTitle(indexstr + self.imgfilename)
             else:
-                rely = QMessageBox.critical(
-                    self, '警告', '打开图片失败,', QMessageBox.Yes, QMessageBox.Yes)
+                critical('打开图片失败')
                 return
 
     def open_watermark_win(self):
