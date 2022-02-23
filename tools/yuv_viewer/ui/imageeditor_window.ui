@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ImageEditor</class>
+ <widget class="QMainWindow" name="ImageEditor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>图片处理工具</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../../components/resource.qrc">
+    <normaloff>:/tool_icon/resource/main.png</normaloff>:/tool_icon/resource/main.png</iconset>
+  </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <property name="toolTipDuration">
+   <number>-1</number>
+  </property>
+  <property name="animated">
+   <bool>true</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging|QMainWindow::VerticalTabs</set>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="photo_title">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>图像处理</string>
+    </property>
+    <widget class="QMenu" name="blur">
+     <property name="title">
+      <string>滤波</string>
+     </property>
+     <addaction name="boxblur"/>
+     <addaction name="guassian"/>
+     <addaction name="medianblur"/>
+     <addaction name="bilateralblur"/>
+    </widget>
+    <addaction name="blur"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>工具</string>
+    </property>
+    <addaction name="watermark"/>
+   </widget>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="mouseTracking">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>RightToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="openimage"/>
+   <addaction name="saveimage"/>
+   <addaction name="deletephoto"/>
+   <addaction name="compareimage"/>
+   <addaction name="actionstats"/>
+   <addaction name="prephoto"/>
+   <addaction name="nextphoto"/>
+  </widget>
+  <action name="historgram">
+   <property name="text">
+    <string>直方图</string>
+   </property>
+  </action>
+  <action name="statics">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>统计信息</string>
+   </property>
+  </action>
+  <action name="boxblur">
+   <property name="text">
+    <string>方框滤波</string>
+   </property>
+  </action>
+  <action name="guassian">
+   <property name="text">
+    <string>高斯滤波</string>
+   </property>
+  </action>
+  <action name="saveimage">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/save_icon.png</normaloff>:/tool_icon/resource/save_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="medianblur">
+   <property name="text">
+    <string>中值滤波</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="bilateralblur">
+   <property name="text">
+    <string>双边滤波</string>
+   </property>
+  </action>
+  <action name="compareimage">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/compare.png</normaloff>:/tool_icon/resource/compare.png</iconset>
+   </property>
+   <property name="text">
+    <string>compare</string>
+   </property>
+   <property name="toolTip">
+    <string>compare</string>
+   </property>
+  </action>
+  <action name="openimage">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/open.png</normaloff>:/tool_icon/resource/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>open</string>
+   </property>
+   <property name="toolTip">
+    <string>open</string>
+   </property>
+  </action>
+  <action name="actionstats">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/stats.png</normaloff>:/tool_icon/resource/stats.png</iconset>
+   </property>
+   <property name="text">
+    <string>stats</string>
+   </property>
+   <property name="toolTip">
+    <string>统计信息</string>
+   </property>
+  </action>
+  <action name="make_water">
+   <property name="text">
+    <string>制作水印</string>
+   </property>
+  </action>
+  <action name="analysis_water">
+   <property name="text">
+    <string>解析水印</string>
+   </property>
+  </action>
+  <action name="actionshui">
+   <property name="text">
+    <string>水印制作</string>
+   </property>
+  </action>
+  <action name="watermark">
+   <property name="text">
+    <string>水印制作</string>
+   </property>
+  </action>
+  <action name="nextphoto">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/down.png</normaloff>:/tool_icon/resource/down.png</iconset>
+   </property>
+   <property name="text">
+    <string>下一个图片</string>
+   </property>
+   <property name="shortcut">
+    <string>Down</string>
+   </property>
+  </action>
+  <action name="prephoto">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/up.png</normaloff>:/tool_icon/resource/up.png</iconset>
+   </property>
+   <property name="text">
+    <string>上一张图片</string>
+   </property>
+   <property name="shortcut">
+    <string>Up</string>
+   </property>
+  </action>
+  <action name="deletephoto">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/delete.png</normaloff>:/tool_icon/resource/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>删除</string>
+   </property>
+   <property name="toolTip">
+    <string>删除</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../../../components/resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

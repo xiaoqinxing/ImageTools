@@ -69,6 +69,7 @@
     <addaction name="imageeditor"/>
     <addaction name="rawimageeditor"/>
     <addaction name="video_compare"/>
+    <addaction name="yuv_viewer"/>
    </widget>
    <widget class="QMenu" name="menuISP">
     <property name="title">
@@ -142,6 +143,11 @@
   <action name="checkupdate">
    <property name="text">
     <string>检查更新</string>
+   </property>
+  </action>
+  <action name="yuv_viewer">
+   <property name="text">
+    <string>YUV查看工具</string>
    </property>
   </action>
  </widget>
