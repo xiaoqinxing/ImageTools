@@ -220,8 +220,9 @@ class ImageEditor(SubWindow):
         """
         if(self.img.is_load_image == True):
             self.scale_ratio = int(ratio * 100)
-            self.ui.statusBar.showMessage(
-                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], self.scale_ratio))
+            if self.rgb is not None:
+                self.ui.statusBar.showMessage(
+                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], self.scale_ratio))
 
     def on_calc_stats(self):
         if(self.img.is_load_image == True):
