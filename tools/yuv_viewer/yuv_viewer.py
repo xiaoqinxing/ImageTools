@@ -69,10 +69,10 @@ class YUVViewer(SubWindow):
         if self.hist_window is not None and self.hist_window.enable is True:
             self.hist_window.update_rect_data(self.img.img, self.rect)
 
-    def update_stats_range(self, viewportRect, fromScenePoint, toScenePoint):
+    def update_stats_range(self, _, fromScenePoint, toScenePoint):
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0
            and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
-            if(self.hist_window is not None):
+            if self.hist_window is not None:
                 self.hist_window.update_rect_data(self.img.img, self.rect)
         else:
             self.rect = [int(fromScenePoint.x()), int(fromScenePoint.y()), int(
@@ -93,18 +93,18 @@ class YUVViewer(SubWindow):
                 self.ui.statusBar.showMessage(
                     "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], scale_ratio))
 
-    def update_wheel_ratio(self, ratio):
+    def update_wheel_ratio(self, scale_ratio):
         """
         func: 鼠标滚轮的回调
         """
         if self.img.img is not None:
-            scale_ratio = int(self.imageview.scale_ratio * 100)
+            scale_ratio = int(scale_ratio * 100)
             self.ui.statusBar.showMessage(
                 "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], scale_ratio))
 
     def on_calc_stats(self):
         if self.img.img is not None:
             self.hist_window = HistView(self.imageview)
-            rect = [0, 0, self.img.img.shape[1], self.img.img.shape[0]]
-            self.hist_window.update_rect_data(self.img.img, rect)
+            self.rect = [0, 0, self.img.img.shape[1], self.img.img.shape[0]]
+            self.hist_window.update_rect_data(self.img.img, self.rect)
             self.hist_window.show()
