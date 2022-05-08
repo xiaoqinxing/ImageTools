@@ -1,6 +1,5 @@
-from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
-from isort import file
-from components.customwidget import ImageView, sceneDisplayImage, critical_win
+from PySide2.QtWidgets import QGraphicsScene, QFileDialog
+from components.customwidget import ImageView, critical_win
 from components.status_code_enum import StatusCode
 from components.window import SubWindow
 from components.histview import HistView
@@ -67,6 +66,8 @@ class YUVViewer(SubWindow):
         if ret is not StatusCode.OK:
             return critical_win(ret.value)
         self.ui.photo_title.setTitle(indexstr + self.img.imgpath)
+        if self.hist_window is not None and self.hist_window.enable is True:
+            self.hist_window.update_rect_data(self.img.img, self.rect)
 
     def update_stats_range(self, viewportRect, fromScenePoint, toScenePoint):
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0
