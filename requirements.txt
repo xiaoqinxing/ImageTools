@@ -7,3 +7,4 @@ numba
 PyWavelets
 logging
 requests
+natsort

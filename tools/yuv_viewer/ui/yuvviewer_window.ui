@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImageEditor</class>
- <widget class="QMainWindow" name="ImageEditor">
+ <class>YUVEditor</class>
+ <widget class="QMainWindow" name="YUVEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>图片处理工具</string>
+   <string>YUV图片查看工具</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../../components/resource.qrc">
@@ -45,39 +45,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>图像处理</string>
-    </property>
-    <widget class="QMenu" name="blur">
-     <property name="title">
-      <string>滤波</string>
-     </property>
-     <addaction name="boxblur"/>
-     <addaction name="guassian"/>
-     <addaction name="medianblur"/>
-     <addaction name="bilateralblur"/>
-    </widget>
-    <addaction name="blur"/>
-   </widget>
-   <widget class="QMenu" name="menu_3">
-    <property name="title">
-     <string>工具</string>
-    </property>
-    <addaction name="watermark"/>
-   </widget>
-   <addaction name="menu_2"/>
-   <addaction name="menu_3"/>
-  </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="mouseTracking">
     <bool>true</bool>
@@ -108,34 +75,12 @@
    <addaction name="openimage"/>
    <addaction name="saveimage"/>
    <addaction name="deletephoto"/>
-   <addaction name="compareimage"/>
    <addaction name="actionstats"/>
    <addaction name="prephoto"/>
    <addaction name="nextphoto"/>
+   <addaction name="rotateright"/>
+   <addaction name="add_compare"/>
   </widget>
-  <action name="historgram">
-   <property name="text">
-    <string>直方图</string>
-   </property>
-  </action>
-  <action name="statics">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>统计信息</string>
-   </property>
-  </action>
-  <action name="boxblur">
-   <property name="text">
-    <string>方框滤波</string>
-   </property>
-  </action>
-  <action name="guassian">
-   <property name="text">
-    <string>高斯滤波</string>
-   </property>
-  </action>
   <action name="saveimage">
    <property name="icon">
     <iconset resource="../../../components/resource.qrc">
@@ -146,31 +91,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
-   </property>
-  </action>
-  <action name="medianblur">
-   <property name="text">
-    <string>中值滤波</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::WindowShortcut</enum>
-   </property>
-  </action>
-  <action name="bilateralblur">
-   <property name="text">
-    <string>双边滤波</string>
-   </property>
-  </action>
-  <action name="compareimage">
-   <property name="icon">
-    <iconset resource="../../../components/resource.qrc">
-     <normaloff>:/tool_icon/resource/compare.png</normaloff>:/tool_icon/resource/compare.png</iconset>
-   </property>
-   <property name="text">
-    <string>compare</string>
-   </property>
-   <property name="toolTip">
-    <string>compare</string>
    </property>
   </action>
   <action name="openimage">
@@ -191,30 +111,10 @@
      <normaloff>:/tool_icon/resource/stats.png</normaloff>:/tool_icon/resource/stats.png</iconset>
    </property>
    <property name="text">
-    <string>stats</string>
+    <string>统计信息</string>
    </property>
    <property name="toolTip">
     <string>统计信息</string>
-   </property>
-  </action>
-  <action name="make_water">
-   <property name="text">
-    <string>制作水印</string>
-   </property>
-  </action>
-  <action name="analysis_water">
-   <property name="text">
-    <string>解析水印</string>
-   </property>
-  </action>
-  <action name="actionshui">
-   <property name="text">
-    <string>水印制作</string>
-   </property>
-  </action>
-  <action name="watermark">
-   <property name="text">
-    <string>水印制作</string>
    </property>
   </action>
   <action name="nextphoto">
@@ -254,6 +154,24 @@
    </property>
    <property name="shortcut">
     <string>Del</string>
+   </property>
+  </action>
+  <action name="add_compare">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/add.png</normaloff>:/tool_icon/resource/add.png</iconset>
+   </property>
+   <property name="text">
+    <string>添加对比图片</string>
+   </property>
+  </action>
+  <action name="rotateright">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/right.png</normaloff>:/tool_icon/resource/right.png</iconset>
+   </property>
+   <property name="text">
+    <string>顺时针旋转</string>
    </property>
   </action>
  </widget>
