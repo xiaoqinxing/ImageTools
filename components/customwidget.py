@@ -144,6 +144,7 @@ class ImageView(QGraphicsView):
     sigWheelEvent = Signal(float)
     sigDragEvent = Signal(str)
     sceneMousePos = None
+    scale_ratio = 1.0
 
     def __init__(self, scene, parent=None):
         super().__init__(scene, parent)
@@ -151,7 +152,6 @@ class ImageView(QGraphicsView):
 
     def setUi(self):
         self.setMouseTracking(True)
-        self.scale_ratio = 1.0
         self.setAcceptDrops(True)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.setToolTipDuration(-1)

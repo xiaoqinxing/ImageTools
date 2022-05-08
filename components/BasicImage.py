@@ -1,10 +1,16 @@
+from logging import critical
 import cv2
 import numpy as np
 from PySide2.QtGui import QPixmap, QImage
+from os import listdir, remove
+from os.path import isfile, join, getmtime, dirname, basename
+from natsort import natsorted
+from components.status_code_enum import StatusCode
 
 YUV_FORMAT_MAP = {
     'NV21': cv2.COLOR_YUV2BGR_NV21,
     'NV12': cv2.COLOR_YUV2BGR_NV12,
+    'YCrCb': cv2.COLOR_YCrCb2BGR,
     'YUV420': cv2.COLOR_YUV2BGR_I420,
     'YUV422': cv2.COLOR_YUV2BGR_Y422,
     'UYVY': cv2.COLOR_YUV2BGR_UYVY,
@@ -35,22 +41,35 @@ class ImageBasic:
         self.img = img.copy()
         self.__update_attr()
 
-    def load_imagefile(self, filename):
+    def remove_image(self) -> StatusCode:
+        if isfile(self.imgpath) is False:
+            return StatusCode.FILE_NOT_FOUND
+        remove(self.imgpath)
+        self.img = None
+        self.imgpath = None
+        return StatusCode.OK
+
+    def load_imagefile(self, filename) -> StatusCode:
+        if isfile(filename) is False:
+            return StatusCode.FILE_NOT_FOUND
         # 防止有中文，因此不使用imread
         self.img = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), 1)
+        if self.img is None:
+            return StatusCode.IMAGE_READ_ERR
         self.imgpath = filename
         self.__update_attr()
+        return StatusCode.OK
 
     def load_yuvfile(self, filename, height, width, cv_format=''):
         yuvdata = np.fromfile(filename, dtype=np.uint8)
         cvt_format = YUV_FORMAT_MAP.get(cv_format)
         if cvt_format is None:
-            return False, 'YUV格式不支持'
+            return StatusCode.IMAGE_FORMAT_NOT_SUPPORT
         self.imgpath = filename
         self.img = cv2.cvtColor(yuvdata.reshape(
             (height*3//2, width)), cvt_format)
         self.__update_attr()
-        return True
+        return StatusCode.OK
 
     # display
     def display_in_scene(self, scene):
@@ -73,15 +92,18 @@ class ImageBasic:
                 qimg = QImage(
                     self.img, self.img.shape[1], self.img.shape[0], bytes_per_line, QImage.Format_RGBA8888)
             else:
-                return "图片格式不能解析"
+                return StatusCode.IMAGE_FORMAT_NOT_SUPPORT
             scene.addPixmap(QPixmap.fromImage(qimg))
-            return True
-        return '图片为空'
+            return StatusCode.OK
+        return StatusCode.IMAGE_IS_NONE
 
     # proc
-    def save_image(self, filename):
+    def save_image(self, filename) -> StatusCode:
+        if self.img is None:
+            return StatusCode.IMAGE_IS_NONE
         # 解决中文路径的问题, 不使用imwrite
         cv2.imencode('.jpg', self.img)[1].tofile(filename)
+        return StatusCode.OK
 
     def get_img_point(self, x, y):
         """
@@ -91,3 +113,46 @@ class ImageBasic:
             return self.img[y, x]
         else:
             return None
+
+    def find_next_time_photo(self, nextIndex):
+        """
+        获取下一个或者上一个图片(按照时间顺序排列)
+        """
+        next_photo_name = ''
+        index = 0
+        path = dirname(self.imgpath)
+        img_name = basename(self.imgpath)
+        filelist = [f for f in listdir(path) if isfile(
+            join(path, f)) and f.split('.')[-1] in ["jpg", "png", "bmp"]]
+        filelist = sorted(
+            filelist,  key=lambda x: getmtime(join(path, x)))
+        files_nums = len(filelist)
+        if img_name in filelist:
+            index = filelist.index(img_name) + nextIndex
+            if(index > len(filelist) - 1):
+                index = 0
+            elif(index < 0):
+                index = len(filelist) - 1
+            next_photo_name = join(path, filelist[index])
+        return (next_photo_name, index, files_nums)
+
+    def find_next_nat_photo(self, nextIndex):
+        """
+        获取下一个或者上一个图片(按照自然顺序排列)
+        """
+        next_photo_name = ''
+        index = 0
+        path = dirname(self.imgpath)
+        img_name = basename(self.imgpath)
+        filelist = [f for f in listdir(path) if isfile(
+            join(path, f)) and f.split('.')[-1] in ["jpg", "png", "bmp"]]
+        natsorted(filelist)
+        files_nums = len(filelist)
+        if img_name in filelist:
+            index = filelist.index(img_name) + nextIndex
+            if(index > len(filelist) - 1):
+                index = 0
+            elif(index < 0):
+                index = len(filelist) - 1
+            next_photo_name = join(path, filelist[index])
+        return (next_photo_name, index, files_nums)
