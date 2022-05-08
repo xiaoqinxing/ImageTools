@@ -1,4 +1,3 @@
-from logging import critical
 import cv2
 import numpy as np
 from PySide2.QtGui import QPixmap, QImage
@@ -32,7 +31,11 @@ class ImageBasic:
             self.width = self.img.shape[1]
             self.depth = self.img.shape[2]
 
-    # load image
+    def get_dir(self):
+        if self.imgpath is None:
+            return '.'
+        return dirname(self.imgpath)
+
     def load_image(self, img):
         self.img = img
         self.__update_attr()
@@ -46,7 +49,6 @@ class ImageBasic:
             return StatusCode.FILE_NOT_FOUND
         remove(self.imgpath)
         self.img = None
-        self.imgpath = None
         return StatusCode.OK
 
     def load_imagefile(self, filename) -> StatusCode:
@@ -101,6 +103,8 @@ class ImageBasic:
     def save_image(self, filename) -> StatusCode:
         if self.img is None:
             return StatusCode.IMAGE_IS_NONE
+        if isfile(filename) is False:
+            return StatusCode.FILE_PATH_NOT_VALID
         # 解决中文路径的问题, 不使用imwrite
         cv2.imencode('.jpg', self.img)[1].tofile(filename)
         return StatusCode.OK
