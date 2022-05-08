@@ -1,5 +1,5 @@
 from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
-from components.customwidget import ImageView, sceneDisplayImage, critical
+from components.customwidget import ImageView, sceneDisplayImage, critical_win
 from components.window import SubWindow
 from components.histview import HistView
 from os import listdir, remove
@@ -93,7 +93,7 @@ class ImageEditor(SubWindow):
                 self.displayImage(self.img.nowImage)
                 self.ui.photo_title.setTitle(indexstr + self.imgfilename)
             else:
-                critical('打开图片失败')
+                critical_win('打开图片失败')
                 return
 
     def open_watermark_win(self):
@@ -116,7 +116,7 @@ class ImageEditor(SubWindow):
             self.watermark_ui.analysis.clicked.connect(
                 self.analysis_space_watermark)
         else:
-            critical('打开原图片失败，请先导入图片')
+            critical_win('打开原图片失败，请先导入图片')
 
     def open_watermark_path(self):
         watermarkpath = QFileDialog.getOpenFileName(
@@ -127,7 +127,7 @@ class ImageEditor(SubWindow):
             self.img.set_watermark_img(self.watermark_path)
             self.set_watermark_params()
         else:
-            critical('打开水印图片失败')
+            critical_win('打开水印图片失败')
 
     def get_watermark_parmas(self):
         watermark_params = WaterMarkParams()

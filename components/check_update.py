@@ -7,7 +7,7 @@ import requests
 import time
 from logging import error, info
 from PySide2.QtCore import Signal, QThread
-from components.customwidget import critical
+from components.customwidget import critical_win
 from components.property import set_persist, get_persist, IS_NEED_AUTO_UPDATE
 
 VERSION_NUMS_LEN = 3
@@ -179,9 +179,9 @@ class CheckUpdate(QDialog):
                 mkdir(dirname(DOWNLOAD_INSTALL_PACK))
             self.update_proc.start()
         elif self.need_update == 0:
-            critical('软件已经是最新啦')
+            critical_win('软件已经是最新啦')
         elif self.need_update == -1:
-            critical('网络连接出错')
+            critical_win('网络连接出错')
 
     def update_proc_done(self, ret):
         if(ret == 0):
@@ -193,7 +193,7 @@ class CheckUpdate(QDialog):
                 startfile(DOWNLOAD_INSTALL_PACK)
                 info('正在启用最新升级包')
                 exit()
-            critical('下载的升级包不存在')
+            critical_win('下载的升级包不存在')
         else:
             info('下载失败')
 

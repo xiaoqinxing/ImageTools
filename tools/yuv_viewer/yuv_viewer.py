@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
 from isort import file
-from components.customwidget import ImageView, sceneDisplayImage, critical
+from components.customwidget import ImageView, sceneDisplayImage, critical_win
 from components.window import SubWindow
 from components.histview import HistView
 from os import listdir, remove
@@ -81,7 +81,7 @@ class YUVViewer(SubWindow):
             self.img.load_imagefile(filename)
             ret = self.img.display_in_scene(self.scene)
             if ret is not True:
-                critical(ret)
+                critical_win(ret)
                 return
             self.ui.photo_title.setTitle(indexstr + self.img.imgpath)
 

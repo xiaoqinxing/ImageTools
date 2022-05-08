@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from components.customwidget import critical
+from components.customwidget import critical_win
 
 
 class WaterMarkType():
@@ -31,6 +31,7 @@ class WaterMarkParams():
 class ImageEffect(object):
     nowImage = None
     img_index = 0
+
     def __init__(self):
         self.is_load_image = False
 
@@ -70,7 +71,7 @@ class ImageEffect(object):
         elif (index == 1):
             self.nowImage = self.dstImage
             self.img_index = 1
-    
+
     def get_img_index(self):
         return self.img_index
 
@@ -108,7 +109,7 @@ class ImageEffect(object):
             self.watermark_img_height = self.watermark_img.shape[0]
             self.watermark_img_width = self.watermark_img.shape[1]
         else:
-            critical('水印图片无法打开')
+            critical_win('水印图片无法打开')
 
     def set_watermark_show(self, params: WaterMarkParams):
         """
@@ -145,19 +146,24 @@ class ImageEffect(object):
         if(params.watermark_type == WaterMarkType.SpaceWaterMark):
             watermark_img_tmp = self.watermark_img.copy()
             self.dstImage = self.srcImage.copy()
-            watermark_img_tmp = cv2.cvtColor(watermark_img_tmp, cv2.COLOR_BGR2GRAY)
+            watermark_img_tmp = cv2.cvtColor(
+                watermark_img_tmp, cv2.COLOR_BGR2GRAY)
             watermark_img_tmp = cv2.threshold(
-                    watermark_img_tmp, params.threshold, 1, cv2.THRESH_BINARY)[1]
+                watermark_img_tmp, params.threshold, 1, cv2.THRESH_BINARY)[1]
             width = min(watermark_img_tmp.shape[1], self.width)
             height = min(watermark_img_tmp.shape[0], self.height)
             w_start = int((self.width - width)/2)
             h_start = int((self.height - height)/2)
-            self.dstImage[h_start:height+h_start, w_start:width+w_start, 0] &= 254
-            self.dstImage[h_start:height+h_start, w_start:width+w_start, 0] |= watermark_img_tmp[:height, :width]
-    
+            self.dstImage[h_start:height+h_start,
+                          w_start:width+w_start, 0] &= 254
+            self.dstImage[h_start:height+h_start, w_start:width +
+                          w_start, 0] |= watermark_img_tmp[:height, :width]
+
     def analysis_space_watermark(self):
-        tmp = cv2.threshold(self.nowImage[:,:,0], 0, 255, cv2.THRESH_BINARY)[1]
+        tmp = cv2.threshold(
+            self.nowImage[:, :, 0], 0, 255, cv2.THRESH_BINARY)[1]
         self.dstImage = cv2.cvtColor(tmp, cv2.COLOR_GRAY2BGR)
+
 
 class BlurType():
     BoxBlur = 0

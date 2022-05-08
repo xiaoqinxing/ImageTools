@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog
 from PySide2.QtGui import QPixmap, Qt, QImage
-from components.customwidget import ImageView, critical
+from components.customwidget import ImageView, critical_win
 from components.window import SubWindow
 from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor
 from tools.rawimageeditor.RawImageParams import RawImageParams
@@ -56,7 +56,7 @@ class RawImageEditor(SubWindow):
         """
         func: 报告ISP算法错误
         """
-        critical(value, self)
+        critical_win(value, self)
 
     def update_img(self):
         """
@@ -129,7 +129,7 @@ class RawImageEditor(SubWindow):
                     self.ui.awb_g.setValue(awb_gain[1])
                     self.ui.awb_b.setValue(awb_gain[2])
                 else:
-                    critical("请在raw图上进行选择")
+                    critical_win("请在raw图上进行选择")
             else:
                 if(self.histView is not None):
                     self.histView.update_rect_data(self.show_img, self.rect)

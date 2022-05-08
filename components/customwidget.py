@@ -237,20 +237,20 @@ def sceneDisplayImage(scene: QGraphicsScene, img):
             qimg = QImage(img, img.shape[1],
                           img.shape[0], bytes_per_line, QImage.Format_RGBA8888)
         else:
-            critical("图片格式不能解析")
+            critical_win("图片格式不能解析")
         scene.addPixmap(QPixmap.fromImage(qimg))
         return True
     return False
 
 
-def critical(string: str, parent=None):
+def critical_win(string: str, parent=None):
     if(string is not None):
         QMessageBox.critical(
             parent, '警告', string, QMessageBox.Yes, QMessageBox.Yes)
     return
 
 
-def info(string: str, parent=None):
+def info_win(string: str, parent=None):
     if(string is not None):
         QMessageBox.information(
             parent, '提示', string, QMessageBox.Yes, QMessageBox.Yes)

@@ -2,7 +2,7 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtCore import Qt
 import sys
 from components.window import MainWindow
-from components.customwidget import info
+from components.customwidget import info_win
 from tools.depth_of_focus.depth_of_focus import FieldDepthWindow
 from tools.shake_test.shake_test import ShakeTestTool
 from tools.imageeditor.imageeditor import ImageEditor
@@ -68,7 +68,7 @@ class ImageTools(MainWindow):
 
     def clear_cache(self):
         self.need_clear_cache = True
-        info('缓存删除成功！\r\n请重启软件', self)
+        info_win('缓存删除成功！\r\n请重启软件', self)
 
 
 if __name__ == "__main__":

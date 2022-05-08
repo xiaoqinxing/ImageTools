@@ -6,9 +6,9 @@ from PySide2.QtGui import QImage
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QFileDialog
 from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor
-from components.customwidget import critical
+from components.customwidget import critical_win
 import cv2
-    
+
 
 class CscParams():
     """
@@ -22,8 +22,8 @@ class CscParams():
     colorspace = 'BT709'
     need_flush = False
     name = 'CSC'
-    
-    def set(self, ui:Ui_ImageEditor):
+
+    def set(self, ui: Ui_ImageEditor):
         """
         设置参数界面的显示
         """
@@ -34,8 +34,8 @@ class CscParams():
         index = ui.color_space.findText(self.colorspace)
         ui.color_space.setCurrentIndex(index)
         ui.limitrange.setCheckState(self.limitrange)
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         """
         func: 获取界面参数
         """
@@ -46,12 +46,12 @@ class CscParams():
         self.set_colorspace(ui.color_space.currentText())
         self.set_limitrange(ui.limitrange.checkState())
         return self.need_flush
-    
+
     def set_luma(self, value):
         if(value != self.luma):
             self.luma = value
             self.need_flush = True
-    
+
     def set_contrast(self, value):
         if(value != self.contrast):
             self.contrast = value
@@ -66,12 +66,12 @@ class CscParams():
         if(value != self.satu):
             self.satu = value
             self.need_flush = True
-    
+
     def set_colorspace(self, value):
         if(value != self.colorspace):
             self.colorspace = value
             self.need_flush = True
-    
+
     def set_limitrange(self, value):
         """
         设置是否限制YUV的输出范围，TV标准是16-235，PC标准是0-255。0为关，2为开
@@ -79,6 +79,7 @@ class CscParams():
         if(value != self.limitrange):
             self.limitrange = value
             self.need_flush = True
+
 
 class FormatParams():
     """
@@ -93,7 +94,7 @@ class FormatParams():
     need_flush = False
     filename = ''
 
-    def set(self, ui:Ui_ImageEditor):
+    def set(self, ui: Ui_ImageEditor):
         ui.width.setValue(self.width)
         ui.height.setValue(self.height)
         ui.bit.setValue(self.bit_depth)
@@ -102,8 +103,8 @@ class FormatParams():
         index = ui.raw_format.findText(self.raw_format)
         ui.raw_format.setCurrentIndex(index)
         ui.filename.setText(self.filename)
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_width(ui.width.value())
         self.set_height(ui.height.value())
         self.set_bit_depth(ui.bit.value())
@@ -111,36 +112,37 @@ class FormatParams():
         self.set_pattern(ui.pattern.currentText().lower())
         self.set_filename(ui.filename.text())
         return self.need_flush
-    
+
     def set_width(self, value):
         if(self.width != value):
             self.width = value
             self.need_flush = True
-    
+
     def set_height(self, value):
         if(self.height != value):
             self.height = value
             self.need_flush = True
-    
+
     def set_bit_depth(self, value):
         if(self.bit_depth != value):
             self.bit_depth = value
             self.need_flush = True
-    
+
     def set_raw_format(self, value):
         if(self.raw_format != value):
             self.raw_format = value
             self.need_flush = True
-    
+
     def set_pattern(self, value):
         if(self.pattern != value):
             self.pattern = value
             self.need_flush = True
-    
+
     def set_filename(self, value):
         if(self.filename != value):
             self.filename = value
             self.need_flush = True
+
 
 class DemosaicParams():
     """
@@ -153,14 +155,14 @@ class DemosaicParams():
     need_flush = False
     name = 'demosaic'
 
-    def set(self, ui:Ui_ImageEditor):
+    def set(self, ui: Ui_ImageEditor):
         index = ui.demosaic_type.findText(self.get_demosaic_func_string())
         ui.demosaic_type.setCurrentIndex(index)
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_demosaic_func_type(ui.demosaic_type.currentText())
-        return self.need_flush        
-    
+        return self.need_flush
+
     def set_demosaic_func_type(self, demosaic_type):
         """
         demosaic有两种算法，设置demosaic的算法
@@ -186,7 +188,7 @@ class DemosaicParams():
         else:
             ret = 'Menon2007'
         return ret
-    
+
     def get_demosaic_funct_type(self):
         return self.__demosaic_func_type
 
@@ -218,15 +220,15 @@ class LTMParams():
     need_flush = False
     name = 'LTM'
 
-    def set(self, ui:Ui_ImageEditor):
+    def set(self, ui: Ui_ImageEditor):
         ui.dark_boost.setValue(self.get_dark_boost())
         ui.bright_suppress.setValue(self.get_bright_suppress())
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_dark_boost(ui.dark_boost.value())
         self.set_bright_suppress(ui.bright_suppress.value())
         return self.need_flush
-    
+
     def set_dark_boost(self, value):
         """
         设置暗处提亮程度
@@ -234,7 +236,7 @@ class LTMParams():
         if(value != self.__dark_boost):
             self.need_flush = True
             self.__dark_boost = value
-    
+
     def get_dark_boost(self):
         return self.__dark_boost
 
@@ -242,7 +244,7 @@ class LTMParams():
         if(value != self.__bright_suppress):
             self.need_flush = True
             self.__bright_suppress = value
-    
+
     def get_bright_suppress(self):
         return self.__bright_suppress
 
@@ -252,17 +254,17 @@ class AWBParams():
     name = 'AWB'
     awb_gain = [1., 1., 1.]
 
-    def set(self, ui:Ui_ImageEditor):
+    def set(self, ui: Ui_ImageEditor):
         awb_gain = self.get_awb_gain()
         ui.awb_r.setValue(awb_gain[0])
         ui.awb_g.setValue(awb_gain[1])
         ui.awb_b.setValue(awb_gain[2])
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_awb_gain(
             [ui.awb_r.value(), ui.awb_g.value(), ui.awb_b.value()])
         return self.need_flush
-    
+
     def set_awb_gain(self, awb_gain):
         """
         设置AWB的增益 1x3
@@ -273,7 +275,7 @@ class AWBParams():
 
     def get_awb_gain(self):
         return self.awb_gain
-    
+
     def set_awb_ratio(self, awb_ratio):
         """
         设置r/g和b/g的值
@@ -285,24 +287,25 @@ class AWBParams():
         if (awb_gain != self.awb_gain):
             self.awb_gain = awb_gain
             self.need_flush = True
-    
+
+
 class BLCParams():
     need_flush = False
     name = 'black level'
     black_level = [0, 0, 0, 0]
 
-    def set(self, ui:Ui_ImageEditor):
+    def set(self, ui: Ui_ImageEditor):
         blc_level = self.get_black_level()
         ui.blc_r.setValue(blc_level[0])
         ui.blc_gr.setValue(blc_level[1])
         ui.blc_gb.setValue(blc_level[2])
         ui.blc_b.setValue(blc_level[3])
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_black_level([ui.blc_r.value(
-            ), ui.blc_gr.value(), ui.blc_gb.value(), ui.blc_b.value()])
+        ), ui.blc_gr.value(), ui.blc_gb.value(), ui.blc_b.value()])
         return self.need_flush
-    
+
     def set_black_level(self, black_level):
         if(black_level != self.black_level):
             self.black_level = black_level
@@ -311,6 +314,7 @@ class BLCParams():
     def get_black_level(self):
         return np.array(self.black_level)
 
+
 class GammaParams():
     need_flush = False
     name = 'gamma'
@@ -318,10 +322,10 @@ class GammaParams():
     # gamma 查找表的长度
     gamma_table_size = 512
 
-    def set(self, ui:Ui_ImageEditor):
+    def set(self, ui: Ui_ImageEditor):
         ui.gamma_ratio.setValue(self.get_gamma_ratio())
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_gamma(ui.gamma_ratio.value())
         return self.need_flush
 
@@ -336,14 +340,15 @@ class GammaParams():
     def get_gamma_ratio(self):
         return self.__gamma_ratio
 
+
 class CCMParams():
     need_flush = False
     name = 'CCM'
     color_matrix = [[1., .0, .0],
                     [.0, 1., .0],
                     [.0, .0, 1.]]
-    
-    def set(self, ui:Ui_ImageEditor):
+
+    def set(self, ui: Ui_ImageEditor):
         ccm = self.get_color_matrix()
         ui.ccm_rr.setValue(ccm[0][0])
         ui.ccm_rg.setValue(ccm[0][1])
@@ -354,13 +359,14 @@ class CCMParams():
         ui.ccm_br.setValue(ccm[2][0])
         ui.ccm_bg.setValue(ccm[2][1])
         ui.ccm_bb.setValue(ccm[2][2])
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_color_matrix([[ui.ccm_rr.value(), ui.ccm_rg.value(), ui.ccm_rb.value()],
-                            [ui.ccm_gr.value(), ui.ccm_gg.value(), ui.ccm_gb.value()],
-                            [ui.ccm_br.value(), ui.ccm_bg.value(), ui.ccm_bb.value()]]) 
+                               [ui.ccm_gr.value(), ui.ccm_gg.value(),
+                                ui.ccm_gb.value()],
+                               [ui.ccm_br.value(), ui.ccm_bg.value(), ui.ccm_bb.value()]])
         return self.need_flush
-    
+
     def set_color_matrix(self, color_matrix):
         """
         设置CCM 3x3
@@ -371,6 +377,7 @@ class CCMParams():
 
     def get_color_matrix(self):
         return self.color_matrix
+
 
 class BPCParams():
     need_flush = False
@@ -388,29 +395,33 @@ class BPCParams():
 
     def get_size_for_bad_pixel_correction(self):
         return self.__neighborhood_size_for_bad_pixel_correction * 2 + 3
-    
-    def set(self, ui:Ui_ImageEditor):
-        ui.badpixelcorrection.setValue(self.__neighborhood_size_for_bad_pixel_correction)
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def set(self, ui: Ui_ImageEditor):
+        ui.badpixelcorrection.setValue(
+            self.__neighborhood_size_for_bad_pixel_correction)
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_size_for_bad_pixel_correction(ui.badpixelcorrection.value())
         return self.need_flush
+
 
 class RolloffParams():
     need_flush = False
     name = 'rolloff'
     flatphoto = 1
     rgb_pattern_dict = {
-        'r':2,
-        'g':1,
-        'b':0
+        'r': 2,
+        'g': 1,
+        'b': 0
     }
+
     def __init__(self, rawformat, blc):
-        self.rawformat = rawformat # 应该只是引用
+        self.rawformat = rawformat  # 应该只是引用
         self.blc = blc
 
     def set_flatphoto(self):
-        self.flatphoto = np.zeros((self.rawformat.height, self.rawformat.width), dtype=np.float32)
+        self.flatphoto = np.zeros(
+            (self.rawformat.height, self.rawformat.width), dtype=np.float32)
         imagepath = QFileDialog.getOpenFileName(
             None, '打开平场图(RAW)', './', "raw (*.raw)")
         if imagepath[0] != '':
@@ -418,18 +429,19 @@ class RolloffParams():
                 flatphoto_ratio = np.fromfile(imagepath[0], dtype="uint16", sep="").reshape(
                     (self.rawformat.height, self.rawformat.width))
             except Exception:
-                critical('打开图片错误')
+                critical_win('打开图片错误')
             for blc, (y, x) in zip(self.blc.black_level, [(0, 0), (0, 1), (1, 0), (1, 1)]):
                 tmp = cv2.medianBlur(flatphoto_ratio[y::2, x::2] - blc, 5)
                 max_value = tmp.max()
                 self.flatphoto[y::2, x::2] = max_value / tmp
             self.need_flush = True
-    
-    def set(self, ui:Ui_ImageEditor):
+
+    def set(self, ui: Ui_ImageEditor):
         pass
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         return self.need_flush
+
 
 class SharpenParams():
     need_flush = False
@@ -447,7 +459,7 @@ class SharpenParams():
         if(value != self.medianblur_strength):
             self.medianblur_strength = value
             self.need_flush = True
-    
+
     def set_sharpen_strength(self, value):
         """
         设置yuv 锐化强度
@@ -455,7 +467,7 @@ class SharpenParams():
         if(value != self.sharpen_strength):
             self.sharpen_strength = value
             self.need_flush = True
-    
+
     def set_denoise_threshold(self, value):
         """
         设置yuv 锐化权重
@@ -463,7 +475,7 @@ class SharpenParams():
         if(value != self.denoise_threshold):
             self.denoise_threshold = value
             self.need_flush = True
-    
+
     def set_clip_range(self, value):
         """
         设置yuv 钳位阈值
@@ -471,14 +483,14 @@ class SharpenParams():
         if(value != self.clip_range):
             self.clip_range = value
             self.need_flush = True
-    
-    def set(self, ui:Ui_ImageEditor):
+
+    def set(self, ui: Ui_ImageEditor):
         ui.medianblur_strength.setValue(self.medianblur_strength)
         ui.sharpen_strength.setValue(self.sharpen_strength)
         ui.denoise_threshold.setValue(self.denoise_threshold)
         ui.clip_range.setValue(self.clip_range)
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_medianblur_strength(ui.medianblur_strength.value())
         self.set_sharpen_strength(ui.sharpen_strength.value())
         self.set_denoise_threshold(ui.denoise_threshold.value())
@@ -501,7 +513,7 @@ class DenoiseParams():
         if(value != self.noise_threshold):
             self.noise_threshold = value
             self.need_flush = True
-    
+
     def set_denoise_strength(self, value):
         """
         设置yuv 降噪强度
@@ -509,7 +521,7 @@ class DenoiseParams():
         if(value != self.denoise_strength):
             self.denoise_strength = value
             self.need_flush = True
-    
+
     def set_color_denoise_strength(self, value):
         """
         设置yuv 色度降噪强度
@@ -517,7 +529,7 @@ class DenoiseParams():
         if(value != self.color_denoise_strength):
             self.color_denoise_strength = value
             self.need_flush = True
-    
+
     def set_noise_weight(self, value):
         """
         设置yuv 降噪权重
@@ -525,8 +537,8 @@ class DenoiseParams():
         if(value != self.noise_weight):
             self.noise_weight = value
             self.need_flush = True
-    
-    def set(self, ui:Ui_ImageEditor):
+
+    def set(self, ui: Ui_ImageEditor):
         ui.noise_threshold_l.setValue(self.noise_threshold[0])
         ui.noise_threshold_m.setValue(self.noise_threshold[1])
         ui.noise_threshold_h.setValue(self.noise_threshold[2])
@@ -537,7 +549,7 @@ class DenoiseParams():
         ui.noise_weight_m.setValue(self.noise_weight[1])
         ui.noise_weight_h.setValue(self.noise_weight[2])
         ui.color_denoise_strength.setValue(self.color_denoise_strength)
-    
+
     def get(self, ui: Ui_ImageEditor):
         self.set_noise_threshold([ui.noise_threshold_l.value(
         ), ui.noise_threshold_m.value(), ui.noise_threshold_h.value()])
@@ -547,7 +559,8 @@ class DenoiseParams():
         ), ui.noise_weight_m.value(), ui.noise_weight_h.value()])
         self.set_color_denoise_strength(ui.color_denoise_strength.value())
         return self.need_flush
-    
+
+
 class DigitalGainParams():
     """
     数字增益
@@ -556,10 +569,10 @@ class DigitalGainParams():
     name = 'digital gain'
     digital_gain = 1.0
 
-    def set(self, ui:Ui_ImageEditor):
+    def set(self, ui: Ui_ImageEditor):
         ui.digital_gain.setValue(self.get_digital_gain())
-    
-    def get(self, ui:Ui_ImageEditor):
+
+    def get(self, ui: Ui_ImageEditor):
         self.set_digital_gain(ui.digital_gain.value())
         return self.need_flush
 
@@ -575,6 +588,8 @@ class DigitalGainParams():
 
 #   Helps set up necessary information/metadata of the image
 # =============================================================
+
+
 class RawImageParams():
     def __init__(self):
         """
@@ -603,27 +618,27 @@ class RawImageParams():
             self.rawformat,
             self.demosaic,
             self.ltm,
-            self.awb, 
+            self.awb,
             self.blc,
             self.gain,
             self.gamma,
             self.ccm,
             self.csc,
-            self.bpc, 
+            self.bpc,
             self.sharpen,
             self.denoise
         ] = self.params
 
         self.rolloff = RolloffParams(self.rawformat, self.blc)
 
-    def set_img_params_ui(self, ui:Ui_ImageEditor):
+    def set_img_params_ui(self, ui: Ui_ImageEditor):
         """
         设置参数界面的显示
         """
         for param in self.params:
             param.set(ui)
 
-    def get_img_params(self, ui:Ui_ImageEditor):
+    def get_img_params(self, ui: Ui_ImageEditor):
         """
         func: 获取界面参数
         """
@@ -638,7 +653,7 @@ class RawImageParams():
 
     def get_error_str(self):
         return self.error_str
-    
+
     def get_params(self, params, ui):
         if params.get(ui) == True:
             self.need_flush_isp.append(params.name)

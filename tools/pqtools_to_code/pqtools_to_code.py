@@ -1,4 +1,4 @@
-from components.customwidget import critical
+from components.customwidget import critical_win
 from components.window import SubWindow
 from tools.pqtools_to_code.pqtools2code_window import Ui_PQtoolsToCode
 import xml.dom.minidom as xmldom
@@ -129,12 +129,12 @@ class PQtoolsToCode(SubWindow):
     def generate_code(self):
         self.params.get_params(self.ui)
         if os.path.exists(self.params.xmlfile) == False:
-            return critical('需要转换的xml文件不存在')
+            return critical_win('需要转换的xml文件不存在')
 
         # 输出文件名的判断与处理
         filename = self.params.output_path
         if(filename == ''):
-            return critical('请填写转换后的头文件名称')
+            return critical_win('请填写转换后的头文件名称')
 
         filename_nosuffix = filename.split('/')[-1]
         if os.path.exists(filename):
