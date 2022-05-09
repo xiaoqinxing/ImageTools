@@ -2,9 +2,9 @@ import cv2
 import numpy as np
 from PySide2.QtGui import QPixmap, QImage
 from os import listdir, remove
-from os.path import isfile, join, getmtime, dirname, basename
+from os.path import isfile, join, getmtime, dirname, basename, isdir
 from natsort import natsorted
-from components.status_code_enum import StatusCode
+from components.status_code_enum import *
 
 YUV_FORMAT_MAP = {
     'NV21': cv2.COLOR_YUV2BGR_NV21,
@@ -44,34 +44,31 @@ class ImageBasic:
         self.img = img.copy()
         self.__update_attr()
 
-    def remove_image(self) -> StatusCode:
+    def remove_image(self):
         if isfile(self.imgpath) is False:
-            return StatusCode.FILE_NOT_FOUND
+            raise FileNotFoundErr()
         remove(self.imgpath)
         self.img = None
-        return StatusCode.OK
 
-    def load_imagefile(self, filename) -> StatusCode:
+    def load_imagefile(self, filename):
         if isfile(filename) is False:
-            return StatusCode.FILE_NOT_FOUND
+            raise FileNotFoundErr()
         # 防止有中文，因此不使用imread
         self.img = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), 1)
         if self.img is None:
-            return StatusCode.IMAGE_READ_ERR
+            raise ImageReadErr()
         self.imgpath = filename
         self.__update_attr()
-        return StatusCode.OK
 
     def load_yuvfile(self, filename, height, width, cv_format=''):
         yuvdata = np.fromfile(filename, dtype=np.uint8)
         cvt_format = YUV_FORMAT_MAP.get(cv_format)
         if cvt_format is None:
-            return StatusCode.IMAGE_FORMAT_NOT_SUPPORT
+            raise ImageFormatNotSupportErr()
         self.imgpath = filename
         self.img = cv2.cvtColor(yuvdata.reshape(
             (height*3//2, width)), cvt_format)
         self.__update_attr()
-        return StatusCode.OK
 
     # display
     def display_in_scene(self, scene):
@@ -94,20 +91,19 @@ class ImageBasic:
                 qimg = QImage(
                     self.img, self.img.shape[1], self.img.shape[0], bytes_per_line, QImage.Format_RGBA8888)
             else:
-                return StatusCode.IMAGE_FORMAT_NOT_SUPPORT
+                raise ImageFormatNotSupportErr()
             scene.addPixmap(QPixmap.fromImage(qimg))
-            return StatusCode.OK
-        return StatusCode.IMAGE_IS_NONE
+            return
+        raise ImageNoneErr()
 
     # proc
-    def save_image(self, filename) -> StatusCode:
+    def save_image(self, filename):
         if self.img is None:
-            return StatusCode.IMAGE_IS_NONE
-        if isfile(filename) is False:
-            return StatusCode.FILE_PATH_NOT_VALID
+            raise ImageNoneErr()
+        if isdir(dirname(filename)) is False:
+            raise FilePathNotValidErr()
         # 解决中文路径的问题, 不使用imwrite
         cv2.imencode('.jpg', self.img)[1].tofile(filename)
-        return StatusCode.OK
 
     def get_img_point(self, x, y):
         """

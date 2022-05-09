@@ -1,11 +1,13 @@
 from PySide2.QtWidgets import QGraphicsScene, QFileDialog
 from components.customwidget import ImageView, critical_win
-from components.status_code_enum import StatusCode
+from components.status_code_enum import *
 from components.window import SubWindow
 from components.histview import HistView
 from os import remove
 from .ui.yuvviewer_window import Ui_YUVEditor
 from components.BasicImage import ImageBasic
+from logging import error
+from traceback import format_exc
 
 
 class YUVViewer(SubWindow):
@@ -52,22 +54,24 @@ class YUVViewer(SubWindow):
         self.__init_img(imagepath[0])
 
     def save_now_image(self):
-        imagepath = QFileDialog.getSaveFileName(
-            None, '保存图片', self.img.get_dir(), "Images (*.jpg)")
-        ret = self.img.save_image(imagepath[0])
-        if ret is not StatusCode.OK:
-            return critical_win(ret.value)
+        try:
+            imagepath = QFileDialog.getSaveFileName(
+                None, '保存图片', self.img.get_dir(), "Images (*.jpg)")
+            self.img.save_image(imagepath[0])
+        except Exception as e:
+            error(format_exc())
+            critical_win(str(e))
 
     def __init_img(self, filename, indexstr=''):
-        ret = self.img.load_imagefile(filename)
-        if ret is not StatusCode.OK:
-            return critical_win(ret.value)
-        ret = self.img.display_in_scene(self.scene)
-        if ret is not StatusCode.OK:
-            return critical_win(ret.value)
-        self.ui.photo_title.setTitle(indexstr + self.img.imgpath)
-        if self.hist_window is not None and self.hist_window.enable is True:
-            self.hist_window.update_rect_data(self.img.img, self.rect)
+        try:
+            self.img.load_imagefile(filename)
+            self.img.display_in_scene(self.scene)
+            self.ui.photo_title.setTitle(indexstr + self.img.imgpath)
+            if self.hist_window is not None and self.hist_window.enable is True:
+                self.hist_window.update_rect_data(self.img.img, self.rect)
+        except Exception as e:
+            error(format_exc())
+            critical_win(str(e))
 
     def update_stats_range(self, _, fromScenePoint, toScenePoint):
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0

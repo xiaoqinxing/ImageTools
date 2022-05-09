@@ -11,3 +11,33 @@ class StatusCode(Enum):
     IMAGE_FORMAT_NOT_SUPPORT = '图像格式不支持'
     IMAGE_READ_ERR = '图像读取失败'
     IMAGE_IS_NONE = '图片为空'
+
+
+class FileNotFoundErr(Exception):
+    def __init__(self):
+        super().__init__('文件不存在')
+
+
+class FilePathNotValidErr(Exception):
+    def __init__(self):
+        super().__init__('文件路径不合法')
+
+
+class ImageFormatErr(Exception):
+    def __init__(self):
+        super().__init__('图像格式错误')
+
+
+class ImageFormatNotSupportErr(Exception):
+    def __init__(self):
+        super().__init__('图像格式不支持')
+
+
+class ImageReadErr(Exception):
+    def __init__(self):
+        super().__init__('图像读取失败')
+
+
+class ImageNoneErr(Exception):
+    def __init__(self):
+        super().__init__('图片为空')
