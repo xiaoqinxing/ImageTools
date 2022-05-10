@@ -122,7 +122,7 @@ class YUVViewer(SubWindow):
         self.y = int(point.y())
         self.__show_point_stats()
 
-    def update_wheel_ratio(self, scale_ratio):
+    def update_wheel_ratio(self, _):
         """
         func: 鼠标滚轮的回调
         """
