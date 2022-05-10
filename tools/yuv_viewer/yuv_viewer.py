@@ -22,31 +22,44 @@ class YUVViewer(SubWindow):
         self.imageview.sigWheelEvent.connect(self.update_wheel_ratio)
         self.ui.openimage.triggered.connect(self.on_open_img)
         self.ui.saveimage.triggered.connect(self.save_now_image)
-        # self.ui.historgram.triggered.connect(self.on_calc_hist)
         self.ui.actionstats.triggered.connect(self.on_calc_stats)
         self.ui.nextphoto.triggered.connect(self.switch_next_photo)
         self.ui.prephoto.triggered.connect(self.switch_pre_photo)
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
         self.ui.deletephoto.triggered.connect(self.delete_photo)
+        self.ui.rotateright.triggered.connect(self.rotate_photo)
         self.img = ImageBasic()
         self.hist_window = None
+        self.img_index_str = ''
+        self.x = 0
+        self.y = 0
 
     def delete_photo(self):
         pre_imgpath = self.img.imgpath
         next_photo, index, files_nums = self.img.find_next_time_photo(1)
-        indexstr = "({}/{})".format(index, files_nums - 1)
-        self.__init_img(next_photo, indexstr)
+        self.img_index_str = "({}/{})".format(index, files_nums - 1)
+        self.__init_img(next_photo, self.img_index_str)
         remove(pre_imgpath)
 
     def switch_next_photo(self):
         next_photo, index, files_nums = self.img.find_next_time_photo(1)
-        indexstr = "({}/{})".format(index + 1, files_nums)
-        self.__init_img(next_photo, indexstr)
+        self.img_index_str = "({}/{})".format(index + 1, files_nums)
+        self.__init_img(next_photo, self.img_index_str)
 
     def switch_pre_photo(self):
         pre_photo, index, files_nums = self.img.find_next_time_photo(-1)
-        indexstr = "({}/{})".format(index + 1, files_nums)
-        self.__init_img(pre_photo, indexstr)
+        self.img_index_str = "({}/{})".format(index + 1, files_nums)
+        self.__init_img(pre_photo, self.img_index_str)
+
+    def rotate_photo(self):
+        try:
+            self.img.rotate90()
+            # TODO 是否需要加个配置项，是否旋转时保存图片
+            self.__display_img(self.img_index_str)
+            # self.img.save_image(self.img.imgpath)
+        except Exception as e:
+            error(format_exc())
+            critical_win(str(e))
 
     def on_open_img(self):
         imagepath = QFileDialog.getOpenFileName(
@@ -73,6 +86,24 @@ class YUVViewer(SubWindow):
             error(format_exc())
             critical_win(str(e))
 
+    def __display_img(self, indexstr=''):
+        try:
+            self.img.display_in_scene(self.scene)
+            self.ui.photo_title.setTitle(indexstr + self.img.imgpath)
+            if self.hist_window is not None and self.hist_window.enable is True:
+                self.hist_window.update_rect_data(self.img.img, self.rect)
+        except Exception as e:
+            error(format_exc())
+            critical_win(str(e))
+
+    def __show_point_stats(self):
+        if self.img.img is not None:
+            rgb = self.img.get_img_point(self.x, self.y)
+            if (rgb is not None):
+                scale_ratio = int(self.imageview.scale_ratio * 100)
+                self.ui.statusBar.showMessage(
+                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, rgb[2], rgb[1], rgb[0], scale_ratio))
+
     def update_stats_range(self, _, fromScenePoint, toScenePoint):
         if(toScenePoint.x() == 0 and toScenePoint.y() == 0
            and self.rect[2] > self.rect[0] and self.rect[3] > self.rect[1]):
@@ -89,22 +120,13 @@ class YUVViewer(SubWindow):
         """
         self.x = int(point.x())
         self.y = int(point.y())
-        if self.img.img is not None:
-            rgb = self.img.get_img_point(self.x, self.y)
-            if (rgb is not None):
-                self.rgb = rgb
-                scale_ratio = int(self.imageview.scale_ratio * 100)
-                self.ui.statusBar.showMessage(
-                    "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], scale_ratio))
+        self.__show_point_stats()
 
     def update_wheel_ratio(self, scale_ratio):
         """
         func: 鼠标滚轮的回调
         """
-        if self.img.img is not None:
-            scale_ratio = int(scale_ratio * 100)
-            self.ui.statusBar.showMessage(
-                "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], scale_ratio))
+        self.__show_point_stats()
 
     def on_calc_stats(self):
         """

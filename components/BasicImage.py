@@ -123,6 +123,15 @@ class ImageBasic:
         else:
             return None
 
+    def rotate90(self):
+        """
+        顺时针旋转90度
+        """
+        if self.img is None:
+            raise ImageNoneErr
+        self.img = cv2.rotate(self.img, cv2.ROTATE_90_CLOCKWISE)
+        self.__update_attr()
+
     def find_next_time_photo(self, nextIndex):
         """
         获取下一个或者上一个图片(按照时间顺序排列)
