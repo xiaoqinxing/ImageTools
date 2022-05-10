@@ -1,10 +1,12 @@
-from PySide2.QtWidgets import QGraphicsScene, QFileDialog
+from distutils.command.config import config
+from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
 from components.customwidget import ImageView, critical_win
 from components.status_code_enum import *
 from components.window import SubWindow
 from components.histview import HistView
 from os import remove
 from .ui.yuvviewer_window import Ui_YUVEditor
+from .ui.yuvconfig import Ui_YUVConfig
 from components.BasicImage import ImageBasic
 from logging import error
 from traceback import format_exc
@@ -28,9 +30,11 @@ class YUVViewer(SubWindow):
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
         self.ui.deletephoto.triggered.connect(self.delete_photo)
         self.ui.rotateright.triggered.connect(self.rotate_photo)
+        self.ui.yuvconfig.triggered.connect(self.on_config)
         self.img = ImageBasic()
         self.hist_window = None
         self.img_index_str = ''
+        self.config_win = None
         self.x = 0
         self.y = 0
 
@@ -137,3 +141,12 @@ class YUVViewer(SubWindow):
             self.rect = [0, 0, self.img.img.shape[1], self.img.img.shape[0]]
             self.hist_window.update_rect_data(self.img.img, self.rect)
             self.hist_window.show()
+
+    def on_config(self):
+        """
+        打开配置的窗口
+        """
+        self.config_win = QDialog()
+        config_win_ui = Ui_YUVConfig()
+        config_win_ui.setupUi(self.config_win)
+        self.config_win.show()
