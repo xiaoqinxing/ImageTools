@@ -19,7 +19,7 @@ class TestBasicImage:
     def test_load_imagefile(self):
         img = ImageBasic()
         try:
-            img.load_imagefile("test/resource/5.jpg")
+            img.load_file("test/resource/5.jpg")
             assert False
         except FileNotFoundErr:
             assert True
@@ -27,7 +27,7 @@ class TestBasicImage:
             assert False
 
         try:
-            img.load_imagefile("test/resource/1.jpg")
+            img.load_file("test/resource/1.jpg")
             assert True
         except Exception:
             assert False
@@ -43,7 +43,7 @@ class TestBasicImage:
             assert False
 
         try:
-            img.load_imagefile("test/resource/1.jpg")
+            img.load_file("test/resource/1.jpg")
             img.save_image("test/resource/1-1.jpg")
             assert isfile("test/resource/1-1.jpg")
             img.remove_image()
@@ -54,7 +54,7 @@ class TestBasicImage:
             assert False
 
         try:
-            img.load_imagefile("test/resource/1-1.jpg")
+            img.load_file("test/resource/1-1.jpg")
             img.save_image("test/resource/1.jpg")
             img.save_image("test/resource/1.jpg")
             assert isfile("test/resource/1.jpg")
@@ -68,7 +68,7 @@ class TestBasicImage:
     def test_next_photo(self):
         img = ImageBasic()
         try:
-            img.load_imagefile("test/resource/2.jpg")
+            img.load_file("test/resource/2.jpg")
             next_photo_name, index, files_nums = img.find_next_time_photo(1)
             assert samefile(next_photo_name, "test/resource/3.png")
             assert index == 3
@@ -80,7 +80,7 @@ class TestBasicImage:
             assert index == 1
             assert files_nums == 5
 
-            img.load_imagefile("test/resource/3.png")
+            img.load_file("test/resource/3.png")
             next_photo_name, index, files_nums = img.find_next_nat_photo(1)
             assert samefile(next_photo_name, "test/resource/6月壁纸.jpg")
             assert index == 3
@@ -97,11 +97,11 @@ class TestBasicImage:
     def test_get_img_point(self):
         img = ImageBasic()
         try:
-            img.load_imagefile("test/resource/2.jpg")
+            img.load_file("test/resource/2.jpg")
             point = img.get_img_point(214, 190)
             assert (point == [218, 211, 255]).all()
 
-            img.load_imagefile("test/resource/3.png")
+            img.load_file("test/resource/3.png")
             point = img.get_img_point(217, 197)
             assert (point == [241, 192, 190]).all()
             assert True

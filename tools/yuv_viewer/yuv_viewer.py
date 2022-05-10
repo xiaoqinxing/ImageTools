@@ -64,7 +64,7 @@ class YUVViewer(SubWindow):
 
     def __init_img(self, filename, indexstr=''):
         try:
-            self.img.load_imagefile(filename)
+            self.img.load_file(filename)
             self.img.display_in_scene(self.scene)
             self.ui.photo_title.setTitle(indexstr + self.img.imgpath)
             if self.hist_window is not None and self.hist_window.enable is True:

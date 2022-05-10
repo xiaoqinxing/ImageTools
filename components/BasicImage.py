@@ -1,3 +1,4 @@
+from posixpath import splitext
 import cv2
 import numpy as np
 from PySide2.QtGui import QPixmap, QImage
@@ -24,6 +25,7 @@ class ImageBasic:
     height = 0
     width = 0
     depth = 0  # 通道数
+    yuv_format = ''
 
     def __update_attr(self):
         if (self.img is not None):
@@ -36,38 +38,45 @@ class ImageBasic:
             return '.'
         return dirname(self.imgpath)
 
-    def load_image(self, img):
-        self.img = img
-        self.__update_attr()
-
-    def copy_image(self, img):
-        self.img = img.copy()
-        self.__update_attr()
-
     def remove_image(self):
         if isfile(self.imgpath) is False:
-            raise FileNotFoundErr()
+            raise FileNotFoundErr
         remove(self.imgpath)
         self.img = None
 
-    def load_imagefile(self, filename):
+    def load_yuv_config(self, width, height, yuv_format):
+        self.width = width
+        self.height = height
+        self.yuv_format = yuv_format
+
+    def load_file(self, filname):
+        if splitext(filname)[-1] in ['.jpg', '.png', '.bmp']:
+            self.__load_imagefile(filname)
+        elif splitext(filname)[-1] in ['.yuv']:
+            self.__load_yuvfile(filname)
+        else:
+            raise ImageFormatNotSupportErr
+
+    def __load_imagefile(self, filename):
         if isfile(filename) is False:
-            raise FileNotFoundErr()
+            raise FileNotFoundErr
         # 防止有中文，因此不使用imread
         self.img = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), 1)
         if self.img is None:
-            raise ImageReadErr()
+            raise ImageReadErr
         self.imgpath = filename
         self.__update_attr()
 
-    def load_yuvfile(self, filename, height, width, cv_format=''):
+    def __load_yuvfile(self, filename):
+        yuv_format = YUV_FORMAT_MAP.get(self.yuv_format)
+        if yuv_format is None:
+            raise ImageFormatNotSupportErr
+        if isfile(filename) is False:
+            raise FileNotFoundErr
         yuvdata = np.fromfile(filename, dtype=np.uint8)
-        cvt_format = YUV_FORMAT_MAP.get(cv_format)
-        if cvt_format is None:
-            raise ImageFormatNotSupportErr()
         self.imgpath = filename
         self.img = cv2.cvtColor(yuvdata.reshape(
-            (height*3//2, width)), cvt_format)
+            (self.height*3//2, self.width)), self.yuv_format)
         self.__update_attr()
 
     # display
@@ -91,17 +100,17 @@ class ImageBasic:
                 qimg = QImage(
                     self.img, self.img.shape[1], self.img.shape[0], bytes_per_line, QImage.Format_RGBA8888)
             else:
-                raise ImageFormatNotSupportErr()
+                raise ImageFormatNotSupportErr
             scene.addPixmap(QPixmap.fromImage(qimg))
             return
-        raise ImageNoneErr()
+        raise ImageNoneErr
 
     # proc
     def save_image(self, filename):
         if self.img is None:
-            raise ImageNoneErr()
+            raise ImageNoneErr
         if isdir(dirname(filename)) is False:
-            raise FilePathNotValidErr()
+            raise FilePathNotValidErr
         # 解决中文路径的问题, 不使用imwrite
         cv2.imencode('.jpg', self.img)[1].tofile(filename)
 
