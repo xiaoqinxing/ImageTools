@@ -17,5 +17,6 @@
     <file>resource/up.png</file>
     <file>resource/delete.png</file>
     <file>resource/right.png</file>
+    <file>resource/config.png</file>
   </qresource>
 </RCC>

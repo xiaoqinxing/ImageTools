@@ -107,6 +107,9 @@ class YUVViewer(SubWindow):
                 "x:{},y:{} : R:{} G:{} B:{} 缩放比例:{}%".format(self.x, self.y, self.rgb[2], self.rgb[1], self.rgb[0], scale_ratio))
 
     def on_calc_stats(self):
+        """
+        打开统计信息的窗口
+        """
         if self.img.img is not None:
             self.hist_window = HistView(self.imageview)
             self.rect = [0, 0, self.img.img.shape[1], self.img.img.shape[0]]

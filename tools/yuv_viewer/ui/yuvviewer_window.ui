@@ -74,6 +74,7 @@
    </attribute>
    <addaction name="openimage"/>
    <addaction name="saveimage"/>
+   <addaction name="yuvconfig"/>
    <addaction name="deletephoto"/>
    <addaction name="actionstats"/>
    <addaction name="prephoto"/>
@@ -172,6 +173,15 @@
    </property>
    <property name="text">
     <string>顺时针旋转</string>
+   </property>
+  </action>
+  <action name="yuvconfig">
+   <property name="icon">
+    <iconset resource="../../../components/resource.qrc">
+     <normaloff>:/tool_icon/resource/config.png</normaloff>:/tool_icon/resource/config.png</iconset>
+   </property>
+   <property name="text">
+    <string>YUV配置</string>
    </property>
   </action>
  </widget>

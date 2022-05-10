@@ -65,6 +65,11 @@ class Ui_YUVEditor(object):
         icon8 = QIcon()
         icon8.addFile(u":/tool_icon/resource/right.png", QSize(), QIcon.Normal, QIcon.Off)
         self.rotateright.setIcon(icon8)
+        self.yuvconfig = QAction(YUVEditor)
+        self.yuvconfig.setObjectName(u"yuvconfig")
+        icon9 = QIcon()
+        icon9.addFile(u":/tool_icon/resource/config.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.yuvconfig.setIcon(icon9)
         self.centralwidget = QWidget(YUVEditor)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -99,6 +104,7 @@ class Ui_YUVEditor(object):
 
         self.toolBar.addAction(self.openimage)
         self.toolBar.addAction(self.saveimage)
+        self.toolBar.addAction(self.yuvconfig)
         self.toolBar.addAction(self.deletephoto)
         self.toolBar.addAction(self.actionstats)
         self.toolBar.addAction(self.prephoto)
@@ -145,6 +151,7 @@ class Ui_YUVEditor(object):
 #endif // QT_CONFIG(shortcut)
         self.add_compare.setText(QCoreApplication.translate("YUVEditor", u"\u6dfb\u52a0\u5bf9\u6bd4\u56fe\u7247", None))
         self.rotateright.setText(QCoreApplication.translate("YUVEditor", u"\u987a\u65f6\u9488\u65cb\u8f6c", None))
+        self.yuvconfig.setText(QCoreApplication.translate("YUVEditor", u"YUV\u914d\u7f6e", None))
         self.photo_title.setTitle("")
         self.toolBar.setWindowTitle(QCoreApplication.translate("YUVEditor", u"toolBar_2", None))
     # retranslateUi
