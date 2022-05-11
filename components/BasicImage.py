@@ -39,27 +39,27 @@ class ImageBasic:
         return dirname(self.imgpath)
 
     def remove_image(self):
-        if isfile(self.imgpath) is False:
-            raise FileNotFoundErr
-        remove(self.imgpath)
         self.img = None
+        if isfile(self.imgpath) is False:
+            return
+        remove(self.imgpath)
 
     def load_yuv_config(self, width, height, yuv_format):
         self.width = width
         self.height = height
         self.yuv_format = yuv_format
 
-    def load_file(self, filname):
-        if splitext(filname)[-1] in ['.jpg', '.png', '.bmp']:
-            self.__load_imagefile(filname)
-        elif splitext(filname)[-1] in ['.yuv']:
-            self.__load_yuvfile(filname)
+    def load_file(self, filename):
+        if isfile(filename) is False:
+            raise FileNotFoundErr
+        if splitext(filename)[-1] in ['.jpg', '.png', '.bmp']:
+            self.__load_imagefile(filename)
+        elif splitext(filename)[-1] in ['.yuv']:
+            self.__load_yuvfile(filename)
         else:
             raise ImageFormatNotSupportErr
 
     def __load_imagefile(self, filename):
-        if isfile(filename) is False:
-            raise FileNotFoundErr
         # 防止有中文，因此不使用imread
         self.img = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), 1)
         if self.img is None:
@@ -71,8 +71,6 @@ class ImageBasic:
         yuv_format = YUV_FORMAT_MAP.get(self.yuv_format)
         if yuv_format is None:
             raise ImageFormatNotSupportErr
-        if isfile(filename) is False:
-            raise FileNotFoundErr
         yuvdata = np.fromfile(filename, dtype=np.uint8)
         self.imgpath = filename
         self.img = cv2.cvtColor(yuvdata.reshape(

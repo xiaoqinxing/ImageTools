@@ -4,7 +4,6 @@ from components.customwidget import ImageView, critical_win
 from components.status_code_enum import *
 from components.window import SubWindow
 from components.histview import HistView
-from os import remove
 from .ui.yuvviewer_window import Ui_YUVEditor
 from .ui.yuvconfig import Ui_YUVConfig
 from components.BasicImage import ImageBasic
@@ -67,11 +66,10 @@ class YUVViewer(SubWindow):
         self.y = 0
 
     def delete_photo(self):
-        pre_imgpath = self.img.imgpath
+        self.img.remove_image()
         next_photo, index, files_nums = self.img.find_next_time_photo(1)
         self.img_index_str = "({}/{})".format(index, files_nums - 1)
         self.__init_img(next_photo, self.img_index_str)
-        remove(pre_imgpath)
 
     def switch_next_photo(self):
         next_photo, index, files_nums = self.img.find_next_time_photo(1)
