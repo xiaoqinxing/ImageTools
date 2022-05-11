@@ -1,4 +1,7 @@
 from enum import Enum
+from logging import error
+from traceback import format_exc
+from components.customwidget import critical_win
 
 
 class StatusCode(Enum):
@@ -13,31 +16,37 @@ class StatusCode(Enum):
     IMAGE_IS_NONE = '图片为空'
 
 
-class FileNotFoundErr(Exception):
+class ImageToolError(Exception):
+    def show(self):
+        error(format_exc())
+        critical_win(str(self))
+
+
+class FileNotFoundErr(ImageToolError):
     def __init__(self):
         super().__init__('文件不存在')
 
 
-class FilePathNotValidErr(Exception):
+class FilePathNotValidErr(ImageToolError):
     def __init__(self):
         super().__init__('文件路径不合法')
 
 
-class ImageFormatErr(Exception):
+class ImageFormatErr(ImageToolError):
     def __init__(self):
         super().__init__('图像格式错误')
 
 
-class ImageFormatNotSupportErr(Exception):
+class ImageFormatNotSupportErr(ImageToolError):
     def __init__(self):
         super().__init__('图像格式不支持')
 
 
-class ImageReadErr(Exception):
+class ImageReadErr(ImageToolError):
     def __init__(self):
         super().__init__('图像读取失败')
 
 
-class ImageNoneErr(Exception):
+class ImageNoneErr(ImageToolError):
     def __init__(self):
         super().__init__('图片为空')

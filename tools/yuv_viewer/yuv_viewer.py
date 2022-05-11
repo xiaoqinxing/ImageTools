@@ -1,14 +1,12 @@
 from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
 from PySide2.QtGui import Qt
-from components.customwidget import ImageView, critical_win
-from components.status_code_enum import *
+from components.customwidget import ImageView
+from components.status_code_enum import ImageToolError
 from components.window import SubWindow
 from components.histview import HistView
 from .ui.yuvviewer_window import Ui_YUVEditor
 from .ui.yuvconfig import Ui_YUVConfig
 from components.BasicImage import ImageBasic
-from logging import error
-from traceback import format_exc
 
 
 class YUVConfig(QDialog):
@@ -87,9 +85,8 @@ class YUVViewer(SubWindow):
             self.__display_img(self.img_index_str)
             if self.config.need_saveimg_in_rotate is True:
                 self.img.save_image(self.img.imgpath)
-        except Exception as e:
-            error(format_exc())
-            critical_win(str(e))
+        except ImageToolError as e:
+            e.show()
 
     def on_open_img(self):
         imagepath = QFileDialog.getOpenFileName(
@@ -103,9 +100,8 @@ class YUVViewer(SubWindow):
                 None, '保存图片', self.img.get_dir(), "Images (*.jpg)")
             if imagepath[0] != '':
                 self.img.save_image(imagepath[0])
-        except Exception as e:
-            error(format_exc())
-            critical_win(str(e))
+        except ImageToolError as e:
+            e.show()
 
     def __init_img(self, filename, indexstr=''):
         try:
@@ -113,9 +109,8 @@ class YUVViewer(SubWindow):
                 self.config.width, self.config.height, self.config.yuv_format)
             self.img.load_file(filename)
             self.__display_img(indexstr)
-        except Exception as e:
-            error(format_exc())
-            critical_win(str(e))
+        except ImageToolError as e:
+            e.show()
 
     def __display_img(self, indexstr=''):
         try:
@@ -123,9 +118,8 @@ class YUVViewer(SubWindow):
             self.ui.photo_title.setTitle(indexstr + self.img.imgpath)
             if self.hist_window is not None and self.hist_window.enable is True:
                 self.hist_window.update_rect_data(self.img.img, self.rect)
-        except Exception as e:
-            error(format_exc())
-            critical_win(str(e))
+        except ImageToolError as e:
+            e.show()
 
     def __show_point_stats(self):
         if self.img.img is not None:

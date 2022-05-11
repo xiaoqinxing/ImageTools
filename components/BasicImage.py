@@ -1,9 +1,8 @@
-from posixpath import splitext
 import cv2
 import numpy as np
 from PySide2.QtGui import QPixmap, QImage
 from os import listdir, remove
-from os.path import isfile, join, getmtime, dirname, basename, isdir
+from os.path import isfile, join, getmtime, dirname, basename, isdir, splitext
 from natsort import natsorted
 from components.status_code_enum import *
 
