@@ -1,5 +1,5 @@
-from distutils.command.config import config
 from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
+from PySide2.QtGui import Qt
 from components.customwidget import ImageView, critical_win
 from components.status_code_enum import *
 from components.window import SubWindow
@@ -10,6 +10,34 @@ from .ui.yuvconfig import Ui_YUVConfig
 from components.BasicImage import ImageBasic
 from logging import error
 from traceback import format_exc
+
+
+class YUVConfig(QDialog):
+    height = 2160
+    width = 3840
+    yuv_format = 'NV21'
+    need_saveimg_in_rotate = True
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.ui = Ui_YUVConfig()
+        self.ui.setupUi(self)
+        self.ui.buttonBox.clicked.connect(self.get)
+
+    def set(self):
+        self.ui.width.setValue(self.width)
+        self.ui.height.setValue(self.height)
+        index = self.ui.yuvformat.findText(self.yuv_format)
+        self.ui.yuvformat.setCurrentIndex(index)
+        self.ui.saveimg_in_rotate.setCheckState(
+            Qt.Checked if self.need_saveimg_in_rotate else Qt.Unchecked)
+
+    def get(self):
+        self.height = self.ui.height.value()
+        self.width = self.ui.width.value()
+        self.yuv_format = self.ui.yuvformat.currentText()
+        self.need_saveimg_in_rotate = (
+            self.ui.saveimg_in_rotate.checkState() == Qt.Checked)
 
 
 class YUVViewer(SubWindow):
@@ -34,7 +62,7 @@ class YUVViewer(SubWindow):
         self.img = ImageBasic()
         self.hist_window = None
         self.img_index_str = ''
-        self.config_win = None
+        self.config = YUVConfig()
         self.x = 0
         self.y = 0
 
@@ -58,9 +86,9 @@ class YUVViewer(SubWindow):
     def rotate_photo(self):
         try:
             self.img.rotate90()
-            # TODO 是否需要加个配置项，是否旋转时保存图片
             self.__display_img(self.img_index_str)
-            # self.img.save_image(self.img.imgpath)
+            if self.config.need_saveimg_in_rotate is True:
+                self.img.save_image(self.img.imgpath)
         except Exception as e:
             error(format_exc())
             critical_win(str(e))
@@ -68,24 +96,25 @@ class YUVViewer(SubWindow):
     def on_open_img(self):
         imagepath = QFileDialog.getOpenFileName(
             None, '打开图片', self.img.get_dir(), "Images (*.jpg *.png *.bmp)")
-        self.__init_img(imagepath[0])
+        if imagepath[0] != '':
+            self.__init_img(imagepath[0])
 
     def save_now_image(self):
         try:
             imagepath = QFileDialog.getSaveFileName(
                 None, '保存图片', self.img.get_dir(), "Images (*.jpg)")
-            self.img.save_image(imagepath[0])
+            if imagepath[0] != '':
+                self.img.save_image(imagepath[0])
         except Exception as e:
             error(format_exc())
             critical_win(str(e))
 
     def __init_img(self, filename, indexstr=''):
         try:
+            self.img.load_yuv_config(
+                self.config.width, self.config.height, self.config.yuv_format)
             self.img.load_file(filename)
-            self.img.display_in_scene(self.scene)
-            self.ui.photo_title.setTitle(indexstr + self.img.imgpath)
-            if self.hist_window is not None and self.hist_window.enable is True:
-                self.hist_window.update_rect_data(self.img.img, self.rect)
+            self.__display_img(indexstr)
         except Exception as e:
             error(format_exc())
             critical_win(str(e))
@@ -119,23 +148,17 @@ class YUVViewer(SubWindow):
         return
 
     def show_point_rgb(self, point):
-        """
-        func: 鼠标移动的回调
-        """
+        """func: 鼠标移动的回调"""
         self.x = int(point.x())
         self.y = int(point.y())
         self.__show_point_stats()
 
     def update_wheel_ratio(self, _):
-        """
-        func: 鼠标滚轮的回调
-        """
+        """func: 鼠标滚轮的回调"""
         self.__show_point_stats()
 
     def on_calc_stats(self):
-        """
-        打开统计信息的窗口
-        """
+        """打开统计信息的窗口"""
         if self.img.img is not None:
             self.hist_window = HistView(self.imageview)
             self.rect = [0, 0, self.img.img.shape[1], self.img.img.shape[0]]
@@ -143,10 +166,5 @@ class YUVViewer(SubWindow):
             self.hist_window.show()
 
     def on_config(self):
-        """
-        打开配置的窗口
-        """
-        self.config_win = QDialog()
-        config_win_ui = Ui_YUVConfig()
-        config_win_ui.setupUi(self.config_win)
-        self.config_win.show()
+        """打开配置的窗口"""
+        self.config.show()
