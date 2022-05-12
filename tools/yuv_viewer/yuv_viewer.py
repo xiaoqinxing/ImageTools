@@ -1,5 +1,6 @@
 from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
 from PySide2.QtGui import Qt
+from PySide2.QtCore import Signal
 from components.customwidget import ImageView
 from components.status_code_enum import ImageToolError
 from components.window import SubWindow
@@ -14,6 +15,7 @@ class YUVConfig(QDialog):
     width = 3840
     yuv_format = 'NV21'
     need_saveimg_in_rotate = True
+    configUpdateEvent = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -35,18 +37,28 @@ class YUVConfig(QDialog):
         self.yuv_format = self.ui.yuvformat.currentText()
         self.need_saveimg_in_rotate = (
             self.ui.saveimg_in_rotate.checkState() == Qt.Checked)
+        self.configUpdateEvent.emit()
 
 
 class YUVViewer(SubWindow):
     def __init__(self, name='YUVViewer', parent=None):
         super().__init__(name, parent, Ui_YUVEditor())
+        self.x = 0
+        self.y = 0
+        self.img = ImageBasic()
+        self.hist_window = None
+        self.img_index_str = ''
+        self.config = YUVConfig()
+        self.config.configUpdateEvent.connect(
+            lambda: self.__init_img(self.img.imgpath))  # 配置界面参数更新
+
         self.scene = QGraphicsScene()
         self.imageview = ImageView(self.scene, parent)
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.gridLayout.addWidget(self.imageview, 0, 1, 3, 1)
         self.imageview.sigDragEvent.connect(self.__init_img)
         self.imageview.sigMouseMovePoint.connect(self.show_point_rgb)
-        self.imageview.sigWheelEvent.connect(self.update_wheel_ratio)
+        self.imageview.sigWheelEvent.connect(self.__show_point_stats)
         self.ui.openimage.triggered.connect(self.on_open_img)
         self.ui.saveimage.triggered.connect(self.save_now_image)
         self.ui.actionstats.triggered.connect(self.on_calc_stats)
@@ -55,13 +67,7 @@ class YUVViewer(SubWindow):
         self.imageview.rubberBandChanged.connect(self.update_stats_range)
         self.ui.deletephoto.triggered.connect(self.delete_photo)
         self.ui.rotateright.triggered.connect(self.rotate_photo)
-        self.ui.yuvconfig.triggered.connect(self.on_config)
-        self.img = ImageBasic()
-        self.hist_window = None
-        self.img_index_str = ''
-        self.config = YUVConfig()
-        self.x = 0
-        self.y = 0
+        self.ui.yuvconfig.triggered.connect(self.config.show)  # 配置UI显示
 
     def delete_photo(self):
         self.img.remove_image()
@@ -90,7 +96,7 @@ class YUVViewer(SubWindow):
 
     def on_open_img(self):
         imagepath = QFileDialog.getOpenFileName(
-            None, '打开图片', self.img.get_dir(), "Images (*.jpg *.png *.bmp)")
+            None, '打开图片', self.img.get_dir(), "Images (*.jpg *.png *.bmp *.yuv)")
         if imagepath[0] != '':
             self.__init_img(imagepath[0])
 
@@ -145,10 +151,6 @@ class YUVViewer(SubWindow):
         self.y = int(point.y())
         self.__show_point_stats()
 
-    def update_wheel_ratio(self, _):
-        """func: 鼠标滚轮的回调"""
-        self.__show_point_stats()
-
     def on_calc_stats(self):
         """打开统计信息的窗口"""
         if self.img.img is not None:
@@ -156,7 +158,3 @@ class YUVViewer(SubWindow):
             self.rect = [0, 0, self.img.img.shape[1], self.img.img.shape[0]]
             self.hist_window.update_rect_data(self.img.img, self.rect)
             self.hist_window.show()
-
-    def on_config(self):
-        """打开配置的窗口"""
-        self.config.show()

@@ -20,7 +20,7 @@ YUV_FORMAT_MAP = {
 
 class ImageBasic:
     img = None
-    imgpath = None  # 图片路径
+    imgpath = ''  # 图片路径
     height = 0
     width = 0
     depth = 0  # 通道数
@@ -33,7 +33,7 @@ class ImageBasic:
             self.depth = self.img.shape[2]
 
     def get_dir(self):
-        if self.imgpath is None:
+        if self.imgpath == '':
             return '.'
         return dirname(self.imgpath)
 
@@ -70,10 +70,26 @@ class ImageBasic:
         yuv_format = YUV_FORMAT_MAP.get(self.yuv_format)
         if yuv_format is None:
             raise ImageFormatNotSupportErr
+
         yuvdata = np.fromfile(filename, dtype=np.uint8)
+        if yuvdata is None:
+            raise ImageNoneErr
+        if self.yuv_format in ['NV21', 'NV12', 'YUV420']:
+            if len(yuvdata) != self.height * self.width * 3 / 2:
+                raise ImageFormatErr
+            yuvdata = yuvdata.reshape(self.height*3//2, self.width)
+        elif self.yuv_format in ['YCrCb', 'YUV422', 'UYVY', 'YUYV', 'YVYU']:
+            if len(yuvdata) != self.height * self.width * 2:
+                raise ImageFormatErr
+            yuvdata = yuvdata.reshape(self.height*2, self.width)
+        else:
+            raise ImageFormatNotSupportErr
+
+        try:
+            self.img = cv2.cvtColor(yuvdata, yuv_format)
+        except Exception:
+            raise ImageFormatErr
         self.imgpath = filename
-        self.img = cv2.cvtColor(yuvdata.reshape(
-            (self.height*3//2, self.width)), self.yuv_format)
         self.__update_attr()
 
     # display
