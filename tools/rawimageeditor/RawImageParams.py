@@ -2,9 +2,9 @@
 # Import the libraries
 # =============================================================
 import numpy as np  # array operations
-from PySide2.QtGui import QImage
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QFileDialog
+from PySide6.QtGui import QImage
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QFileDialog
 from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor
 from components.customwidget import critical_win
 import cv2

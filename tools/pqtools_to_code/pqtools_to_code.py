@@ -4,7 +4,7 @@ from tools.pqtools_to_code.pqtools2code_window import Ui_PQtoolsToCode
 import xml.dom.minidom as xmldom
 import os
 import time
-from PySide2.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QFileDialog
 
 
 class PQtoolsParams:

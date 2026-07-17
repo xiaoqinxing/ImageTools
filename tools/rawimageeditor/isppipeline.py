@@ -1,10 +1,10 @@
 from tools.rawimageeditor.RawImageParams import RawImageParams
 from tools.rawimageeditor.RawImageInfo import RawImageInfo
 import tools.rawimageeditor.ispfunction as ispfunc
-from imp import reload
+from importlib import reload
 import time
-from PySide2.QtCore import Signal, QThread
-from PySide2.QtWidgets import QMessageBox
+from PySide6.QtCore import Signal, QThread
+from PySide6.QtWidgets import QMessageBox
 from threading import Lock
 
 class IspPipeline():

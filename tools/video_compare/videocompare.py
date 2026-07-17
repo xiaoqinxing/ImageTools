@@ -1,7 +1,7 @@
 import cv2
-from PySide2.QtWidgets import QFileDialog, QMessageBox, QDialog, QWidget
-from PySide2.QtGui import QImage, QPixmap
-from PySide2.QtCore import QTimer
+from PySide6.QtWidgets import QFileDialog, QMessageBox, QDialog, QWidget
+from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtCore import QTimer
 from tools.video_compare.shake_test_window import Ui_ShakeTestWindow
 from tools.video_compare.rtspconfigview import Ui_RtspConfigView
 from components.customwidget import VideoView

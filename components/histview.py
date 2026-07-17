@@ -1,5 +1,5 @@
 from components.ui.histgramview import Ui_HistgramView
-from PySide2.QtWidgets import QGraphicsView, QDialog
+from PySide6.QtWidgets import QGraphicsView, QDialog
 from components.customwidget import MatplotlibWidget
 import numpy as np
 import cv2

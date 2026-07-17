@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QGraphicsScene, QFileDialog, QDialog
+from PySide6.QtWidgets import QGraphicsScene, QFileDialog, QDialog
 from components.customwidget import ImageView, sceneDisplayImage, critical_win
 from components.window import SubWindow
 from components.histview import HistView

@@ -1,4 +1,4 @@
-pyside2
+pyside6
 matplotlib
 numpy
 opencv-python

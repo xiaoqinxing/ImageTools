@@ -1,0 +1,8 @@
+2026-07-17 16:57:02,601 - logconfig.py[line:26] - INFO: logging module init is ok
+2026-07-17 16:57:02,701 - ImageTools.py[line:42] - INFO: ImageTools 工具初始化成功
+2026-07-17 16:57:02,916 - ImageTools.py[line:53] - INFO: 是否需要自动更新 False
+2026-07-17 16:57:07,265 - ImageTools.py[line:49] - INFO: 打开False工具 success
+2026-07-17 16:58:28,434 - logconfig.py[line:26] - INFO: logging module init is ok
+2026-07-17 16:58:28,440 - ImageTools.py[line:42] - INFO: ImageTools 工具初始化成功
+2026-07-17 16:58:28,505 - ImageTools.py[line:53] - INFO: 是否需要自动更新 False
+2026-07-17 16:58:33,383 - ImageTools.py[line:49] - INFO: 打开False工具 success

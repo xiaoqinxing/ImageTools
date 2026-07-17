@@ -1,5 +1,5 @@
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Qt
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Qt
 import sys
 from components.window import MainWindow
 from components.customwidget import info_win
@@ -81,4 +81,4 @@ if __name__ == "__main__":
     appswindow.show()
     appswindow.load_saved_windows()
     appswindow.check_version()
-    sys.exit(apps.exec_())
+    sys.exit(apps.exec())

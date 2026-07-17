@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QMessageBox, QMainWindow, QProgressBar, QLabel
+from PySide6.QtWidgets import QMessageBox, QMainWindow, QProgressBar, QLabel
 from components.ui.mainwindow import Ui_MainWindow
 import pickle
 import os

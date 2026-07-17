@@ -1,12 +1,12 @@
 from os import startfile, mkdir
 from os.path import exists, abspath, dirname
 from sys import exit
-from PySide2.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog
 from components.ui.check_update_win import Ui_CheckUpdate
 import requests
 import time
 from logging import error, info
-from PySide2.QtCore import Signal, QThread
+from PySide6.QtCore import Signal, QThread
 from components.customwidget import critical_win
 from components.property import set_persist, get_persist, IS_NEED_AUTO_UPDATE
 

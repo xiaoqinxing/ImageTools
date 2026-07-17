@@ -1,5 +1,5 @@
-from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog
-from PySide2.QtGui import QPixmap, Qt, QImage
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QMessageBox, QFileDialog
+from PySide6.QtGui import QPixmap, Qt, QImage
 from components.customwidget import ImageView, critical_win
 from components.window import SubWindow
 from tools.rawimageeditor.ui.rawimageeditor_window import Ui_ImageEditor

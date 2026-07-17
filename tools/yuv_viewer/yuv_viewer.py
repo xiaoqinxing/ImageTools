@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QGraphicsScene, QFileDialog
+from PySide6.QtWidgets import QGraphicsScene, QFileDialog
 from components.customwidget import ImageView
 from components.status_code_enum import ImageToolError
 from components.window import SubWindow

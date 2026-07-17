@@ -1,10 +1,10 @@
-from PySide2.QtCore import Signal, QPointF, Qt, QSize
-from PySide2.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea, QLabel, QProgressBar
+from PySide6.QtCore import Signal, QPointF, Qt, QSize
+from PySide6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsView, QAbstractScrollArea, QLabel, QProgressBar
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
-from PySide2.QtWidgets import QMessageBox, QGraphicsScene
-from PySide2.QtGui import QPixmap, QImage
+from PySide6.QtWidgets import QMessageBox, QGraphicsScene
+from PySide6.QtGui import QPixmap, QImage
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -169,7 +169,7 @@ class ImageView(QGraphicsView):
         return super().mouseMoveEvent(event)
 
     def wheelEvent(self, event):
-        angle = event.angleD.y()
+        angle = event.angleDelta().y()
         self.centerOn(self.sceneMousePos)
         if (angle > 0):
             self.scale(1.25, 1.25)
