@@ -27,6 +27,7 @@ class RawImageEditor(SubWindow):
         self.show_img = None
         self.select_awb = False
         self.histView = None
+        self.rect = [0, 0, 0, 0]
 
         # 由于graphicsView被自定义了，需要重新定义一下UI，gridlayout还需要重新加一下widget
         self.ui.graphicsView.addWidget(self.imageview, 0, 1, 3, 1)

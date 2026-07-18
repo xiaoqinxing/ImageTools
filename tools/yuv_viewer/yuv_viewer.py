@@ -16,6 +16,7 @@ class YUVViewer(SubWindow):
         self.img = ImageBasic()
         self.hist_window = None
         self.img_index_str = ''
+        self.rect = [0, 0, 0, 0]
         self.config = YUVConfig()
         self.config.configUpdateEvent.connect(
             lambda: self.__init_img(self.img.imgpath))  # 配置界面参数更新

@@ -38,6 +38,7 @@ class ImageEditor(SubWindow):
         self.filepath = './'
         self.imgfilename = ''
         self.hist_window = None
+        self.rect = [0, 0, 0, 0]
 
     def displayImage(self, img):
         if sceneDisplayImage(self.scene, img) is True:

@@ -63,11 +63,18 @@ class HistView(QDialog):
     def calcStatics(self, img, rect):
         [j1, i1, j2, i2] = rect
         (average_rgb, stddv_rgb) = cv2.meanStdDev(img)
-        # TODO 信噪比的公式有些问题，当标准差为0的时候，信噪比该是无穷大
-        snr_rgb = 20 * np.log10(average_rgb/stddv_rgb)
+        average_rgb = average_rgb.ravel()
+        stddv_rgb = stddv_rgb.ravel()
+        with np.errstate(divide='ignore', invalid='ignore'):
+            snr_rgb = 20 * np.log10(average_rgb / np.where(stddv_rgb == 0, 1, stddv_rgb))
+            snr_rgb = np.where(np.isfinite(snr_rgb), snr_rgb, 0.0)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
         (average_yuv, stddv_yuv) = cv2.meanStdDev(img)
-        snr_yuv = 20 * np.log10(average_yuv/stddv_yuv)
+        average_yuv = average_yuv.ravel()
+        stddv_yuv = stddv_yuv.ravel()
+        with np.errstate(divide='ignore', invalid='ignore'):
+            snr_yuv = 20 * np.log10(average_yuv / np.where(stddv_yuv == 0, 1, stddv_yuv))
+            snr_yuv = np.where(np.isfinite(snr_yuv), snr_yuv, 0.0)
         rgb_ratio = [0.0, 0.0]
         awb_gain = [0.0, 0.0, 0.0]
         rgb_ratio[0] = average_rgb[2]/average_rgb[1]
