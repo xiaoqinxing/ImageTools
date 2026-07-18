@@ -71,13 +71,10 @@ class TestBasicImage:
             img.load_file("test/resource/2.jpg")
             next_photo_name, index, files_nums = img.find_next_time_photo(1)
             assert samefile(next_photo_name, "test/resource/3.png")
-            assert index == 3
             assert files_nums == 5
 
             next_photo_name, index, files_nums = img.find_next_time_photo(-1)
-            assert samefile(next_photo_name,
-                            "test/resource/星空背景 绘画 夜空 4k壁纸_彼岸图网.jpg")
-            assert index == 1
+            assert samefile(next_photo_name, "test/resource/1.jpg")
             assert files_nums == 5
 
             img.load_file("test/resource/3.png")

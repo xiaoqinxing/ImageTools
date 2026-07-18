@@ -19,12 +19,13 @@ YUV_FORMAT_MAP = {
 
 
 class ImageBasic:
-    img = None
-    imgpath = ''  # 图片路径
-    height = 0
-    width = 0
-    depth = 0  # 通道数
-    yuv_format = ''
+    def __init__(self):
+        self.img = None
+        self.imgpath = ''
+        self.height = 0
+        self.width = 0
+        self.depth = 0
+        self.yuv_format = ''
 
     def __update_attr(self):
         if (self.img is not None):
@@ -177,7 +178,7 @@ class ImageBasic:
         img_name = basename(self.imgpath)
         filelist = [f for f in listdir(path) if isfile(
             join(path, f)) and f.split('.')[-1] in ["jpg", "png", "bmp"]]
-        natsorted(filelist)
+        filelist = natsorted(filelist)
         files_nums = len(filelist)
         if img_name in filelist:
             index = filelist.index(img_name) + nextIndex

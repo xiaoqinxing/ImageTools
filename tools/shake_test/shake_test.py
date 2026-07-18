@@ -24,16 +24,15 @@ class Direction():
 
 
 class ShakeTestTool(SubWindow):
-    video_valid = False
-    only_select_move_point = False
-    roi_up_crop = 0
-    roi_down_crop = 0
-    horizon_direction = Direction.left
-    vertical_direction = Direction.up
-    inter_frames = 50
-
     def __init__(self, name='ShakeTestTool', parent=None):
         super().__init__(name, parent, Ui_ShakeTestWindow())
+        self.video_valid = False
+        self.only_select_move_point = False
+        self.roi_up_crop = 0
+        self.roi_down_crop = 0
+        self.horizon_direction = Direction.left
+        self.vertical_direction = Direction.up
+        self.inter_frames = 50
         self.videoview = VideoView(parent)
         self.ui.gridLayout_2.addWidget(self.videoview, 0, 0, 1, 1)
         self.videoview.sigDragEvent.connect(self.open_video_path)

@@ -14,14 +14,16 @@ class CscParams():
     """
     CSC转换的相关参数
     """
-    luma = 50
-    contrast = 50
-    hue = 50
-    satu = 50
-    limitrange = Qt.Unchecked
-    colorspace = 'BT709'
-    need_flush = False
     name = 'CSC'
+
+    def __init__(self):
+        self.luma = 50
+        self.contrast = 50
+        self.hue = 50
+        self.satu = 50
+        self.limitrange = Qt.Unchecked
+        self.colorspace = 'BT709'
+        self.need_flush = False
 
     def set(self, ui: Ui_ImageEditor):
         """
@@ -85,14 +87,16 @@ class FormatParams():
     """
     图片输入格式相关参数
     """
-    height = 0
-    width = 0
-    bit_depth = 0
-    raw_format = "MIPI"
-    pattern = "rggb"
     name = 'original raw'
-    need_flush = False
-    filename = ''
+
+    def __init__(self):
+        self.height = 0
+        self.width = 0
+        self.bit_depth = 0
+        self.raw_format = "MIPI"
+        self.pattern = "rggb"
+        self.need_flush = False
+        self.filename = ''
 
     def set(self, ui: Ui_ImageEditor):
         ui.width.setValue(self.width)
@@ -148,12 +152,14 @@ class DemosaicParams():
     """
     demosaic相关参数
     """
-    __neighborhood_size_for_bad_pixel_correction = 3
-    __demosaic_func_type = 0
-    __demosaic_need_proc_color = 0
-    __demosaic_need_media_filter = 0
-    need_flush = False
     name = 'demosaic'
+
+    def __init__(self):
+        self.__neighborhood_size_for_bad_pixel_correction = 3
+        self.__demosaic_func_type = 0
+        self.__demosaic_need_proc_color = 0
+        self.__demosaic_need_media_filter = 0
+        self.need_flush = False
 
     def set(self, ui: Ui_ImageEditor):
         index = ui.demosaic_type.findText(self.get_demosaic_func_string())
@@ -215,10 +221,12 @@ class LTMParams():
     """
     设置动态范围调整参数
     """
-    __dark_boost = 100
-    __bright_suppress = 100
-    need_flush = False
     name = 'LTM'
+
+    def __init__(self):
+        self.__dark_boost = 100
+        self.__bright_suppress = 100
+        self.need_flush = False
 
     def set(self, ui: Ui_ImageEditor):
         ui.dark_boost.setValue(self.get_dark_boost())
@@ -250,9 +258,11 @@ class LTMParams():
 
 
 class AWBParams():
-    need_flush = False
     name = 'AWB'
-    awb_gain = [1., 1., 1.]
+
+    def __init__(self):
+        self.need_flush = False
+        self.awb_gain = [1., 1., 1.]
 
     def set(self, ui: Ui_ImageEditor):
         awb_gain = self.get_awb_gain()
@@ -290,9 +300,11 @@ class AWBParams():
 
 
 class BLCParams():
-    need_flush = False
     name = 'black level'
-    black_level = [0, 0, 0, 0]
+
+    def __init__(self):
+        self.need_flush = False
+        self.black_level = [0, 0, 0, 0]
 
     def set(self, ui: Ui_ImageEditor):
         blc_level = self.get_black_level()
@@ -316,11 +328,12 @@ class BLCParams():
 
 
 class GammaParams():
-    need_flush = False
     name = 'gamma'
-    __gamma_ratio = 2.2
-    # gamma 查找表的长度
     gamma_table_size = 512
+
+    def __init__(self):
+        self.need_flush = False
+        self.__gamma_ratio = 2.2
 
     def set(self, ui: Ui_ImageEditor):
         ui.gamma_ratio.setValue(self.get_gamma_ratio())
@@ -342,11 +355,13 @@ class GammaParams():
 
 
 class CCMParams():
-    need_flush = False
     name = 'CCM'
-    color_matrix = [[1., .0, .0],
-                    [.0, 1., .0],
-                    [.0, .0, 1.]]
+
+    def __init__(self):
+        self.need_flush = False
+        self.color_matrix = [[1., .0, .0],
+                             [.0, 1., .0],
+                             [.0, .0, 1.]]
 
     def set(self, ui: Ui_ImageEditor):
         ccm = self.get_color_matrix()
@@ -380,9 +395,11 @@ class CCMParams():
 
 
 class BPCParams():
-    need_flush = False
     name = 'bad pixel correction'
-    __neighborhood_size_for_bad_pixel_correction = 0
+
+    def __init__(self):
+        self.need_flush = False
+        self.__neighborhood_size_for_bad_pixel_correction = 0
 
     def set_size_for_bad_pixel_correction(self, value):
         """
@@ -406,9 +423,7 @@ class BPCParams():
 
 
 class RolloffParams():
-    need_flush = False
     name = 'rolloff'
-    flatphoto = 1
     rgb_pattern_dict = {
         'r': 2,
         'g': 1,
@@ -416,7 +431,9 @@ class RolloffParams():
     }
 
     def __init__(self, rawformat, blc):
-        self.rawformat = rawformat  # 应该只是引用
+        self.need_flush = False
+        self.flatphoto = 1
+        self.rawformat = rawformat
         self.blc = blc
 
     def set_flatphoto(self):
@@ -444,13 +461,14 @@ class RolloffParams():
 
 
 class SharpenParams():
-    need_flush = False
     name = 'yuv sharpen'
-    medianblur_strength = 0
-    sharpen_strength = 5
-    denoise_threshold = 50
-    clip_range = 64
-    # TODO 滑动条右侧增加数值label显示
+
+    def __init__(self):
+        self.need_flush = False
+        self.medianblur_strength = 0
+        self.sharpen_strength = 5
+        self.denoise_threshold = 50
+        self.clip_range = 64
 
     def set_medianblur_strength(self, value):
         """
@@ -499,12 +517,14 @@ class SharpenParams():
 
 
 class DenoiseParams():
-    need_flush = False
     name = 'yuv denoise'
-    noise_threshold = [50, 50, 50]
-    denoise_strength = [50, 50, 50]
-    color_denoise_strength = 50
-    noise_weight = [50, 50, 50]
+
+    def __init__(self):
+        self.need_flush = False
+        self.noise_threshold = [50, 50, 50]
+        self.denoise_strength = [50, 50, 50]
+        self.color_denoise_strength = 50
+        self.noise_weight = [50, 50, 50]
 
     def set_noise_threshold(self, value):
         """
@@ -565,9 +585,11 @@ class DigitalGainParams():
     """
     数字增益
     """
-    need_flush = False
     name = 'digital gain'
-    digital_gain = 1.0
+
+    def __init__(self):
+        self.need_flush = False
+        self.digital_gain = 1.0
 
     def set(self, ui: Ui_ImageEditor):
         ui.digital_gain.setValue(self.get_digital_gain())
@@ -591,6 +613,14 @@ class DigitalGainParams():
 
 
 class RawImageParams():
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        for param in self.params:
+            fresh = type(param)()
+            for k, v in fresh.__dict__.items():
+                if k not in param.__dict__:
+                    param.__dict__[k] = v
+
     def __init__(self):
         """
         zh

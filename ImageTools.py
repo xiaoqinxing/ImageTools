@@ -72,7 +72,6 @@ class ImageTools(MainWindow):
 
 
 if __name__ == "__main__":
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     apps = QApplication([])
     apps.setStyle('Fusion')
     log.clean_old_log()
