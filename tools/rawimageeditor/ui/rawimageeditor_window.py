@@ -760,7 +760,7 @@ class Ui_ImageEditor(object):
 
         self.blc_gb = QSpinBox(self.groupBox_4)
         self.blc_gb.setObjectName(u"blc_gb")
-        self.blc_gb.setMaximum(1000)
+        self.blc_gb.setMaximum(10000)
 
         self.gridLayout_3.addWidget(self.blc_gb, 0, 6, 1, 1)
 
